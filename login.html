@@ -5,112 +5,118 @@
 <title>poist.ie — Sign In</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --teal:#1A7A6E;--teal-dark:#0f5a51;--teal-light:#E8F5F3;--teal-mid:#2a9d8f;
-  --gold:#F5C518;--gold-dark:#d4a800;
-  --dark:#1A1A2E;--gray:#6B7280;--border:#E5E7EB;--white:#ffffff;
-  --red:#dc2626;--green:#16a34a;
-}
+:root{--teal:#1A7A6E;--teal-dark:#0f5a51;--teal-light:#E8F5F3;--gold:#F5C518;--dark:#1A1A2E;--gray:#6B7280;--border:#E5E7EB;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'DM Sans',sans-serif;color:var(--dark);min-height:100vh;display:flex;background:#0f5a51;}
-
-/* Split layout */
 .login-split{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;width:100%;}
 
-/* Left panel */
+/* Left */
 .login-left{background:linear-gradient(160deg,#0f5a51 0%,#1A7A6E 50%,#2a9d8f 100%);display:flex;flex-direction:column;justify-content:space-between;padding:3rem;position:relative;overflow:hidden;}
 .login-left::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 30% 60%,rgba(245,197,24,0.08) 0%,transparent 70%);}
-.login-left-grid{position:absolute;inset:0;opacity:0.05;background-image:linear-gradient(rgba(255,255,255,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.5) 1px,transparent 1px);background-size:48px 48px;}
-.law-pill{display:inline-flex;align-items:center;gap:.5rem;background:rgba(245,197,24,.15);border:1px solid rgba(245,197,24,.3);color:#F5C518;padding:.4rem 1rem;border-radius:100px;font-size:.82rem;font-weight:600;margin-bottom:2rem;}
+.login-left-grid{position:absolute;inset:0;opacity:0.04;background-image:linear-gradient(rgba(255,255,255,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.5) 1px,transparent 1px);background-size:48px 48px;}
+.law-pill{display:inline-flex;align-items:center;gap:.5rem;background:rgba(245,197,24,.15);border:1px solid rgba(245,197,24,.3);color:#F5C518;padding:.4rem 1rem;border-radius:100px;font-size:.82rem;font-weight:600;margin-bottom:1.5rem;}
 .stat-pill{display:flex;flex-direction:column;align-items:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.9rem 1.2rem;text-align:center;}
-.stat-pill .num{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:#F5C518;}
-.stat-pill .lbl{font-size:.72rem;color:rgba(255,255,255,.5);margin-top:.1rem;}
+.stat-pill .num{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:#F5C518;}
+.stat-pill .lbl{font-size:.7rem;color:rgba(255,255,255,.5);margin-top:.1rem;}
+.feature-item{display:flex;align-items:flex-start;gap:.9rem;}
+.feature-icon{width:36px;height:36px;border-radius:8px;background:rgba(245,197,24,.15);border:1px solid rgba(245,197,24,.25);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
 
-/* Right panel — centred */
+/* Right */
 .login-right{background:#fff;display:flex;align-items:center;justify-content:center;padding:3rem;}
 .auth-box{width:100%;max-width:400px;}
 
-/* Role selector */
+/* Role */
 .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1.5rem;}
 .role-btn{padding:.65rem .5rem;border:1.5px solid var(--border);border-radius:10px;text-align:center;cursor:pointer;font-size:.82rem;font-weight:600;color:var(--gray);transition:all .18s;background:#fff;display:flex;flex-direction:column;align-items:center;gap:.25rem;}
-.role-btn .role-icon{font-size:1.3rem;}
+.role-btn .ri{font-size:1.3rem;}
 .role-btn.active{border-color:var(--teal);background:var(--teal-light);color:var(--teal);}
 
 /* Form */
 .form-group{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem;}
 .form-label{font-size:.85rem;font-weight:600;color:var(--dark);}
-.form-input{padding:.65rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-size:.9rem;color:var(--dark);background:#fff;transition:border-color .18s;outline:none;width:100%;}
+.form-input{padding:.65rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-size:.9rem;color:var(--dark);background:#fff;transition:border-color .18s;outline:none;width:100%;font-family:'DM Sans',sans-serif;}
 .form-input:focus{border-color:var(--teal);}
-.form-error{font-size:.78rem;color:var(--red);margin-top:.3rem;display:none;}
-
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.75rem 1.2rem;border-radius:8px;font-size:.95rem;font-weight:600;cursor:pointer;border:none;transition:all .18s;text-decoration:none;width:100%;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.75rem 1.2rem;border-radius:8px;font-size:.95rem;font-weight:600;cursor:pointer;border:none;transition:all .18s;width:100%;font-family:'DM Sans',sans-serif;}
 .btn-teal{background:var(--teal);color:#fff;}
 .btn-teal:hover{background:var(--teal-dark);}
-.btn-teal:disabled{opacity:.6;cursor:not-allowed;transform:none;}
-
-.divider{display:flex;align-items:center;gap:.8rem;margin:1.2rem 0;color:#9CA3AF;font-size:.82rem;}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
-
-/* Error banner */
-.error-banner{background:#fef2f2;border:1.5px solid #fecaca;color:var(--red);padding:.75rem 1rem;border-radius:8px;font-size:.85rem;margin-bottom:1rem;display:none;}
+.btn-teal:disabled{opacity:.6;cursor:not-allowed;}
+.error-banner{background:#fef2f2;border:1.5px solid #fecaca;color:#dc2626;padding:.75rem 1rem;border-radius:8px;font-size:.85rem;margin-bottom:1rem;display:none;}
 
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 .fade-in{animation:fadeIn 0.3s ease both;}
-
-@media(max-width:768px){
-  .login-split{grid-template-columns:1fr;}
-  .login-left{display:none;}
-  .login-right{padding:2rem 1.5rem;}
-}
+@media(max-width:768px){.login-split{grid-template-columns:1fr;}.login-left{display:none;}.login-right{padding:2rem 1.5rem;}}
 </style>
 </head>
 <body>
-
 <div class="login-split">
 
-  <!-- Left: Brand panel -->
+  <!-- Left panel -->
   <div class="login-left">
     <div class="login-left-grid"></div>
+
+    <!-- Top -->
     <div style="position:relative;z-index:1;">
       <a href="index.html" style="text-decoration:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:2rem;letter-spacing:-.03em;color:#fff;">poist.ie</a>
-      <div class="law-pill" style="margin-top:2rem;">⚖️ Official Languages Act 2021</div>
-      <h2 style="font-family:'Syne',sans-serif;font-size:clamp(1.8rem,3vw,2.6rem);font-weight:800;color:#fff;line-height:1.1;margin-bottom:1rem;">Ireland's Irish language<br>jobs platform</h2>
-      <p style="color:rgba(255,255,255,.65);font-size:.95rem;line-height:1.7;max-width:380px;">Connecting verified Irish-speaking candidates with public bodies who need them — built for the 2030 statutory deadline.</p>
+      <div class="law-pill" style="margin-top:1.5rem;">⚖️ Official Languages Act 2021</div>
+      <h2 style="font-family:'Syne',sans-serif;font-size:clamp(1.6rem,2.5vw,2.4rem);font-weight:800;color:#fff;line-height:1.15;margin-bottom:.8rem;">Ireland's Irish language<br>jobs platform</h2>
+      <p style="color:rgba(255,255,255,.6);font-size:.9rem;line-height:1.7;max-width:360px;">Connecting verified Irish-speaking candidates with public bodies who need them — built for the 2030 statutory deadline.</p>
     </div>
+
+    <!-- Middle: features -->
+    <div style="position:relative;z-index:1;display:flex;flex-direction:column;gap:1rem;">
+      <div class="feature-item">
+        <div class="feature-icon">📋</div>
+        <div>
+          <div style="font-weight:600;color:#fff;font-size:.88rem;">Language Passport</div>
+          <div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-top:.15rem;">CEFR-verified profile — build it free in 5 minutes</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🗺️</div>
+        <div>
+          <div style="font-weight:600;color:#fff;font-size:.88rem;">Map-First Job Search</div>
+          <div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-top:.15rem;">Discover roles across all 32 counties</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✅</div>
+        <div>
+          <div style="font-weight:600;color:#fff;font-size:.88rem;">CEFR Assessment</div>
+          <div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-top:.15rem;">Verify your Irish level — A1 to C2</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">⚖️</div>
+        <div>
+          <div style="font-weight:600;color:#fff;font-size:.88rem;">2030 Compliance Tools</div>
+          <div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-top:.15rem;">Built for the Official Languages Act deadline</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom: stats -->
     <div style="position:relative;z-index:1;">
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-bottom:1.5rem;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;">
         <div class="stat-pill"><div class="num">3,500+</div><div class="lbl">Public bodies</div></div>
         <div class="stat-pill"><div class="num">20%</div><div class="lbl">2030 target</div></div>
         <div class="stat-pill"><div class="num">Free</div><div class="lbl">To join</div></div>
       </div>
-      <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:1.2rem;">
-        <p style="font-size:.85rem;color:rgba(255,255,255,.75);line-height:1.6;">Ireland's only dedicated platform for verified Irish language employment — built for the 2030 Official Languages Act deadline.</p>
-        <div style="font-size:.78rem;color:rgba(255,255,255,.45);margin-top:.6rem;">Free to join · No credit card needed</div>
-      </div>
     </div>
   </div>
 
-  <!-- Right: Login form -->
+  <!-- Right panel -->
   <div class="login-right">
     <div class="auth-box fade-in">
-
       <h1 style="font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;margin-bottom:.3rem;">Welcome back</h1>
       <p style="color:var(--gray);font-size:.9rem;margin-bottom:1.8rem;">Sign in to your poist.ie account</p>
 
-      <!-- Role selector — candidate / employer only (no admin) -->
       <div class="role-grid">
-        <button class="role-btn active" id="rb-candidate" onclick="setRole('candidate',this)">
-          <span class="role-icon">🎓</span>Candidate
-        </button>
-        <button class="role-btn" id="rb-employer" onclick="setRole('employer',this)">
-          <span class="role-icon">🏛️</span>Employer
-        </button>
+        <button class="role-btn active" id="rb-candidate" onclick="setRole('candidate',this)"><span class="ri">🎓</span>Candidate</button>
+        <button class="role-btn" id="rb-employer" onclick="setRole('employer',this)"><span class="ri">🏛️</span>Employer</button>
       </div>
 
-      <!-- Error banner -->
       <div class="error-banner" id="errorBanner"></div>
 
-      <!-- Login form -->
       <div class="form-group">
         <label class="form-label">Email address</label>
         <input type="email" id="email" class="form-input" placeholder="you@example.ie">
@@ -126,39 +132,32 @@ body{font-family:'DM Sans',sans-serif;color:var(--dark);min-height:100vh;display
         </div>
       </div>
 
-      <button class="btn btn-teal" id="submitBtn" onclick="handleLogin()" style="margin-top:.5rem;">
-        Sign in →
-      </button>
+      <button class="btn btn-teal" id="submitBtn" onclick="handleLogin()" style="margin-top:.5rem;">Sign in →</button>
 
       <div style="text-align:center;margin-top:1.5rem;font-size:.88rem;color:var(--gray);">
         Don't have an account?
         <a href="register-candidate.html" id="regLink" style="color:var(--teal);font-weight:600;text-decoration:none;"> Create one free →</a>
       </div>
-
       <div style="margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--border);text-align:center;">
         <p style="font-size:.75rem;color:#9CA3AF;">Free during launch phase · No credit card needed</p>
       </div>
-
     </div>
   </div>
 </div>
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
 const SUPABASE_URL = 'https://kpfshjarepmazrgzffot.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwZnNoamFyZXBtYXpyZ3pmZm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNzQ0MjIsImV4cCI6MjA5MDY1MDQyMn0.yU-6ASii1duNXgGMs0ZWTkgTYXonVfqVOnEQr0J8FhU';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// If already logged in, redirect away from login page
+// Redirect if already logged in
 const { data: { session } } = await supabase.auth.getSession();
 if (session) {
-  // Check which table they're in to redirect correctly
-  const { data: candidate } = await supabase.from('candidates').select('id').eq('id', session.user.id).single();
-  window.location.href = candidate ? 'candidate-dashboard.html' : 'employer-dashboard.html';
+  const { data: c } = await supabase.from('candidates').select('id').eq('id', session.user.id).single();
+  window.location.href = c ? 'candidate-dashboard.html' : 'employer-dashboard.html';
 }
 
-// Role toggle
 let currentRole = 'candidate';
 window.setRole = (role, el) => {
   currentRole = role;
@@ -167,64 +166,38 @@ window.setRole = (role, el) => {
   document.getElementById('regLink').href = role === 'employer' ? 'register-employer.html' : 'register-candidate.html';
 };
 
-// Show error
 function showError(msg) {
-  const banner = document.getElementById('errorBanner');
-  banner.textContent = msg;
-  banner.style.display = 'block';
+  const b = document.getElementById('errorBanner');
+  b.textContent = msg; b.style.display = 'block';
 }
 function clearError() {
   document.getElementById('errorBanner').style.display = 'none';
 }
 
-// Handle login
 window.handleLogin = async () => {
   clearError();
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
   const btn = document.getElementById('submitBtn');
-
-  if (!email || !password) {
-    showError('Please enter your email and password.');
-    return;
-  }
-
-  btn.textContent = 'Signing in…';
-  btn.disabled = true;
-
+  if (!email || !password) { showError('Please enter your email and password.'); return; }
+  btn.textContent = 'Signing in…'; btn.disabled = true;
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
   if (error) {
-    showError(error.message === 'Invalid login credentials'
-      ? 'Incorrect email or password. Please try again.'
-      : error.message);
-    btn.textContent = 'Sign in →';
-    btn.disabled = false;
+    showError(error.message === 'Invalid login credentials' ? 'Incorrect email or password. Please try again.' : error.message);
+    btn.textContent = 'Sign in →'; btn.disabled = false;
     return;
   }
-
-  // Check which table to determine redirect
-  const { data: candidate } = await supabase
-    .from('candidates')
-    .select('id')
-    .eq('id', data.user.id)
-    .single();
-
-  window.location.href = candidate ? 'candidate-dashboard.html' : 'employer-dashboard.html';
+  const { data: c } = await supabase.from('candidates').select('id').eq('id', data.user.id).single();
+  window.location.href = c ? 'candidate-dashboard.html' : 'employer-dashboard.html';
 };
 
-// Password toggle
 window.togglePw = () => {
   const p = document.getElementById('password');
   p.type = p.type === 'password' ? 'text' : 'password';
 };
 
-// Allow Enter key to submit
-document.getElementById('password').addEventListener('keydown', e => {
-  if (e.key === 'Enter') window.handleLogin();
-});
-document.getElementById('email').addEventListener('keydown', e => {
-  if (e.key === 'Enter') window.handleLogin();
+['email','password'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') window.handleLogin(); });
 });
 </script>
 </body>
