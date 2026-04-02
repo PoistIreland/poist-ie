@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>poist.ie — Create Candidate Account</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* poist.ie base styles — shared across all pages */
+:root {
+  --teal:#1A7A6E;--teal-dark:#0f5a51;--teal-light:#E8F5F3;--teal-mid:#2a9d8f;
+  --gold:#F5C518;--gold-dark:#d4a800;
+  --dark:#1A1A2E;--gray:#6B7280;--cream:#F5F2ED;--border:#E5E7EB;--white:#ffffff;
+  --red:#dc2626;--green:#16a34a;
+  --sidebar-w:220px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:#F5F2ED;color:var(--dark);overflow-x:hidden;}
+input,select,textarea{font-family:'DM Sans',sans-serif;}
+.logo{text-decoration:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.65rem;letter-spacing:-0.03em;background:linear-gradient(90deg,#0f5a51,#2a9d8f);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+/* Layout */
+.app-shell{display:flex;min-height:100vh;}
+.main-area{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
+.page-content{flex:1;overflow-y:auto;padding:1.5rem;}
+
+/* Cards */
+.card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.4rem;}
+.card-sm{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1rem;}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:0.4rem;padding:0.6rem 1.2rem;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;border:none;transition:all 0.18s;text-decoration:none;}
+.btn-primary{background:var(--gold);color:var(--dark);}
+.btn-primary:hover{background:var(--gold-dark);transform:translateY(-1px);}
+.btn-teal{background:var(--teal);color:#fff;}
+.btn-teal:hover{background:var(--teal-dark);}
+.btn-outline{background:transparent;border:1.5px solid var(--teal);color:var(--teal);}
+.btn-outline:hover{background:var(--teal-light);}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--gray);}
+.btn-ghost:hover{border-color:var(--dark);color:var(--dark);}
+.btn-danger{background:#fef2f2;border:1.5px solid #fecaca;color:var(--red);}
+.btn-danger:hover{background:#fee2e2;}
+.btn-lg{padding:0.8rem 1.8rem;font-size:1rem;border-radius:10px;}
+
+/* Form elements */
+.form-group{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:1rem;}
+.form-label{font-size:0.85rem;font-weight:600;color:var(--dark);}
+.form-input{padding:0.65rem 0.9rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.9rem;color:var(--dark);background:var(--white);transition:border-color 0.18s;outline:none;}
+.form-input:focus{border-color:var(--teal);}
+.form-input.error{border-color:var(--red);}
+.form-hint{font-size:0.78rem;color:var(--gray);}
+.form-error{font-size:0.78rem;color:var(--red);}
+select.form-input{cursor:pointer;}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;padding:0.18rem 0.55rem;border-radius:4px;font-size:0.72rem;font-weight:700;}
+.badge-gold{background:var(--gold);color:var(--dark);}
+.badge-teal{background:var(--teal-light);color:var(--teal);}
+.badge-gray{background:#F3F4F6;color:var(--gray);}
+.badge-green{background:#dcfce7;color:var(--green);}
+.badge-red{background:#fef2f2;color:var(--red);}
+
+/* Stats grid */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem;}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.2rem;}
+.stat-num{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--teal);}
+.stat-label{font-size:0.78rem;color:var(--gray);margin-top:0.15rem;}
+
+/* CEFR scale */
+.cefr-scale{display:flex;gap:3px;}
+.cefr-pip{flex:1;height:6px;border-radius:3px;background:#E5E7EB;}
+.cefr-pip.on{background:var(--gold);}
+
+/* Section header */
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.section-hdr h2{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;}
+
+/* Verified badge */
+.verified{display:inline-flex;align-items:center;gap:0.3rem;background:#E8F5F3;color:var(--teal);font-size:0.72rem;font-weight:600;padding:0.18rem 0.55rem;border-radius:4px;}
+
+/* Animations */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
+.fade-in{animation:fadeIn 0.3s ease both;}
+
+/* Public nav */
+.pub-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;height:66px;display:flex;align-items:center;justify-content:space-between;}
+.pub-nav-links{display:flex;align-items:center;gap:1.8rem;}
+.pub-nav-links a{text-decoration:none;color:var(--gray);font-weight:500;font-size:0.93rem;transition:color 0.2s;}
+.pub-nav-links a:hover{color:var(--teal);}
+.pub-nav-cta{background:var(--gold);color:var(--dark)!important;padding:0.5rem 1.2rem;border-radius:7px;font-weight:600;font-size:0.88rem;}
+.pub-nav-cta:hover{background:var(--gold-dark)!important;}
+
+/* Responsive */
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .pub-nav-links{display:none;}
+}
+
+
+body{background:linear-gradient(160deg,#0f5a51 0%,#1A7A6E 60%,#2a9d8f 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+.auth-card{background:#fff;border-radius:20px;width:100%;max-width:500px;box-shadow:0 24px 60px rgba(0,0,0,0.25);overflow:hidden;}
+.card-header{background:linear-gradient(135deg,#0f5a51,#1A7A6E);padding:1.8rem 2rem;color:#fff;}
+.card-body{padding:2rem;}
+.step-track{display:flex;align-items:center;margin-bottom:1.5rem;gap:0;}
+.step-node{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;flex-shrink:0;}
+.step-node.done{background:#1A7A6E;color:#fff;}
+.step-node.active{background:#F5C518;color:#1A1A2E;}
+.step-node.pending{background:#E5E7EB;color:#9CA3AF;}
+.step-line{flex:1;height:2px;background:#E5E7EB;}
+.step-line.done{background:#1A7A6E;}
+.step{display:none;animation:fadeIn .3s ease;}
+.step.active{display:block;}
+.cefr-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
+.cefr-btn{border:1.5px solid #E5E7EB;border-radius:8px;padding:.6rem .9rem;cursor:pointer;font-size:.83rem;font-weight:600;color:#6B7280;transition:all .15s;background:#fff;text-align:left;}
+.cefr-btn.sel{border-color:#1A7A6E;background:#E8F5F3;color:#1A7A6E;}
+.cefr-btn .lv{font-size:1rem;font-weight:800;font-family:'Syne',sans-serif;color:inherit;}
+.profile-option{border:1.5px solid #E5E7EB;border-radius:10px;padding:1rem;cursor:pointer;transition:all .18s;display:flex;gap:.8rem;align-items:flex-start;}
+.profile-option:has(input:checked){border-color:#1A7A6E;background:#E8F5F3;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+</style>
+</head>
+<body>
+
+<div class="auth-card fade-in">
+  <div class="card-header">
+    <a href="index.html" style="text-decoration:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.6rem;color:#fff;letter-spacing:-.03em;">poist.ie</a>
+    <div style="margin-top:1rem;">
+      <div style="background:rgba(245,197,24,.2);border:1px solid rgba(245,197,24,.35);color:#F5C518;display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .8rem;border-radius:100px;font-size:.78rem;font-weight:600;margin-bottom:.8rem;">✓ Free — always</div>
+      <h1 style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:.2rem;">Create your Language Passport</h1>
+      <p style="color:rgba(255,255,255,.65);font-size:.85rem;">3 steps · under 5 minutes</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <!-- Step tracker -->
+    <div class="step-track" id="stepTrack">
+      <div class="step-node active" id="sn1">1</div>
+      <div class="step-line" id="sl1"></div>
+      <div class="step-node pending" id="sn2">2</div>
+      <div class="step-line" id="sl2"></div>
+      <div class="step-node pending" id="sn3">3</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:-.8rem;margin-bottom:1.2rem;font-size:.72rem;color:#6B7280;font-weight:600;">
+      <span>Account</span><span>Irish level</span><span>Profile type</span>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="step active" id="step1">
+      <div class="form-group">
+        <label class="form-label">Full name</label>
+        <input type="text" id="name" class="form-input" placeholder="Síle Ní Bhriain" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email address</label>
+        <input type="email" id="email" class="form-input" placeholder="sile@example.ie" required>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;">
+        <div class="form-group"><label class="form-label">Password</label><input type="password" id="pass" class="form-input" placeholder="8+ characters"></div>
+        <div class="form-group"><label class="form-label">Confirm</label><input type="password" id="pass2" class="form-input" placeholder="Repeat"></div>
+      </div>
+      <span class="form-error" id="passErr" style="display:none"></span>
+      <button class="btn btn-teal btn-lg" style="width:100%;justify-content:center;margin-top:.5rem;" onclick="nextStep(1)">Continue →</button>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step" id="step2">
+      <div class="form-group">
+        <label class="form-label">Your Irish proficiency (CEFR)</label>
+        <p class="form-hint" style="margin-bottom:.7rem;">Select the level that best describes your Irish. Employers use this to find you.</p>
+        <div class="cefr-grid" id="irishGrid">
+          <button class="cefr-btn" onclick="setCefr('irish','A1',this)"><span class="lv">A1</span><br><span style="font-size:.72rem;font-weight:400;">Beginner</span></button>
+          <button class="cefr-btn" onclick="setCefr('irish','A2',this)"><span class="lv">A2</span><br><span style="font-size:.72rem;font-weight:400;">Elementary</span></button>
+          <button class="cefr-btn" onclick="setCefr('irish','B1',this)"><span class="lv">B1</span><br><span style="font-size:.72rem;font-weight:400;">Intermediate</span></button>
+          <button class="cefr-btn sel" onclick="setCefr('irish','B2',this)"><span class="lv">B2</span><br><span style="font-size:.72rem;font-weight:400;">Upper-Intermediate</span></button>
+          <button class="cefr-btn" onclick="setCefr('irish','C1',this)"><span class="lv">C1</span><br><span style="font-size:.72rem;font-weight:400;">Advanced</span></button>
+          <button class="cefr-btn" onclick="setCefr('irish','C2',this)"><span class="lv">C2</span><br><span style="font-size:.72rem;font-weight:400;">Native / Proficient</span></button>
+        </div>
+        <span class="form-error" id="irishErr" style="display:none;margin-top:.4rem;"></span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">County</label>
+        <select id="county" class="form-input">
+          <option value="">Select your county…</option>
+          <option>Carlow</option><option>Cavan</option><option>Clare</option><option>Cork</option><option>Donegal</option><option>Dublin</option><option>Galway</option><option>Kerry</option><option>Kildare</option><option>Kilkenny</option><option>Laois</option><option>Leitrim</option><option>Limerick</option><option>Longford</option><option>Louth</option><option>Mayo</option><option>Meath</option><option>Monaghan</option><option>Offaly</option><option>Roscommon</option><option>Sligo</option><option>Tipperary</option><option>Waterford</option><option>Westmeath</option><option>Wexford</option><option>Wicklow</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:.8rem;">
+        <button class="btn btn-ghost" onclick="goStep(1)" style="flex:1;justify-content:center;">← Back</button>
+        <button class="btn btn-teal btn-lg" style="flex:2;justify-content:center;" onclick="nextStep(2)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step" id="step3">
+      <div style="display:flex;flex-direction:column;gap:.7rem;margin-bottom:1.2rem;">
+        <label class="profile-option">
+          <input type="radio" name="ptype" value="active" checked style="margin-top:3px;flex-shrink:0;">
+          <div>
+            <div style="font-weight:700;margin-bottom:.2rem;">🔍 Active — I'm job hunting now</div>
+            <div style="font-size:.82rem;color:#6B7280;">Your profile appears in employer searches immediately</div>
+          </div>
+        </label>
+        <label class="profile-option">
+          <input type="radio" name="ptype" value="passive" style="margin-top:3px;flex-shrink:0;">
+          <div>
+            <div style="font-weight:700;margin-bottom:.2rem;">🔔 Passive — Open to opportunities</div>
+            <div style="font-size:.82rem;color:#6B7280;">Let employers find you without actively applying</div>
+          </div>
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Current role / title <span style="font-weight:400;color:#9CA3AF;">(optional)</span></label>
+        <input type="text" id="jobTitle" class="form-input" placeholder="e.g. Content Creator, Teacher, Developer">
+      </div>
+      <div style="background:#E8F5F3;border-radius:10px;padding:.9rem;margin-bottom:1rem;font-size:.82rem;color:#1A7A6E;">
+        ✓ Your Language Passport will be immediately visible to employers searching for {cefrSelected.irish||'your level'} Irish speakers in your county.
+      </div>
+      <div style="display:flex;gap:.8rem;">
+        <button class="btn btn-ghost" onclick="goStep(2)" style="flex:1;justify-content:center;">← Back</button>
+        <button class="btn btn-teal btn-lg" style="flex:2;justify-content:center;" onclick="register()">Create my Passport →</button>
+      </div>
+    </div>
+
+    <p style="text-align:center;margin-top:1.2rem;font-size:.82rem;color:#6B7280;">Already have an account? <a href="login.html" style="color:#1A7A6E;font-weight:600;text-decoration:none;">Sign in</a></p>
+  </div>
+</div>
+
+<script>
+// poist.ie shared utilities
+// Replace localStorage calls with Supabase auth/db calls when going live
+
+const POIST = {
+  // ── Brand ──────────────────────────────────────────
+  logo: (dark = false) => `
+    <a href="index.html" style="text-decoration:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.65rem;letter-spacing:-0.03em;background:linear-gradient(90deg,${dark?'rgba(255,255,255,0.9),rgba(255,255,255,0.6)':'#0f5a51,#2a9d8f'});-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">poist.ie</a>`,
+
+  // ── Auth helpers (swap for Supabase auth) ──────────
+  getUser: () => JSON.parse(localStorage.getItem('poist_user') || 'null'),
+  setUser: (u) => localStorage.setItem('poist_user', JSON.stringify(u)),
+  logout: () => { localStorage.removeItem('poist_user'); window.location.href = 'login.html'; },
+  requireAuth: (role) => {
+    const u = POIST.getUser();
+    if (!u) { window.location.href = 'login.html'; return null; }
+    if (role && u.role !== role) { window.location.href = 'index.html'; return null; }
+    return u;
+  },
+
+  // ── CEFR helpers ───────────────────────────────────
+  cefrLevels: ['A1','A2','B1','B2','C1','C2'],
+  cefrLabel: { A1:'Beginner',A2:'Elementary',B1:'Intermediate',B2:'Upper-Intermediate',C1:'Advanced',C2:'Proficient/Native' },
+
+  // ── Demo seed data (replace with Supabase queries) ─
+  demoJobs: [
+    { id:1, title:'Irish Language Officer', org:'Department of Education', location:'Dublin', county:'Dublin', type:'Full-time', cefr:'B2', sector:'Government', posted:'2 days ago', lat:53.349, lng:-6.260, desc:'Lead Irish language strategy across the department, supporting the 2030 Official Languages Act targets.' },
+    { id:2, title:'Bainisteoir Tionscadail', org:'Údarás na Gaeltachta', location:'Galway', county:'Galway', type:'Full-time', cefr:'C1', sector:'Semi-state', posted:'1 day ago', lat:53.270, lng:-9.056, desc:'Manage capital projects across Gaeltacht regions. Full Irish essential.' },
+    { id:3, title:'Irish Language Teacher', org:'Coláiste Íde', location:'Dingle, Kerry', county:'Kerry', type:'Full-time', cefr:'C2', sector:'Education', posted:'3 days ago', lat:52.141, lng:-10.267, desc:'Teach Irish at secondary level at a leading Irish-medium college.' },
+    { id:4, title:'Communications Officer (Irish)', org:'HSE', location:'Cork', county:'Cork', type:'Full-time', cefr:'B2', sector:'Healthcare', posted:'Today', lat:51.898, lng:-8.475, desc:'Produce Irish-language health communications for HSE Cork region.' },
+    { id:5, title:'Tech Lead Gaeilge', org:'GlobalTech Ireland', location:'Cork', county:'Cork', type:'Full-time', cefr:'B1', sector:'Technology', posted:'5 days ago', lat:51.903, lng:-8.468, desc:'Lead a bilingual engineering team. Irish language skills valued but not essential at native level.' },
+    { id:6, title:'Content Creator', org:'TG4', location:'Galway', county:'Galway', type:'Contract', cefr:'C1', sector:'Media', posted:'Today', lat:53.274, lng:-9.049, desc:'Create engaging Irish-language video content for TG4 digital platforms.' },
+    { id:7, title:'Irish Language Coordinator', org:'Limerick City Council', location:'Limerick', county:'Limerick', type:'Part-time', cefr:'B1', sector:'Government', posted:'1 week ago', lat:52.664, lng:-8.630, desc:'Coordinate Irish language services for Limerick City Council.' },
+    { id:8, title:'Community Manager', org:'Conradh na Gaeilge', location:'Dublin', county:'Dublin', type:'Full-time', cefr:'C2', sector:'Non-profit', posted:'4 days ago', lat:53.342, lng:-6.268, desc:'Manage community programmes and events promoting the Irish language.' },
+  ],
+
+  demoCandidates: [
+    { id:1, name:'Síle Ní Bhriain', title:'Content Creator', location:'Galway', cefr:'B2', englishCefr:'C2', skills:['Content Writing','Public Speaking','Media Production'], available:'Passive', verified:true, avatar:'👩‍💼' },
+    { id:2, name:'Ciarán Mac Giolla', title:'Software Developer', location:'Dublin', cefr:'C1', englishCefr:'C2', skills:['React','Node.js','Irish Language Tech'], available:'Active', verified:true, avatar:'👨‍💻' },
+    { id:3, name:'Aoife Ní Fhaoláin', title:'Irish Language Officer', location:'Galway', cefr:'C2', englishCefr:'C2', skills:['Policy','Training','Communications'], available:'Passive', verified:true, avatar:'👩‍🏫' },
+    { id:4, name:'Seán Ó Briain', title:'Communications Manager', location:'Cork', cefr:'B2', englishCefr:'C1', skills:['PR','Social Media','Copywriting'], available:'Active', verified:false, avatar:'👨‍💼' },
+  ],
+
+  // ── Sidebar nav renderer ────────────────────────────
+  renderSidebar: (role, activePage) => {
+    const candidateLinks = [
+      { href:'candidate-dashboard.html', icon:'⊞', label:'Dashboard' },
+      { href:'candidate-jobs.html', icon:'🔍', label:'Find Jobs' },
+      { href:'candidate-passport.html', icon:'📋', label:'My Passport' },
+    ];
+    const employerLinks = [
+      { href:'employer-dashboard.html', icon:'⊞', label:'Dashboard' },
+      { href:'employer-search.html', icon:'🔍', label:'Find Candidates' },
+      { href:'employer-post-job.html', icon:'＋', label:'Post a Job' },
+    ];
+    const adminLinks = [
+      { href:'admin-dashboard.html', icon:'⊞', label:'Overview' },
+      { href:'admin-dashboard.html#jobs', icon:'📋', label:'Job Approvals' },
+      { href:'admin-dashboard.html#users', icon:'👥', label:'Users' },
+    ];
+    const links = role==='employer' ? employerLinks : role==='admin' ? adminLinks : candidateLinks;
+    return `
+      <aside style="width:220px;min-height:100vh;background:#0f5a51;display:flex;flex-direction:column;flex-shrink:0;">
+        <div style="padding:1.4rem 1.2rem 1rem;border-bottom:1px solid rgba(255,255,255,0.1);">
+          ${POIST.logo(true)}
+        </div>
+        <nav style="padding:0.8rem 0;flex:1;">
+          ${links.map(l=>`
+            <a href="${l.href}" style="display:flex;align-items:center;gap:0.7rem;padding:0.7rem 1.2rem;text-decoration:none;font-size:0.92rem;font-weight:500;border-radius:0;transition:background 0.15s;${activePage===l.href?'background:rgba(255,255,255,0.15);color:#fff;':'color:rgba(255,255,255,0.7);'}"
+               onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='${activePage===l.href?'rgba(255,255,255,0.15)':'transparent'}'">
+              <span style="font-size:1rem;width:20px;text-align:center;">${l.icon}</span>${l.label}
+            </a>`).join('')}
+        </nav>
+        <div style="padding:1rem 1.2rem;border-top:1px solid rgba(255,255,255,0.1);">
+          <button onclick="POIST.logout()" style="background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.7);padding:0.5rem 1rem;border-radius:6px;cursor:pointer;font-size:0.85rem;width:100%;text-align:left;">← Sign out</button>
+        </div>
+      </aside>`;
+  },
+
+  // ── Top bar for dashboards ──────────────────────────
+  renderTopBar: (title, user) => `
+    <div style="height:60px;background:#fff;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;flex-shrink:0;">
+      <h1 style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#1A1A2E;">${title}</h1>
+      <div style="display:flex;align-items:center;gap:0.8rem;">
+        <div style="width:32px;height:32px;border-radius:50%;background:#E8F5F3;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">${user?.avatar||'👤'}</div>
+        <span style="font-size:0.88rem;font-weight:500;color:#374151;">${user?.name||'User'}</span>
+      </div>
+    </div>`,
+
+  // ── CEFR badge ─────────────────────────────────────
+  cefrBadge: (level) => `<span style="background:#F5C518;color:#1A1A2E;font-size:0.7rem;font-weight:700;padding:0.18rem 0.5rem;border-radius:4px;">${level}</span>`,
+
+  // ── Toast notification ──────────────────────────────
+  toast: (msg, type='success') => {
+    const t = document.createElement('div');
+    const bg = type==='success'?'#1A7A6E':type==='error'?'#dc2626':'#1A1A2E';
+    t.style.cssText=`position:fixed;bottom:1.5rem;right:1.5rem;background:${bg};color:#fff;padding:0.8rem 1.3rem;border-radius:10px;font-size:0.9rem;font-weight:500;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.2);animation:slideIn 0.3s ease;`;
+    t.textContent=msg;
+    document.body.appendChild(t);
+    setTimeout(()=>t.remove(),3000);
+  },
+};
+
+// Demo login shortcut — remove when Supabase auth is live
+window.POIST = POIST;
+
+const _demoUsers={candidate:{role:'candidate'},employer:{role:'employer'},admin:{role:'admin'}};
+function getUser(r){return POIST.getUser();}
+
+let currentStep=1;
+const cefrSelected={irish:'B2',english:'C2'};
+function goStep(n){
+  document.getElementById('step'+currentStep).classList.remove('active');
+  currentStep=n;
+  document.getElementById('step'+n).classList.add('active');
+  ['sn1','sn2','sn3'].forEach((id,i)=>{
+    const el=document.getElementById(id);
+    el.className='step-node '+(i+1<n?'done':i+1===n?'active':'pending');
+    el.textContent=i+1<n?'✓':i+2;
+  });
+  ['sl1','sl2'].forEach((id,i)=>{
+    document.getElementById(id).className='step-line'+(i+1<n?' done':'');
+  });
+}
+function nextStep(from){
+  if(from===1){
+    const p=document.getElementById('pass').value,p2=document.getElementById('pass2').value,err=document.getElementById('passErr');
+    if(!document.getElementById('name').value||!document.getElementById('email').value){POIST.toast('Please fill in all fields','error');return;}
+    if(p.length<8){err.textContent='Password must be 8+ characters';err.style.display='block';return;}
+    if(p!==p2){err.textContent='Passwords do not match';err.style.display='block';return;}
+    err.style.display='none';
+  }
+  if(from===2&&!cefrSelected.irish){document.getElementById('irishErr').textContent='Please select your Irish level';document.getElementById('irishErr').style.display='block';return;}
+  goStep(from+1);
+}
+function setCefr(lang,val,el){
+  cefrSelected[lang]=val;
+  document.getElementById(lang==='irish'?'irishGrid':'engGrid')?.querySelectorAll('.cefr-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function register(){
+  const u={role:'candidate',name:document.getElementById('name').value||'Candidate',email:document.getElementById('email').value,avatar:'👩‍💼',irishCefr:cefrSelected.irish,englishCefr:cefrSelected.english,county:document.getElementById('county').value,jobTitle:document.getElementById('jobTitle').value,profileType:document.querySelector('input[name=ptype]:checked').value,skills:[]};
+  POIST.setUser(u);
+  window.location.href='candidate-passport.html';
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>poist.ie — For Employers | Hire Verified Irish Speakers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #1A7A6E; --teal-dark: #0f5a51; --teal-light: #E8F5F3; --teal-mid: #2a9d8f;
+    --gold: #F5C518; --gold-dark: #d4a800; --gold-light: #FEF9E7;
+    --dark: #1A1A2E; --gray: #6B7280; --light: #F9FAFB; --border: #E5E7EB; --white: #ffffff;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--white); color: var(--dark); overflow-x: hidden; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem; height: 68px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--teal); text-decoration: none; }
+  .nav-logo span { color: var(--dark); }
+  .nav-links { display: flex; align-items: center; gap: 2rem; }
+  .nav-links a { text-decoration: none; color: var(--gray); font-weight: 500; font-size: 0.95rem; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--teal); }
+  .nav-cta { background: var(--teal); color: var(--white); padding: 0.55rem 1.3rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem; text-decoration: none; transition: background 0.2s; }
+  .nav-cta:hover { background: var(--teal-dark); }
+
+  /* HERO */
+  .hero {
+    padding: 140px 2rem 80px;
+    background: linear-gradient(135deg, var(--dark) 0%, #16312e 60%, #1a3e38 100%);
+    color: var(--white); position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 50% 70% at 70% 50%, rgba(245,197,24,0.06) 0%, transparent 70%);
+  }
+  .hero-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; position: relative; z-index: 1; }
+  .hero-tag { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(245,197,24,0.15); border: 1px solid rgba(245,197,24,0.3); color: var(--gold); padding: 0.35rem 0.9rem; border-radius: 100px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1.2rem; }
+  .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2.2rem, 4.5vw, 3.6rem); font-weight: 800; line-height: 1.1; margin-bottom: 1.2rem; }
+  .hero h1 em { color: var(--gold); font-style: normal; }
+  .hero p { font-size: 1.1rem; color: rgba(255,255,255,0.7); line-height: 1.7; margin-bottom: 2rem; }
+  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn-primary-gold { background: var(--gold); color: var(--dark); padding: 0.9rem 2rem; border-radius: 10px; font-weight: 700; font-size: 1rem; text-decoration: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .btn-primary-gold:hover { background: var(--gold-dark); transform: translateY(-2px); }
+  .btn-outline-white { background: transparent; color: var(--white); border: 2px solid rgba(255,255,255,0.3); padding: 0.9rem 2rem; border-radius: 10px; font-weight: 600; font-size: 1rem; text-decoration: none; transition: all 0.2s; }
+  .btn-outline-white:hover { border-color: var(--white); background: rgba(255,255,255,0.08); }
+  .hero-proof { display: flex; gap: 1.5rem; margin-top: 2.5rem; flex-wrap: wrap; }
+  .proof-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: rgba(255,255,255,0.55); }
+  .proof-item strong { color: var(--gold); }
+
+  /* SEARCH UI MOCKUP */
+  .search-ui {
+    background: var(--white); border-radius: 20px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+    overflow: hidden;
+  }
+  .search-header {
+    background: var(--teal); color: var(--white);
+    padding: 1rem 1.4rem;
+    display: flex; align-items: center; gap: 0.6rem;
+    font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700;
+  }
+  .search-filters { padding: 1rem 1.4rem; background: var(--light); border-bottom: 1px solid var(--border); }
+  .filter-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .filter-chip {
+    background: var(--white); border: 1px solid var(--border);
+    padding: 0.35rem 0.8rem; border-radius: 8px;
+    font-size: 0.78rem; font-weight: 500; color: var(--dark);
+    display: flex; align-items: center; gap: 0.3rem;
+  }
+  .filter-chip.active { background: var(--teal-light); border-color: var(--teal); color: var(--teal); font-weight: 600; }
+  .candidate-list { padding: 1rem 1.4rem; }
+  .candidate-row {
+    display: flex; align-items: center; gap: 0.8rem;
+    padding: 0.8rem; border-radius: 10px; margin-bottom: 0.5rem;
+    border: 1px solid var(--border); background: var(--white);
+    transition: all 0.2s; cursor: pointer;
+  }
+  .candidate-row:hover { border-color: var(--teal); background: var(--teal-light); }
+  .c-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--teal); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+  .c-name { font-weight: 600; font-size: 0.85rem; color: var(--dark); }
+  .c-role { font-size: 0.75rem; color: var(--gray); }
+  .c-badge { margin-left: auto; background: var(--gold); color: var(--dark); font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 5px; }
+  .c-verified { font-size: 0.7rem; color: var(--teal); font-weight: 600; }
+
+  /* SECTIONS */
+  section { padding: 80px 2rem; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .section-label { display: inline-block; background: var(--teal-light); color: var(--teal); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.3rem 0.8rem; border-radius: 100px; margin-bottom: 1rem; }
+  .section-title { font-family: 'Syne', sans-serif; font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 700; line-height: 1.2; margin-bottom: 1rem; }
+  .section-sub { font-size: 1.05rem; color: var(--gray); max-width: 560px; line-height: 1.7; }
+
+  /* PROBLEM/SOLUTION */
+  .ps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem; }
+  .ps-card { border-radius: 20px; padding: 2rem; }
+  .ps-card.problem { background: #FEF2F2; border: 1px solid #FECACA; }
+  .ps-card.solution { background: var(--teal-light); border: 1px solid #A7D9D4; }
+  .ps-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1.2rem; }
+  .ps-icon { font-size: 1.5rem; }
+  .ps-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; }
+  .ps-card.problem .ps-title { color: #991B1B; }
+  .ps-card.solution .ps-title { color: var(--teal-dark); }
+  .ps-list { display: flex; flex-direction: column; gap: 0.7rem; }
+  .ps-item { display: flex; gap: 0.6rem; font-size: 0.9rem; line-height: 1.5; }
+  .ps-item .marker { flex-shrink: 0; font-weight: 700; }
+  .ps-card.problem .marker { color: #DC2626; }
+  .ps-card.solution .marker { color: var(--teal); }
+
+  /* FEATURES */
+  .features-bg { background: var(--light); }
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; }
+  .feature-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 1.8rem; transition: all 0.3s; }
+  .feature-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.08); border-color: var(--teal); }
+  .feature-icon { width: 52px; height: 52px; border-radius: 14px; background: var(--teal-light); color: var(--teal); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 1.2rem; }
+  .feature-card h4 { font-family: 'Syne', sans-serif; font-weight: 700; margin-bottom: 0.6rem; }
+  .feature-card p { font-size: 0.9rem; color: var(--gray); line-height: 1.6; }
+
+  /* PRICING */
+  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; }
+  .pricing-card { border: 2px solid var(--border); border-radius: 20px; padding: 2rem; position: relative; }
+  .pricing-card.featured { border-color: var(--teal); background: var(--teal-light); }
+  .featured-tag { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--teal); color: var(--white); font-size: 0.75rem; font-weight: 700; padding: 0.25rem 1rem; border-radius: 100px; white-space: nowrap; }
+  .price-tier { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray); margin-bottom: 0.8rem; }
+  .price-featured .price-tier { color: var(--teal); }
+  .price-amount { font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800; color: var(--dark); line-height: 1; }
+  .price-amount span { font-size: 1.1rem; font-weight: 600; color: var(--gray); }
+  .price-period { font-size: 0.85rem; color: var(--gray); margin: 0.3rem 0 1.2rem; }
+  .price-features { display: flex; flex-direction: column; gap: 0.7rem; margin: 1.5rem 0; }
+  .price-feat { display: flex; gap: 0.6rem; font-size: 0.9rem; }
+  .price-feat .tick { color: var(--teal); font-weight: 700; flex-shrink: 0; }
+  .price-cta { display: block; text-align: center; padding: 0.8rem; border-radius: 10px; font-weight: 600; text-decoration: none; transition: all 0.2s; }
+  .price-cta.primary { background: var(--teal); color: var(--white); }
+  .price-cta.primary:hover { background: var(--teal-dark); }
+  .price-cta.outline { background: transparent; border: 2px solid var(--teal); color: var(--teal); }
+  .price-cta.outline:hover { background: var(--teal-light); }
+
+  /* TESTIMONIALS */
+  .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; }
+  .testimonial { border: 1px solid var(--border); border-radius: 16px; padding: 1.8rem; position: relative; }
+  .testimonial::before { content: '"'; font-family: 'Syne', sans-serif; font-size: 5rem; color: var(--teal-light); position: absolute; top: -0.5rem; left: 1.2rem; line-height: 1; }
+  .testimonial p { font-size: 0.95rem; line-height: 1.7; color: var(--dark); margin-bottom: 1.2rem; position: relative; z-index: 1; }
+  .testimonial-author { display: flex; align-items: center; gap: 0.8rem; }
+  .t-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--teal-light); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+  .t-name { font-weight: 600; font-size: 0.9rem; }
+  .t-role { font-size: 0.8rem; color: var(--gray); }
+
+  /* CTA */
+  .cta-section { background: linear-gradient(135deg, var(--gold) 0%, #f0b800 100%); text-align: center; }
+  .cta-section .section-title { color: var(--dark); max-width: 600px; margin: 0 auto 1rem; }
+  .cta-section .section-sub { color: rgba(26,26,46,0.7); margin: 0 auto 3rem; }
+
+  footer { background: var(--dark); color: rgba(255,255,255,0.6); padding: 3rem 2rem 1.5rem; text-align: center; }
+  footer .nav-logo { color: var(--teal); font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; }
+  footer .nav-logo span { color: rgba(255,255,255,0.4); }
+  .footer-links { display: flex; gap: 2rem; justify-content: center; margin: 1rem 0; flex-wrap: wrap; }
+  .footer-links a { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 0.85rem; }
+  .footer-links a:hover { color: var(--white); }
+  .footer-bottom { font-size: 0.8rem; margin-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  .hero-inner > * { animation: fadeUp 0.8s ease both; }
+  .hero-inner > *:nth-child(2) { animation-delay: 0.15s; }
+
+  @media (max-width: 768px) {
+    .hero-inner, .ps-grid { grid-template-columns: 1fr; }
+    .features-grid, .pricing-grid, .testimonials-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">poist<span>.ie</span></a>
+  <div class="nav-links">
+    <a href="index.html">← Home</a>
+    <a href="#">Candidate Search</a>
+    <a href="#">Pricing</a>
+    <a href="candidates.html">For Candidates</a>
+    <a href="#" class="nav-cta">Post a Job Free</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag">🏢 For Employers & Recruiters</div>
+      <h1>Find verified <em>Irish speakers</em> before your competition does</h1>
+      <p>Access Ireland's most trusted database of CEFR-verified Irish language talent. Stop guessing what "some Irish" means — every candidate on poist.ie is verified to a precise level.</p>
+      <div class="hero-actions">
+        <a href="#" class="btn-primary-gold">🔍 Search Candidates</a>
+        <a href="#pricing" class="btn-outline-white">View Pricing</a>
+      </div>
+      <div class="hero-proof">
+        <div class="proof-item">✓ <strong>1,200+</strong> verified candidates</div>
+        <div class="proof-item">✓ CEFR-verified profiles</div>
+        <div class="proof-item">✓ <strong>Free</strong> first job post</div>
+      </div>
+    </div>
+    <div>
+      <!-- Candidate Search UI Mockup -->
+      <div class="search-ui">
+        <div class="search-header">
+          🔍 Candidate Search — poist.ie
+        </div>
+        <div class="search-filters">
+          <div style="font-size:0.75rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.6rem;">Active Filters</div>
+          <div class="filter-row">
+            <div class="filter-chip active">📍 Galway</div>
+            <div class="filter-chip active">B2+ Irish</div>
+            <div class="filter-chip active">Communications</div>
+            <div class="filter-chip">+ Add filter</div>
+          </div>
+        </div>
+        <div class="candidate-list">
+          <div style="font-size:0.75rem;font-weight:600;color:var(--gray);margin-bottom:0.8rem;">12 matching candidates</div>
+          <div class="candidate-row">
+            <div class="c-avatar">👩</div>
+            <div>
+              <div class="c-name">Síle Ní Bhriain</div>
+              <div class="c-role">Content Creator · Galway</div>
+              <div class="c-verified">✓ Verified</div>
+            </div>
+            <div class="c-badge">B2</div>
+          </div>
+          <div class="candidate-row">
+            <div class="c-avatar">👨</div>
+            <div>
+              <div class="c-name">Ciarán Mac Giolla</div>
+              <div class="c-role">Communications Manager · Galway</div>
+              <div class="c-verified">✓ Verified</div>
+            </div>
+            <div class="c-badge">C1</div>
+          </div>
+          <div class="candidate-row">
+            <div class="c-avatar">👩‍🦱</div>
+            <div>
+              <div class="c-name">Aoife Ní Fhaoláin</div>
+              <div class="c-role">Irish Language Officer · Galway</div>
+              <div class="c-verified">✓ Verified</div>
+            </div>
+            <div class="c-badge">C2</div>
+          </div>
+          <div style="text-align:center;margin-top:1rem;">
+            <div style="background:var(--gold);color:var(--dark);display:inline-block;padding:0.5rem 1.5rem;border-radius:8px;font-weight:600;font-size:0.85rem;cursor:pointer;">
+              Contact Candidates →
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM / SOLUTION -->
+<section>
+  <div class="container">
+    <div style="max-width:600px;">
+      <span class="section-label">The Problem We Solve</span>
+      <h2 class="section-title">Hiring Irish speakers shouldn't be a guessing game</h2>
+      <p class="section-sub">Standard job boards can't verify language ability. poist.ie changes that.</p>
+    </div>
+    <div class="ps-grid">
+      <div class="ps-card problem">
+        <div class="ps-header">
+          <div class="ps-icon">😤</div>
+          <div class="ps-title">The old way (painful)</div>
+        </div>
+        <div class="ps-list">
+          <div class="ps-item"><span class="marker">✗</span><span>CVs say "conversational Irish" with zero standardisation</span></div>
+          <div class="ps-item"><span class="marker">✗</span><span>You have to test every candidate yourself at interview</span></div>
+          <div class="ps-item"><span class="marker">✗</span><span>Job boards return irrelevant candidates with no Irish at all</span></div>
+          <div class="ps-item"><span class="marker">✗</span><span>No way to search by location AND Irish proficiency together</span></div>
+          <div class="ps-item"><span class="marker">✗</span><span>Weeks of searching, dozens of wasted screenings</span></div>
+        </div>
+      </div>
+      <div class="ps-card solution">
+        <div class="ps-header">
+          <div class="ps-icon">🎯</div>
+          <div class="ps-title">The poist.ie way (precise)</div>
+        </div>
+        <div class="ps-list">
+          <div class="ps-item"><span class="marker">✓</span><span>Every candidate is CEFR-verified — A1 to C2, no ambiguity</span></div>
+          <div class="ps-item"><span class="marker">✓</span><span>Search by exact proficiency level, role type and location</span></div>
+          <div class="ps-item"><span class="marker">✓</span><span>Map-first interface shows you candidates geographically</span></div>
+          <div class="ps-item"><span class="marker">✓</span><span>Contact candidates directly — no intermediary needed</span></div>
+          <div class="ps-item"><span class="marker">✓</span><span>Build a talent pipeline for future hiring rounds</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-bg">
+  <div class="container">
+    <div style="text-align:center;max-width:600px;margin:0 auto 0.5rem;">
+      <span class="section-label">Employer Tools</span>
+      <h2 class="section-title">Everything you need to hire Irish speakers</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <h4>CEFR-Filtered Search</h4>
+        <p>Search by exact Irish proficiency level, English level, location, job title and skills. Filter combinations give you precisely the right shortlist.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🗺️</div>
+        <h4>Map-First Interface</h4>
+        <p>See candidates geographically across all of Ireland. Ideal for regional hiring or Gaeltacht-specific roles.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✅</div>
+        <h4>Verified Language Passports</h4>
+        <p>Every candidate has a Language Passport showing their verified CEFR level. No self-reported fluff — real assessments.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h4>Job Posting Management</h4>
+        <p>Post roles with specific Irish language requirements. Candidates are matched based on their verified level automatically.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">👥</div>
+        <h4>Talent Pipeline</h4>
+        <p>Save searches and build pipelines of passive candidates for future roles. Never start from scratch again.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h4>Analytics Dashboard</h4>
+        <p>Track applications, candidate engagement and pipeline progress. Understand your Irish language talent market.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="container">
+    <div style="text-align:center;max-width:600px;margin:0 auto 0.5rem;">
+      <span class="section-label">Pricing</span>
+      <h2 class="section-title">Simple, transparent pricing</h2>
+      <p class="section-sub" style="margin:0 auto;">Start free and scale as your Irish language hiring grows.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="price-tier">Starter</div>
+        <div class="price-amount">Free<span></span></div>
+        <div class="price-period">Forever free to get started</div>
+        <div class="price-features">
+          <div class="price-feat"><span class="tick">✓</span><span>1 active job posting</span></div>
+          <div class="price-feat"><span class="tick">✓</span><span>Basic candidate search</span></div>
+          <div class="price-feat"><span class="tick">✓</span><span>Up to 5 candidate contacts/month</span></div>
+          <div class="price-feat"><span class="tick">✓</span><span>Email support</span></div>
+        </div>
+        <a href="#" class="price-cta outline">Get Started Free</a>
+      </div>
+      <div class="pricing-card featured">
+        <div class="featured-tag">Most Popular</div>
+        <div class="price-tier" style="color:var(--teal);">Growth</div>
+        <div class="price-amount">€299<span>/mo</span></div>
+        <div class="price-period">Billed monthly, cancel anytime</div>
+        <div class="price-features">
+          <div class="price-feat"><span class="tick">✓</span><span>Unlimited job postings</span></div>
+          <div class="price-feat"><span class="tick">✓</span><span>Advanced CEFR-filtered search</span></div>
+          <div class="price-feat"><span class="tick">✓</span><span>Unlimited candidate contacts</span></div>
+          <div class="price-feat"><span class="tick">✓</span><span>Talent pipeline builder</span></div>
+          <div class="price-feat"><span class="tick">✓</span><span>Map-first candidate view</span></div>
+          <div class="price-feat"><span class="tick">✓</span><span>Priority support</span></div>
+        </div>
+        <a href="#" class="price-cta primary">Start Free Trial</a>
+      </div>
+      <div class="pricing-card">
+        <div class="price-tier">Enterprise</div>
+        <div class="price-amount" style="font-size:2rem;">Custom</div>
+        <div class="price-period">For large organisations & agencies</div>
+        <div class="price-features">
+          <div class="price-feat"><span class="tick">✓</span><span>Everything in Growth</span></div>
+          <div class="price-feat"><span class="tick">✓</span><span>Multi-seat employer accounts</span></div>
+          <div class="price-feat"><span class="tick">✓</span><span>API access & ATS integration</span></div>
+          <div class="price-feat"><span class="tick">✓</span><span>Dedicated account manager</span></div>
+          <div class="price-feat"><span class="tick">✓</span><span>Custom reporting & SLAs</span></div>
+        </div>
+        <a href="#" class="price-cta outline">Talk to Us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section style="background:var(--light);">
+  <div class="container">
+    <div style="text-align:center;max-width:600px;margin:0 auto 3rem;">
+      <span class="section-label">Employer Stories</span>
+      <h2 class="section-title">Organisations hiring smarter with poist.ie</h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial">
+        <p>We needed a verified C1 Irish speaker for a production role and found three qualified candidates within 48 hours. The CEFR filtering alone saved us weeks of screening.</p>
+        <div class="testimonial-author">
+          <div class="t-avatar">📺</div>
+          <div>
+            <div class="t-name">Máire Ní Cheallaigh</div>
+            <div class="t-role">Commissioning Editor · TG4</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial">
+        <p>As a government body we have statutory Irish language requirements. poist.ie is the only platform that lets us specify exactly what level we need and trust the results.</p>
+        <div class="testimonial-author">
+          <div class="t-avatar">🏛️</div>
+          <div>
+            <div class="t-name">Seán de Búrca</div>
+            <div class="t-role">HR Lead · An Garda Síochána</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial">
+        <p>The map view is brilliant for our regional hiring. We could immediately see how many B2+ candidates were within 30km of our Connemara office. Game changer.</p>
+        <div class="testimonial-author">
+          <div class="t-avatar">🌿</div>
+          <div>
+            <div class="t-name">Peadar Ó Mainnín</div>
+            <div class="t-role">Operations Director · Údarás na Gaeltachta</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <span class="section-label" style="background:rgba(26,26,46,0.1);color:var(--dark);">Start Hiring Today</span>
+    <h2 class="section-title">Post your first Irish language role — free</h2>
+    <p class="section-sub">No credit card needed. Access verified Irish-speaking candidates in minutes.</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <a href="#" class="btn-primary-gold" style="background:var(--dark);color:var(--white);">🔍 Search Candidates</a>
+      <a href="#" class="btn-primary-gold">📋 Post a Job Free</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <a href="index.html" class="nav-logo">poist<span>.ie</span></a>
+  <div class="footer-links">
+    <a href="#">Post a Job</a>
+    <a href="#">Candidate Search</a>
+    <a href="#">Talent Pipeline</a>
+    <a href="#">Pricing</a>
+    <a href="candidates.html">For Candidates</a>
+    <a href="#">Contact</a>
+  </div>
+  <div class="footer-bottom">© 2025 poist.ie · Ag nascadh cainteoirí Gaeilge le deiseanna</div>
+</footer>
+
+</body>
+</html>

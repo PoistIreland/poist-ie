@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abair.ie — Irish TTS Demo for poist.ie</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal:#1A7A6E;--teal-dark:#0f5a51;--teal-light:#E8F5F3;
+    --gold:#F5C518;--gold-dark:#d4a800;
+    --dark:#1A1A2E;--gray:#6B7280;--cream:#F5F2ED;--border:#E5E7EB;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--dark);min-height:100vh;padding:2rem;}
+
+  .container{max-width:700px;margin:0 auto;}
+
+  .header{background:linear-gradient(135deg,#0f5a51,#1A7A6E);border-radius:16px;padding:1.8rem 2rem;color:#fff;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+  .header h1{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:0.2rem;}
+  .header p{font-size:0.85rem;color:rgba(255,255,255,0.7);}
+  .badge{background:rgba(245,197,24,0.2);border:1px solid rgba(245,197,24,0.4);color:#F5C518;padding:0.3rem 0.8rem;border-radius:100px;font-size:0.75rem;font-weight:600;white-space:nowrap;}
+
+  .card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:1.4rem;margin-bottom:1rem;}
+  .card h3{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:1rem;}
+
+  /* Voice selector */
+  .voice-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:0;}
+  .voice-btn{border:1.5px solid var(--border);border-radius:10px;padding:0.8rem 1rem;cursor:pointer;background:#fff;text-align:left;transition:all 0.15s;}
+  .voice-btn:hover{border-color:var(--teal);}
+  .voice-btn.active{border-color:var(--teal);background:var(--teal-light);}
+  .voice-btn .vname{font-weight:600;font-size:0.88rem;color:var(--dark);}
+  .voice-btn .vdialect{font-size:0.75rem;color:var(--gray);margin-top:2px;}
+  .voice-btn.active .vname{color:var(--teal);}
+
+  /* Sample clips */
+  .sample{display:flex;align-items:flex-start;gap:0.8rem;padding:0.9rem;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.15s;margin-bottom:0.6rem;background:#fff;}
+  .sample:hover{border-color:var(--teal);background:var(--teal-light);}
+  .sample.playing{border-color:var(--teal);background:var(--teal-light);}
+  .play-btn{width:36px;height:36px;border-radius:50%;background:var(--teal);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.75rem;flex-shrink:0;margin-top:2px;transition:background 0.15s;}
+  .play-btn.loading{background:var(--gray);}
+  .play-btn.playing{background:#dc2626;}
+  .sample-body{flex:1;min-width:0;}
+  .sample-irish{font-size:0.88rem;color:var(--dark);line-height:1.5;margin-bottom:0.3rem;}
+  .sample-english{font-size:0.78rem;color:var(--gray);font-style:italic;line-height:1.4;}
+  .level-badge{background:var(--gold);color:var(--dark);font-size:0.68rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:4px;flex-shrink:0;margin-top:4px;}
+
+  /* Custom text */
+  .custom-area{width:100%;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.9rem;font-family:'DM Sans',sans-serif;resize:vertical;min-height:80px;outline:none;transition:border-color 0.2s;}
+  .custom-area:focus{border-color:var(--teal);}
+  .btn-row{display:flex;gap:0.6rem;margin-top:0.8rem;flex-wrap:wrap;}
+  .btn{padding:0.6rem 1.2rem;border-radius:8px;font-size:0.88rem;font-weight:600;cursor:pointer;border:none;transition:all 0.18s;display:inline-flex;align-items:center;gap:0.4rem;}
+  .btn-gold{background:var(--gold);color:var(--dark);}
+  .btn-gold:hover{background:var(--gold-dark);}
+  .btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--gray);}
+  .btn-ghost:hover{border-color:var(--dark);color:var(--dark);}
+
+  /* Status bar */
+  .status-bar{background:var(--dark);color:#fff;border-radius:10px;padding:0.8rem 1.2rem;display:flex;align-items:center;gap:0.8rem;font-size:0.85rem;margin-bottom:1rem;}
+  .status-dot{width:10px;height:10px;border-radius:50%;background:var(--gray);flex-shrink:0;transition:background 0.2s;}
+  .status-dot.ready{background:#16a34a;}
+  .status-dot.loading{background:var(--gold);animation:pulse 0.8s ease-in-out infinite;}
+  .status-dot.playing{background:#3b82f6;animation:pulse 0.8s ease-in-out infinite;}
+  .status-dot.error{background:#dc2626;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+
+  /* Speed/pitch controls */
+  .controls{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+  .control-group label{font-size:0.78rem;font-weight:600;color:var(--gray);display:block;margin-bottom:0.4rem;}
+  .control-group input[type=range]{width:100%;}
+  .control-group .val{font-size:0.78rem;font-weight:700;color:var(--teal);}
+
+  /* Note */
+  .note{background:#E8F5F3;border:1px solid rgba(26,122,110,0.2);border-radius:10px;padding:1rem;font-size:0.82rem;color:var(--teal);line-height:1.6;}
+  .note strong{font-weight:600;}
+
+  /* Waveform animation */
+  .wave{display:flex;align-items:center;gap:2px;height:20px;}
+  .wave-bar{width:3px;border-radius:2px;background:#3b82f6;animation:wave 0.6s ease-in-out infinite;}
+  .wave-bar:nth-child(1){animation-delay:0s;height:6px;}
+  .wave-bar:nth-child(2){animation-delay:0.1s;height:12px;}
+  .wave-bar:nth-child(3){animation-delay:0.2s;height:18px;}
+  .wave-bar:nth-child(4){animation-delay:0.3s;height:12px;}
+  .wave-bar:nth-child(5){animation-delay:0.4s;height:8px;}
+  @keyframes wave{0%,100%{transform:scaleY(1);}50%{transform:scaleY(0.4);}}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div>
+      <h1>Abair.ie — Irish Language TTS</h1>
+      <p>Live demo for poist.ie assessment · Trinity College Dublin</p>
+    </div>
+    <div class="badge">3 Dialects · 6 Voices</div>
+  </div>
+
+  <!-- Status -->
+  <div class="status-bar">
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">Select a voice and click a sample to begin</span>
+    <div class="wave" id="wave" style="display:none;">
+      <div class="wave-bar"></div><div class="wave-bar"></div>
+      <div class="wave-bar"></div><div class="wave-bar"></div>
+      <div class="wave-bar"></div>
+    </div>
+  </div>
+
+  <!-- Voice selector -->
+  <div class="card">
+    <h3>🗣️ Select dialect &amp; voice</h3>
+    <div class="voice-grid">
+      <button class="voice-btn active" onclick="selectVoice(this,'ga_UL_anb_nnmnkwii_nemo')">
+        <div class="vname">Ulster — Female</div>
+        <div class="vdialect">Donegal Irish · Caighdeán an Tuaiscirt</div>
+      </button>
+      <button class="voice-btn" onclick="selectVoice(this,'ga_CO_snc_nnmnkwii_nemo')">
+        <div class="vname">Connacht — Male</div>
+        <div class="vdialect">Connemara Irish · Caighdeán an Iarthair</div>
+      </button>
+      <button class="voice-btn" onclick="selectVoice(this,'ga_MU_nnc_nnmnkwii_nemo')">
+        <div class="vname">Munster — Female</div>
+        <div class="vdialect">Kerry Irish · Caighdeán an Deiscirt</div>
+      </button>
+      <button class="voice-btn" onclick="selectVoice(this,'ga_CO_pmg_nnmnkwii_nemo')">
+        <div class="vname">Connacht — Female</div>
+        <div class="vdialect">Connemara Irish · Caighdeán an Iarthair</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Sample clips -->
+  <div class="card">
+    <h3>📋 Assessment sample clips — exactly as they'd appear in the poist.ie test</h3>
+
+    <div class="sample" id="s0" onclick="playSample(0)">
+      <button class="play-btn" id="pb0">▶</button>
+      <div class="sample-body">
+        <div class="sample-irish">Dia duit. Is mise Seán. Tá mé cúig bliana fichead d'aois. Tá mé i mo chónaí i gCorcaigh. Oibrím i siopa. Taitníonn ceol liom.</div>
+        <div class="sample-english">Hello. I'm Seán. I'm 25 years old. I live in Cork. I work in a shop. I enjoy music.</div>
+      </div>
+      <div class="level-badge">A1/A2</div>
+    </div>
+
+    <div class="sample" id="s1" onclick="playSample(1)">
+      <button class="play-btn" id="pb1">▶</button>
+      <div class="sample-body">
+        <div class="sample-irish">Bhí cruinniú againn inné le foireann na roinne. Pléadh ceisteanna maidir le polasaí teanga na heagraíochta. Aontaíodh go gcuirfí tús le clár oiliúna Gaeilge ón gcéad lá de mhí na Samhna.</div>
+        <div class="sample-english">We had a meeting yesterday with the department team. Language policy questions were discussed. It was agreed to start an Irish training programme from the first of November.</div>
+      </div>
+      <div class="level-badge">B1/B2</div>
+    </div>
+
+    <div class="sample" id="s2" onclick="playSample(2)">
+      <button class="play-btn" id="pb2">▶</button>
+      <div class="sample-body">
+        <div class="sample-irish">Tá athrú mór tagtha ar an margadh fostaíochta in Éirinn le deich mbliana anuas. De réir suirbhé a rinneadh i mí Feabhra, tá suas le daichead faoin gcéad d'fhostóirí sa earnáil phoiblí ag lorg iarrthóirí a bhfuil Gaeilge líofa acu.</div>
+        <div class="sample-english">The Irish jobs market has changed greatly over the past ten years. According to a February survey, up to 40% of public sector employers are seeking candidates with fluent Irish.</div>
+      </div>
+      <div class="level-badge">B2</div>
+    </div>
+
+    <div class="sample" id="s3" onclick="playSample(3)">
+      <button class="play-btn" id="pb3">▶</button>
+      <div class="sample-body">
+        <div class="sample-irish">Léiríonn an taighde is déanaí ó Ollscoil na Gaillimhe go bhfuil buntáistí suntasacha ag baint le hoideachas dátheangach maidir le forbairt chognaíoch leanaí. Léirítear go bhfuil scileanna réitigh fadhbanna agus cumas meabhrach níos forbartha ag páistí a fhástar le dhá theanga.</div>
+        <div class="sample-english">Recent research from University of Galway shows significant benefits of bilingual education for children's cognitive development. Children raised with two languages show stronger problem-solving skills and cognitive ability.</div>
+      </div>
+      <div class="level-badge">C1/C2</div>
+    </div>
+
+    <div class="sample" id="s4" onclick="playSample(4)">
+      <button class="play-btn" id="pb4">▶</button>
+      <div class="sample-body">
+        <div class="sample-irish">Léiríonn an taighde is déanaí ó Ollscoil na Gaillimhe go bhfuil buntáistí suntasacha ag baint le hoideachas dátheangach maidir le forbairt chognaíoch leanaí.</div>
+        <div class="sample-english">Is maith an scéalaí an aimsir. — The weather is a good storyteller. (Irish proverb)</div>
+      </div>
+      <div class="level-badge">Proverb</div>
+    </div>
+  </div>
+
+  <!-- Speed control -->
+  <div class="card">
+    <h3>⚙️ Voice settings</h3>
+    <div class="controls">
+      <div class="control-group">
+        <label>Speed: <span class="val" id="speedVal">1.0×</span></label>
+        <input type="range" id="speed" min="0.5" max="2.0" step="0.1" value="1.0" oninput="document.getElementById('speedVal').textContent=this.value+'×'">
+      </div>
+      <div class="control-group">
+        <label>Pitch: <span class="val" id="pitchVal">1.0</span></label>
+        <input type="range" id="pitch" min="0.5" max="2.0" step="0.1" value="1.0" oninput="document.getElementById('pitchVal').textContent=this.value">
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom text -->
+  <div class="card">
+    <h3>✏️ Type your own Irish text</h3>
+    <textarea class="custom-area" id="customText">Fáilte go poist.ie, an t-ardán fostaíochta Gaeilge. Cuidíonn muid le cainteoirí Gaeilge post a fháil in Éirinn.</textarea>
+    <div class="btn-row">
+      <button class="btn btn-gold" onclick="playCustom()">▶ Hear it spoken</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('customText').value='Tá mé an-sásta bheith ag obair le fostóirí a luíonn le mo chuid Gaeilge.'">Try another example</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('customText').value='Cén chaoi a bhfuil tú? Tá mé go maith, go raibh maith agat. Agus tú féin?'">Conversation</button>
+    </div>
+  </div>
+
+  <!-- Note -->
+  <div class="note">
+    <strong>About Abair.ie:</strong> Developed by the Phonetics &amp; Speech Laboratory at Trinity College Dublin since 2008. Covers all three major Irish dialects — Ulster (Donegal), Connacht (Connemara) and Munster (Kerry) — with multiple voices per dialect. Free for non-commercial use. For poist.ie commercial use, contact the ABAIR team at <strong>abair.ie/contact</strong> to discuss licensing.
+    <br><br>
+    <strong>For the assessment:</strong> Abair voices are suitable for A1–B2 clips. For C1–C2 material where natural prosody matters more, commission recordings from a native speaker. Total cost for a full assessment audio bank: estimate €300–600 for professional voice recordings.
+  </div>
+
+</div>
+
+<script>
+const samples = [
+  "Dia duit. Is mise Seán. Tá mé cúig bliana fichead d'aois. Tá mé i mo chónaí i gCorcaigh. Oibrím i siopa. Taitníonn ceol liom.",
+  "Bhí cruinniú againn inné le foireann na roinne. Pléadh ceisteanna maidir le polasaí teanga na heagraíochta. Aontaíodh go gcuirfí tús le clár oiliúna Gaeilge ón gcéad lá de mhí na Samhna.",
+  "Tá athrú mór tagtha ar an margadh fostaíochta in Éirinn le deich mbliana anuas. De réir suirbhé a rinneadh i mí Feabhra, tá suas le daichead faoin gcéad d'fhostóirí sa earnáil phoiblí ag lorg iarrthóirí a bhfuil Gaeilge líofa acu.",
+  "Léiríonn an taighde is déanaí ó Ollscoil na Gaillimhe go bhfuil buntáistí suntasacha ag baint le hoideachas dátheangach maidir le forbairt chognaíoch leanaí. Léirítear go bhfuil scileanna réitigh fadhbanna agus cumas meabhrach níos forbartha ag páistí a fhástar le dhá theanga.",
+  "Is maith an scéalaí an aimsir."
+];
+
+let currentVoice = 'ga_UL_anb_nnmnkwii_nemo';
+let currentAudio = null;
+let currentSample = -1;
+
+function selectVoice(btn, voice) {
+  document.querySelectorAll('.voice-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentVoice = voice;
+  setStatus('ready', 'Voice selected: ' + btn.querySelector('.vname').textContent);
+}
+
+function setStatus(state, msg) {
+  const dot = document.getElementById('statusDot');
+  const text = document.getElementById('statusText');
+  const wave = document.getElementById('wave');
+  dot.className = 'status-dot ' + state;
+  text.textContent = msg;
+  wave.style.display = state === 'playing' ? 'flex' : 'none';
+}
+
+function resetButtons() {
+  document.querySelectorAll('.play-btn').forEach(b => {
+    b.textContent = '▶';
+    b.className = 'play-btn';
+  });
+  document.querySelectorAll('.sample').forEach(s => s.classList.remove('playing'));
+}
+
+async function playSample(idx) {
+  if (currentAudio && currentSample === idx) {
+    currentAudio.pause();
+    currentAudio = null;
+    currentSample = -1;
+    resetButtons();
+    setStatus('ready', 'Stopped');
+    return;
+  }
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  resetButtons();
+  currentSample = idx;
+  const pb = document.getElementById('pb' + idx);
+  const s = document.getElementById('s' + idx);
+  pb.textContent = '...';
+  pb.className = 'play-btn loading';
+  await synthesise(samples[idx], pb, s);
+}
+
+async function playCustom() {
+  const text = document.getElementById('customText').value.trim();
+  if (!text) { setStatus('error', 'Please enter some Irish text first'); return; }
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  resetButtons();
+  currentSample = -1;
+  await synthesise(text, null, null);
+}
+
+async function synthesise(text, playBtn, sampleEl) {
+  const speed = document.getElementById('speed').value;
+  const pitch = document.getElementById('pitch').value;
+  setStatus('loading', 'Requesting audio from Abair.ie...');
+
+  // Build API URL — Abair v2 API
+  const params = new URLSearchParams({
+    input: text,
+    voice: currentVoice,
+    audioEncoding: 'MP3',
+    speed: speed,
+    pitch: pitch,
+  });
+
+  const apiUrl = 'https://www.abair.ie/api/v2.0/synthesis?' + params.toString();
+
+  try {
+    const resp = await fetch(apiUrl, {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (!resp.ok) {
+      const errText = await resp.text();
+      throw new Error('HTTP ' + resp.status + ': ' + errText.substring(0, 100));
+    }
+
+    const data = await resp.json();
+    let audioSrc = null;
+
+    if (data.audioContent) {
+      audioSrc = 'data:audio/mp3;base64,' + data.audioContent;
+    } else if (data.url) {
+      audioSrc = data.url;
+    } else if (data.audio) {
+      audioSrc = 'data:audio/mp3;base64,' + data.audio;
+    } else {
+      throw new Error('No audio in response. Keys: ' + JSON.stringify(Object.keys(data)));
+    }
+
+    const audio = new Audio(audioSrc);
+    currentAudio = audio;
+
+    if (playBtn) {
+      playBtn.textContent = '■';
+      playBtn.className = 'play-btn playing';
+    }
+    if (sampleEl) sampleEl.classList.add('playing');
+
+    setStatus('playing', 'Playing — ' + currentVoice.split('_').slice(0,2).join(' '));
+
+    audio.play();
+    audio.onended = () => {
+      resetButtons();
+      currentAudio = null;
+      currentSample = -1;
+      setStatus('ready', 'Finished. Click another sample or type your own text.');
+    };
+    audio.onerror = (e) => {
+      resetButtons();
+      setStatus('error', 'Audio playback error. Try a different voice or browser.');
+    };
+
+  } catch(err) {
+    resetButtons();
+    setStatus('error', 'Error: ' + err.message);
+
+    // Fallback: open Abair directly
+    const fallbackUrl = 'https://www.abair.ie/synthesis?text=' + encodeURIComponent(text) + '&dialect=' + (currentVoice.includes('UL') ? 'Ulster' : currentVoice.includes('MU') ? 'Munster' : 'Connemara');
+    const openBtn = document.createElement('button');
+    openBtn.textContent = '→ Open in Abair.ie directly';
+    openBtn.style.cssText = 'margin-left:0.8rem;background:#F5C518;color:#1A1A2E;border:none;padding:0.3rem 0.8rem;border-radius:6px;cursor:pointer;font-size:0.8rem;font-weight:600;';
+    openBtn.onclick = () => window.open(fallbackUrl, '_blank');
+    document.getElementById('statusText').after(openBtn);
+  }
+}
+
+// Init
+setStatus('ready', 'Ulster (Donegal) female voice selected — click any sample to hear');
+</script>
+</body>
+</html>

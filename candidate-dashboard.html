@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>poist.ie — Candidate Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal:#1A7A6E;--teal-dark:#0f5a51;--teal-light:#E8F5F3;--teal-mid:#2a9d8f;
+  --gold:#F5C518;--gold-dark:#d4a800;
+  --dark:#1A1A2E;--gray:#6B7280;--cream:#F5F2ED;--border:#E5E7EB;--white:#ffffff;
+  --red:#dc2626;--green:#16a34a;
+  --sidebar-w:220px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:#F5F2ED;color:var(--dark);overflow-x:hidden;}
+input,select,textarea{font-family:'DM Sans',sans-serif;}
+
+.app-shell{display:flex;min-height:100vh;}
+.main-area{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
+.page-content{flex:1;overflow-y:auto;padding:1.5rem;}
+
+.card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.4rem;}
+.card-sm{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1rem;}
+
+.btn{display:inline-flex;align-items:center;gap:0.4rem;padding:0.6rem 1.2rem;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;border:none;transition:all 0.18s;text-decoration:none;}
+.btn-primary{background:var(--gold);color:var(--dark);}
+.btn-primary:hover{background:var(--gold-dark);transform:translateY(-1px);}
+.btn-teal{background:var(--teal);color:#fff;}
+.btn-teal:hover{background:var(--teal-dark);}
+.btn-outline{background:transparent;border:1.5px solid var(--teal);color:var(--teal);}
+.btn-outline:hover{background:var(--teal-light);}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--gray);}
+.btn-ghost:hover{border-color:var(--dark);color:var(--dark);}
+
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem;}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.2rem;}
+.stat-num{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--teal);}
+.stat-label{font-size:0.78rem;color:var(--gray);margin-top:0.15rem;}
+.stat-num.placeholder{color:var(--border);}
+
+.cefr-scale{display:flex;gap:3px;}
+.cefr-pip{flex:1;height:6px;border-radius:3px;background:#E5E7EB;}
+.cefr-pip.on{background:var(--gold);}
+
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.section-hdr h2{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;}
+
+.badge{display:inline-flex;align-items:center;padding:0.18rem 0.55rem;border-radius:4px;font-size:0.72rem;font-weight:700;}
+.badge-gold{background:var(--gold);color:var(--dark);}
+.badge-gray{background:#F3F4F6;color:var(--gray);}
+.badge-green{background:#dcfce7;color:var(--green);}
+
+/* Loading skeleton */
+.skeleton{background:linear-gradient(90deg,#e5e7eb 25%,#f3f4f6 50%,#e5e7eb 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px;}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
+/* Incomplete passport prompt */
+.passport-prompt{background:linear-gradient(135deg,#fffbeb,#fef9e7);border:1.5px solid var(--gold);border-radius:12px;padding:1.1rem 1.3rem;display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;}
+.passport-prompt-icon{font-size:1.8rem;flex-shrink:0;}
+.passport-prompt h3{font-size:0.95rem;font-weight:700;margin-bottom:0.2rem;}
+.passport-prompt p{font-size:0.82rem;color:var(--gray);}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
+.fade-in{animation:fadeIn 0.3s ease both;}
+
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .two-col{grid-template-columns:1fr!important;}
+}
+</style>
+</head>
+<body>
+
+<!-- Shell rendered by JS after auth check -->
+<div class="app-shell" id="shell">
+  <!-- Loading state shown while Supabase session is checked -->
+  <div id="loading-screen" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:100vh;background:#F5F2ED;">
+    <div style="text-align:center;">
+      <div style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.65rem;letter-spacing:-0.03em;background:linear-gradient(90deg,#0f5a51,#2a9d8f);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0.8rem;">poist.ie</div>
+      <div style="color:#6B7280;font-size:0.88rem;">Loading your dashboard…</div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+// ── Config — replace with your real values ──────────────────────────────────
+const SUPABASE_URL = 'https://kpfshjarepmazrgzffot.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwZnNoamFyZXBtYXpyZ3pmZm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNzQ0MjIsImV4cCI6MjA5MDY1MDQyMn0.yU-6ASii1duNXgGMs0ZWTkgTYXonVfqVOnEQr0J8FhU';
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ── Auth check — redirect to login if no session ─────────────────────────────
+const { data: { session } } = await supabase.auth.getSession();
+if (!session) {
+  window.location.href = 'login.html';
+  throw new Error('No session');
+}
+
+// ── Load candidate profile from Supabase ─────────────────────────────────────
+const { data: profile, error } = await supabase
+  .from('candidates')
+  .select('*')
+  .eq('id', session.user.id)
+  .single();
+
+if (error || !profile) {
+  // Auth user exists but no candidates row — shouldn't happen, but handle it
+  console.error('Profile load error:', error);
+  window.location.href = 'login.html';
+  throw new Error('No candidate profile');
+}
+
+// ── Load recent assessment from Supabase (if any) ────────────────────────────
+const { data: assessment } = await supabase
+  .from('assessments')
+  .select('cefr_result, completed_at')
+  .eq('candidate_id', session.user.id)
+  .order('completed_at', { ascending: false })
+  .limit(1)
+  .single();
+
+// ── Helper: passport completion % ────────────────────────────────────────────
+function passportCompletion(p) {
+  const fields = ['full_name', 'county', 'cefr_level', 'bio', 'skills', 'speaking_clip_url'];
+  const filled = fields.filter(f => p[f] && p[f] !== '' && (!Array.isArray(p[f]) || p[f].length > 0));
+  return Math.round((filled.length / fields.length) * 100);
+}
+
+// ── Helper: CEFR pip scale ────────────────────────────────────────────────────
+const CEFR_LEVELS = ['A1','A2','B1','B2','C1','C2'];
+function cefrScale(level) {
+  return CEFR_LEVELS.map(l =>
+    `<div class="cefr-pip ${CEFR_LEVELS.indexOf(l) <= CEFR_LEVELS.indexOf(level || 'A1') ? 'on' : ''}"></div>`
+  ).join('');
+}
+
+// ── Helper: CEFR badge ────────────────────────────────────────────────────────
+function cefrBadge(level) {
+  return `<span style="background:#F5C518;color:#1A1A2E;font-size:0.7rem;font-weight:700;padding:0.18rem 0.5rem;border-radius:4px;">${level}</span>`;
+}
+
+// ── Helper: logout ────────────────────────────────────────────────────────────
+window._logout = async () => {
+  await supabase.auth.signOut();
+  window.location.href = 'login.html';
+};
+
+// ── Helper: toast ────────────────────────────────────────────────────────────
+window._toast = (msg, type = 'success') => {
+  const t = document.createElement('div');
+  const bg = type === 'success' ? '#1A7A6E' : type === 'error' ? '#dc2626' : '#1A1A2E';
+  t.style.cssText = `position:fixed;bottom:1.5rem;right:1.5rem;background:${bg};color:#fff;padding:0.8rem 1.3rem;border-radius:10px;font-size:0.9rem;font-weight:500;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.2);animation:slideIn 0.3s ease;`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+};
+
+// ── Derive display values from real profile ───────────────────────────────────
+const firstName = (profile.full_name || 'there').split(' ')[0];
+const irishCefr = profile.cefr_level || null;
+const completion = passportCompletion(profile);
+const skills = Array.isArray(profile.skills) ? profile.skills : [];
+const assessmentDone = !!assessment;
+
+// ── Sidebar ───────────────────────────────────────────────────────────────────
+function renderSidebar() {
+  const links = [
+    { href: 'candidate-dashboard.html', icon: '⊞', label: 'Dashboard' },
+    { href: 'candidate-jobs.html', icon: '🔍', label: 'Find Jobs' },
+    { href: 'candidate-passport.html', icon: '📋', label: 'My Passport' },
+  ];
+  return `
+    <aside class="sidebar" style="width:220px;min-height:100vh;background:#0f5a51;display:flex;flex-direction:column;flex-shrink:0;">
+      <div style="padding:1.4rem 1.2rem 1rem;border-bottom:1px solid rgba(255,255,255,0.1);">
+        <a href="index.html" style="text-decoration:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.65rem;letter-spacing:-0.03em;background:linear-gradient(90deg,rgba(255,255,255,0.9),rgba(255,255,255,0.6));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">poist.ie</a>
+      </div>
+      <nav style="padding:0.8rem 0;flex:1;">
+        ${links.map(l => `
+          <a href="${l.href}" style="display:flex;align-items:center;gap:0.7rem;padding:0.7rem 1.2rem;text-decoration:none;font-size:0.92rem;font-weight:500;transition:background 0.15s;${l.href === 'candidate-dashboard.html' ? 'background:rgba(255,255,255,0.15);color:#fff;' : 'color:rgba(255,255,255,0.7);'}"
+             onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='${l.href === 'candidate-dashboard.html' ? 'rgba(255,255,255,0.15)' : 'transparent'}'">
+            <span style="font-size:1rem;width:20px;text-align:center;">${l.icon}</span>${l.label}
+          </a>`).join('')}
+      </nav>
+      <div style="padding:1rem 1.2rem;border-top:1px solid rgba(255,255,255,0.1);">
+        <button onclick="_logout()" style="background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.7);padding:0.5rem 1rem;border-radius:6px;cursor:pointer;font-size:0.85rem;width:100%;text-align:left;">← Sign out</button>
+      </div>
+    </aside>`;
+}
+
+// ── Passport card ─────────────────────────────────────────────────────────────
+function renderPassportCard() {
+  return `
+    <div class="card">
+      <div class="section-hdr">
+        <h2>My Language Passport</h2>
+        <a href="candidate-passport.html" class="btn btn-outline" style="font-size:.8rem;padding:.35rem .8rem;">Edit</a>
+      </div>
+      <div style="background:linear-gradient(145deg,var(--teal-dark),var(--teal));border-radius:12px;padding:1.2rem;color:#fff;">
+        <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:1rem;">
+          <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:1.3rem;">👤</div>
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;">${profile.full_name || 'Complete your profile'}</div>
+            <div style="font-size:.75rem;opacity:.7;">${profile.profile_type || 'Add your profile type'} · ${profile.county || 'Add location'}</div>
+          </div>
+        </div>
+        ${irishCefr ? `
+          <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;opacity:.55;margin-bottom:.4rem;">Irish (CEFR)</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;">
+            <span style="font-size:.83rem;font-weight:600;">Gaeilge</span>
+            <span style="background:var(--gold);color:var(--dark);padding:.12rem .45rem;border-radius:4px;font-size:.7rem;font-weight:700;">${irishCefr}</span>
+          </div>
+          <div class="cefr-scale">${cefrScale(irishCefr)}</div>
+          <div style="display:inline-flex;align-items:center;gap:.3rem;background:rgba(245,197,24,.2);border:1px solid rgba(245,197,24,.35);color:var(--gold);padding:.25rem .6rem;border-radius:100px;font-size:.7rem;font-weight:600;margin-top:.8rem;">✓ Verified Irish Candidate</div>
+        ` : `
+          <div style="background:rgba(255,255,255,.1);border-radius:8px;padding:.8rem;text-align:center;font-size:.83rem;opacity:.8;">
+            No CEFR level set yet — take the assessment or edit your passport.
+          </div>
+        `}
+      </div>
+      <a href="candidate-passport.html" class="btn btn-teal" style="width:100%;justify-content:center;margin-top:.8rem;">
+        ${completion < 100 ? `Complete Passport (${completion}%) →` : 'View Passport →'}
+      </a>
+    </div>`;
+}
+
+// ── Recommended jobs — uses demo data for now ─────────────────────────────────
+// TODO: replace with real Supabase jobs query filtered by profile.cefr_level
+const DEMO_JOBS = [
+  { id:1, title:'Irish Language Officer', org:'Department of Education', location:'Dublin', cefr:'B2', type:'Full-time' },
+  { id:2, title:'Bainisteoir Tionscadail', org:'Údarás na Gaeltachta', location:'Galway', cefr:'C1', type:'Full-time' },
+  { id:3, title:'Communications Officer (Irish)', org:'HSE', location:'Cork', cefr:'B2', type:'Full-time' },
+];
+
+function renderJobsCard() {
+  return `
+    <div class="card">
+      <div class="section-hdr">
+        <h2>Recommended for you</h2>
+        <a href="candidate-jobs.html" class="btn btn-outline" style="font-size:.8rem;padding:.35rem .8rem;">View all</a>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.8rem;">
+        ${DEMO_JOBS.map(j => `
+          <div style="border:1px solid var(--border);border-radius:10px;padding:.8rem;display:flex;justify-content:space-between;align-items:flex-start;">
+            <div style="min-width:0;">
+              <div style="font-weight:600;font-size:.88rem;color:var(--teal);">${j.title}</div>
+              <div style="font-size:.78rem;color:var(--gray);">${j.org} · ${j.location}</div>
+              <div style="display:flex;gap:.4rem;margin-top:.4rem;">${cefrBadge(j.cefr)}<span class="badge badge-gray">${j.type}</span></div>
+            </div>
+            <a href="candidate-jobs.html" class="btn btn-primary" style="font-size:.78rem;padding:.35rem .7rem;flex-shrink:0;margin-left:.5rem;">Apply</a>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// ── Assessment status ─────────────────────────────────────────────────────────
+function renderAssessmentStatus() {
+  if (assessmentDone) {
+    return `<span class="badge badge-green">✓ Assessment complete — ${assessment.cefr_result}</span>`;
+  }
+  return `<a href="assessment.html" class="btn btn-primary">🎯 Take Assessment</a>`;
+}
+
+// ── Main render ───────────────────────────────────────────────────────────────
+document.getElementById('shell').innerHTML = `
+  ${renderSidebar()}
+  <div class="main-area fade-in">
+    <!-- Top bar -->
+    <div style="height:60px;background:#fff;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;flex-shrink:0;">
+      <h1 style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#1A1A2E;">Dashboard</h1>
+      <div style="display:flex;align-items:center;gap:0.8rem;">
+        <div style="width:32px;height:32px;border-radius:50%;background:#E8F5F3;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">👤</div>
+        <span style="font-size:0.88rem;font-weight:500;color:#374151;">${profile.full_name || 'User'}</span>
+      </div>
+    </div>
+
+    <div class="page-content">
+
+      <!-- Welcome -->
+      <div style="margin-bottom:1.5rem;">
+        <h2 style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:.3rem;">Welcome back, ${firstName} 👋</h2>
+        <p style="color:var(--gray);font-size:.92rem;">
+          ${completion < 100
+            ? `Your Language Passport is ${completion}% complete — finish it to get discovered by employers.`
+            : 'Your Language Passport is complete and visible to employers.'}
+        </p>
+      </div>
+
+      <!-- Incomplete passport prompt -->
+      ${completion < 60 ? `
+        <div class="passport-prompt">
+          <div class="passport-prompt-icon">📋</div>
+          <div style="flex:1;">
+            <h3>Complete your Language Passport</h3>
+            <p>Add your CEFR level, location and skills so employers can find you.</p>
+          </div>
+          <a href="candidate-passport.html" class="btn btn-primary" style="flex-shrink:0;">Complete now →</a>
+        </div>` : ''}
+
+      <!-- Stats — real data where available, hidden where not -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-num">${completion}%</div>
+          <div class="stat-label">Passport complete</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">${irishCefr || '—'}</div>
+          <div class="stat-label">Irish CEFR level</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="${!assessmentDone ? 'color:var(--border);' : ''}">
+            ${assessmentDone ? assessment.cefr_result : '—'}
+          </div>
+          <div class="stat-label">Last assessment result</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="color:var(--border);">—</div>
+          <div class="stat-label">Profile views <span style="font-size:.7rem;">(coming soon)</span></div>
+        </div>
+      </div>
+
+      <!-- Two-column: passport + jobs -->
+      <div class="two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;">
+        ${renderPassportCard()}
+        ${renderJobsCard()}
+      </div>
+
+      <!-- Quick actions -->
+      <div class="card" style="margin-top:1.2rem;">
+        <h2 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:1rem;">Quick actions</h2>
+        <div style="display:flex;gap:.8rem;flex-wrap:wrap;">
+          ${renderAssessmentStatus()}
+          <a href="candidate-passport.html" class="btn btn-teal">📋 ${completion < 100 ? 'Build Passport' : 'View Passport'}</a>
+          <a href="candidate-jobs.html" class="btn btn-outline">🗺️ Browse Jobs</a>
+          <button onclick="_toast('Passive mode toggled!')" class="btn btn-ghost">🔔 Toggle Passive Mode</button>
+          <button onclick="_logout()" class="btn btn-ghost">← Sign out</button>
+        </div>
+      </div>
+
+    </div>
+  </div>`;
+</script>
+</body>
+</html>

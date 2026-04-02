@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>poist.ie — Irish Language Screening</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── BASE ── */
+:root{
+  --teal:#1A7A6E;--teal-dark:#0f5a51;--teal-light:#E8F5F3;--teal-mid:#2a9d8f;
+  --gold:#F5C518;--gold-dark:#d4a800;
+  --dark:#1A1A2E;--gray:#6B7280;--cream:#F5F2ED;--border:#E5E7EB;--white:#fff;
+  --green:#16a34a;--green-light:#dcfce7;--red:#dc2626;--red-light:#fef2f2;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--dark);min-height:100vh;}
+
+/* ── PROGRESS HEADER ── */
+.assess-header{
+  position:sticky;top:0;z-index:50;
+  background:var(--white);border-bottom:1px solid var(--border);
+  padding:0.9rem 1.5rem;
+  display:flex;align-items:center;gap:1.2rem;
+}
+.assess-logo{
+  text-decoration:none;font-family:'DM Sans',sans-serif;font-weight:700;
+  font-size:1.3rem;letter-spacing:-0.03em;flex-shrink:0;
+  background:linear-gradient(90deg,#0f5a51,#2a9d8f);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.phase-track{display:flex;align-items:center;flex:1;min-width:0;}
+.ph{
+  display:flex;align-items:center;gap:0.4rem;
+  padding:0.3rem 0.7rem;border-radius:100px;
+  font-size:0.75rem;font-weight:600;color:var(--gray);white-space:nowrap;
+  transition:all 0.2s;flex-shrink:0;
+}
+.ph.done{color:var(--teal);}
+.ph.active{background:var(--teal-light);color:var(--teal);}
+.ph-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.ph-line{height:1px;background:var(--border);flex:1;min-width:8px;}
+.ph-line.done{background:var(--teal);}
+
+/* ── CONTENT ── */
+.assess-content{max-width:740px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+
+/* ── SCREENS ── */
+.screen{display:none;}
+.screen.active{display:block;animation:fadeUp 0.3s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── CARDS ── */
+.card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1rem;}
+.card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:0.3rem;}
+.card-sub{font-size:0.85rem;color:var(--gray);margin-bottom:1.2rem;line-height:1.6;}
+
+/* ── NOTICE BOX ── */
+.notice{
+  background:var(--teal-light);border:1px solid rgba(26,122,110,0.2);
+  border-radius:10px;padding:0.9rem 1.1rem;
+  font-size:0.83rem;color:var(--teal-dark);line-height:1.65;
+}
+.notice strong{font-weight:600;}
+
+/* ── OPTIONS ── */
+.options{display:flex;flex-direction:column;gap:0.55rem;}
+.opt{
+  border:1.5px solid var(--border);border-radius:9px;
+  padding:0.8rem 1rem;cursor:pointer;
+  font-size:0.9rem;transition:all 0.15s;
+  display:flex;align-items:center;gap:0.7rem;
+  background:var(--white);text-align:left;width:100%;
+}
+.opt:hover{border-color:var(--teal);background:var(--teal-light);}
+.opt.selected{border-color:var(--teal);background:var(--teal-light);color:var(--teal);font-weight:600;}
+.opt.correct{border-color:var(--green);background:var(--green-light);color:var(--green);}
+.opt.wrong{border-color:var(--red);background:var(--red-light);color:var(--red);}
+.opt-key{
+  width:26px;height:26px;border-radius:50%;border:1.5px solid currentColor;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.72rem;font-weight:700;flex-shrink:0;
+}
+
+/* ── PASSAGE ── */
+.passage-box{
+  background:var(--cream);border-left:3px solid var(--teal);
+  border-radius:0 8px 8px 0;padding:1rem 1.2rem;
+  font-size:0.93rem;line-height:1.8;margin-bottom:1.2rem;font-style:italic;
+}
+.blank{
+  display:inline-block;background:var(--white);
+  border:1.5px solid var(--border);border-radius:5px;
+  padding:0.1rem 0.5rem;margin:0 2px;min-width:80px;
+  text-align:center;font-style:normal;font-weight:600;
+  cursor:pointer;transition:all 0.15s;
+}
+.blank:hover,.blank.active{border-color:var(--teal);background:var(--teal-light);color:var(--teal);}
+.blank.filled{border-color:var(--teal);color:var(--teal-dark);background:#fff;}
+
+/* ── GAP FILL OPTIONS ── */
+.gap-opts{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:1rem;}
+.gap-opt{
+  border:1.5px solid var(--border);border-radius:7px;
+  padding:0.45rem 0.9rem;cursor:pointer;font-size:0.9rem;font-weight:600;
+  transition:all 0.15s;background:var(--white);
+}
+.gap-opt:hover{border-color:var(--teal);background:var(--teal-light);}
+.gap-opt.used{opacity:0.35;cursor:not-allowed;}
+
+/* ── AUDIO PLAYER ── */
+.audio-player{
+  background:linear-gradient(135deg,#0f5a51,#1A7A6E);
+  border-radius:12px;padding:1.1rem 1.3rem;
+  display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem;
+}
+.play-btn{
+  width:42px;height:42px;border-radius:50%;
+  background:rgba(255,255,255,0.18);border:none;
+  cursor:pointer;font-size:1rem;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  transition:background 0.2s;flex-shrink:0;
+}
+.play-btn:hover{background:rgba(255,255,255,0.28);}
+.audio-meta{flex:1;}
+.audio-label{font-weight:600;font-size:0.88rem;color:#fff;margin-bottom:0.2rem;}
+.audio-hint{font-size:0.78rem;color:rgba(255,255,255,0.6);}
+.play-count{font-size:0.75rem;color:rgba(255,255,255,0.5);flex-shrink:0;}
+.audio-transcript{
+  background:var(--cream);border-radius:8px;padding:0.8rem 1rem;
+  font-size:0.83rem;color:var(--gray);font-style:italic;line-height:1.6;
+  margin-bottom:1rem;
+}
+
+/* ── WRITING ── */
+.writing-wrap{position:relative;}
+textarea.writing-input{
+  width:100%;min-height:140px;padding:0.9rem 1rem;
+  border:1.5px solid var(--border);border-radius:9px;
+  font-size:0.92rem;font-family:'DM Sans',sans-serif;
+  line-height:1.7;resize:vertical;outline:none;
+  transition:border-color 0.2s;
+}
+textarea.writing-input:focus{border-color:var(--teal);}
+.word-count{font-size:0.78rem;color:var(--gray);text-align:right;margin-top:0.4rem;}
+.word-count.ok{color:var(--green);}
+.ai-feedback{
+  background:var(--teal-light);border:1px solid rgba(26,122,110,0.2);
+  border-radius:10px;padding:1rem 1.2rem;margin-top:0.8rem;
+}
+.ai-feedback-title{font-weight:600;font-size:0.88rem;margin-bottom:0.5rem;color:var(--teal-dark);}
+.ai-criteria{display:flex;flex-direction:column;gap:0.4rem;}
+.crit-row{display:flex;justify-content:space-between;align-items:center;font-size:0.83rem;}
+.crit-label{color:var(--gray);}
+.crit-val{font-weight:600;color:var(--teal);}
+
+/* ── SPEAKING ── */
+.speaking-passage{
+  background:linear-gradient(135deg,#0f5a51,#1A7A6E);
+  border-radius:12px;padding:1.4rem 1.5rem;color:#fff;margin-bottom:1rem;
+}
+.speaking-passage p{font-size:0.97rem;line-height:1.75;margin-bottom:0.5rem;}
+.speaking-passage .tip{font-size:0.8rem;opacity:0.65;font-style:italic;}
+.record-area{text-align:center;padding:1.5rem;}
+.record-btn{
+  display:inline-flex;align-items:center;gap:0.6rem;
+  padding:0.9rem 2rem;border-radius:100px;
+  font-size:0.95rem;font-weight:700;cursor:pointer;border:none;
+  transition:all 0.2s;
+}
+.record-btn.idle{background:var(--gold);color:var(--dark);}
+.record-btn.idle:hover{background:var(--gold-dark);}
+.record-btn.recording{background:var(--red);color:#fff;animation:pulse 1.2s ease-in-out infinite;}
+.record-btn.done{background:var(--green);color:#fff;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.75;}}
+.rec-dot{width:10px;height:10px;border-radius:50%;background:currentColor;}
+.waveform{
+  display:flex;align-items:center;justify-content:center;gap:3px;
+  height:36px;margin:0.9rem 0;
+}
+.w-bar{width:3px;border-radius:2px;background:var(--border);transition:height 0.1s;}
+.record-status{font-size:0.85rem;color:var(--gray);margin-top:0.6rem;}
+.transcript-box{
+  background:var(--cream);border-radius:9px;padding:0.9rem 1.1rem;
+  margin-top:1rem;
+}
+.transcript-label{font-size:0.72rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;}
+.clip-saved{
+  display:flex;align-items:center;gap:0.7rem;
+  background:var(--green-light);border:1px solid rgba(22,163,74,0.2);
+  border-radius:9px;padding:0.9rem 1.1rem;margin-top:0.8rem;
+  font-size:0.85rem;color:var(--green);font-weight:600;
+}
+
+/* ── RESULT ── */
+.result-hero{
+  background:linear-gradient(145deg,#0f5a51,#1A7A6E);
+  border-radius:18px;padding:2.2rem;color:#fff;text-align:center;margin-bottom:1.2rem;
+}
+.result-level{font-family:'Syne',sans-serif;font-size:3.2rem;font-weight:800;color:var(--gold);line-height:1;}
+.result-label{font-size:1.05rem;font-weight:600;margin:0.3rem 0 0.5rem;}
+.result-score{color:rgba(255,255,255,0.6);font-size:0.88rem;}
+.skill-bars{display:flex;flex-direction:column;gap:0.65rem;margin:1.2rem 0;}
+.sk-row{display:flex;align-items:center;gap:0.8rem;font-size:0.85rem;}
+.sk-label{width:75px;flex-shrink:0;font-weight:600;}
+.sk-bg{flex:1;height:7px;background:rgba(255,255,255,0.18);border-radius:4px;overflow:hidden;}
+.sk-fill{height:100%;border-radius:4px;background:var(--gold);transition:width 1.2s ease;}
+.sk-pct{width:34px;text-align:right;font-weight:700;color:var(--gold);font-size:0.8rem;}
+.borderline-note{
+  background:rgba(245,197,24,0.15);border:1px solid rgba(245,197,24,0.3);
+  border-radius:8px;padding:0.7rem 0.9rem;
+  font-size:0.8rem;color:var(--gold);margin-top:0.8rem;
+}
+.disclaimer{
+  background:rgba(255,255,255,0.08);border-radius:8px;
+  padding:0.75rem 1rem;margin-top:1rem;
+  font-size:0.78rem;color:rgba(255,255,255,0.55);line-height:1.6;font-style:italic;
+}
+
+/* ── NAV ROW ── */
+.nav-row{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);
+}
+.nav-info{font-size:0.82rem;color:var(--gray);}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;gap:0.4rem;
+  padding:0.65rem 1.3rem;border-radius:8px;font-weight:600;font-size:0.9rem;
+  cursor:pointer;border:none;transition:all 0.18s;text-decoration:none;
+}
+.btn-teal{background:var(--teal);color:#fff;}
+.btn-teal:hover{background:var(--teal-dark);}
+.btn-teal:disabled{background:var(--gray);cursor:not-allowed;}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--gray);}
+.btn-ghost:hover{border-color:var(--dark);color:var(--dark);}
+.btn-gold{background:var(--gold);color:var(--dark);}
+.btn-gold:hover{background:var(--gold-dark);}
+.btn-outline{background:transparent;border:1.5px solid var(--teal);color:var(--teal);}
+.btn-lg{padding:0.8rem 1.6rem;font-size:0.95rem;}
+
+/* ── STEP INDICATOR ── */
+.q-indicator{font-size:0.75rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.5rem;}
+.q-text{font-size:0.97rem;font-weight:600;line-height:1.5;margin-bottom:1rem;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="assess-header">
+  <a href="candidate-dashboard.html" class="assess-logo">poist.ie</a>
+  <div class="phase-track" id="phaseTrack">
+    <div class="ph active" id="ph0"><div class="ph-dot"></div>Welcome</div>
+    <div class="ph-line" id="pl0"></div>
+    <div class="ph" id="ph1"><div class="ph-dot"></div>Placement</div>
+    <div class="ph-line" id="pl1"></div>
+    <div class="ph" id="ph2"><div class="ph-dot"></div>Listening</div>
+    <div class="ph-line" id="pl2"></div>
+    <div class="ph" id="ph3"><div class="ph-dot"></div>Reading</div>
+    <div class="ph-line" id="pl3"></div>
+    <div class="ph" id="ph4"><div class="ph-dot"></div>Writing</div>
+    <div class="ph-line" id="pl4"></div>
+    <div class="ph" id="ph5"><div class="ph-dot"></div>Speaking</div>
+    <div class="ph-line" id="pl5"></div>
+    <div class="ph" id="ph6"><div class="ph-dot"></div>Result</div>
+  </div>
+</div>
+
+<div class="assess-content">
+
+<!-- ══ SCREEN 0: WELCOME ══ -->
+<div class="screen active" id="s0">
+  <div class="card" style="text-align:center;padding:2.2rem;">
+    <div style="font-size:2rem;margin-bottom:0.8rem;">🍀</div>
+    <h1 style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:0.5rem;">Irish Language Screening</h1>
+    <p style="color:var(--gray);font-size:0.92rem;max-width:480px;margin:0 auto 1.5rem;line-height:1.7;">This screening gives you an indicative Irish language proficiency level for your Language Passport. Employers use it to understand your ability before making contact.</p>
+  </div>
+
+  <div class="notice" style="margin-bottom:1rem;">
+    <strong>About this screening</strong><br>
+    This is a CEFR-referenced screening — it is designed around the Common European Framework of Reference for Languages guidelines, but it is not a formal certification. Your result is an indicative level based on your performance across four areas. Formal qualifications such as a TEG certificate or your Leaving Certificate grade are noted separately on your passport.
+  </div>
+
+  <div class="card">
+    <div class="card-title">What's involved</div>
+    <div style="display:flex;flex-direction:column;gap:0.9rem;margin-top:0.5rem;">
+      <div style="display:flex;gap:0.9rem;align-items:flex-start;">
+        <div style="width:34px;height:34px;border-radius:8px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">🎧</div>
+        <div>
+          <div style="font-weight:600;font-size:0.9rem;margin-bottom:0.15rem;">Listening — 3 questions</div>
+          <div style="font-size:0.82rem;color:var(--gray);line-height:1.5;">Listen to a short clip in Irish, then answer questions about what you heard. You can listen twice. Auto-scored. (~5 min)</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:0.9rem;align-items:flex-start;">
+        <div style="width:34px;height:34px;border-radius:8px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">📝</div>
+        <div>
+          <div style="font-weight:600;font-size:0.9rem;margin-bottom:0.15rem;">Reading (gap-fill) — 4 blanks</div>
+          <div style="font-size:0.82rem;color:var(--gray);line-height:1.5;">Read an Irish passage and select the correct word for each gap. Auto-scored. (~5 min)</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:0.9rem;align-items:flex-start;">
+        <div style="width:34px;height:34px;border-radius:8px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">✍️</div>
+        <div>
+          <div style="font-weight:600;font-size:0.9rem;margin-bottom:0.15rem;">Writing — 1 short task</div>
+          <div style="font-size:0.82rem;color:var(--gray);line-height:1.5;">Write a short piece in Irish. Assessed automatically using AI — scored on vocabulary, grammar and structure. (~7 min)</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:0.9rem;align-items:flex-start;">
+        <div style="width:34px;height:34px;border-radius:8px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">🎤</div>
+        <div>
+          <div style="font-weight:600;font-size:0.9rem;margin-bottom:0.15rem;">Spoken sample — read a short passage aloud</div>
+          <div style="font-size:0.82rem;color:var(--gray);line-height:1.5;">Record yourself reading an Irish passage. This clip is stored on your Language Passport so employers can hear your spoken Irish before deciding to contact you. (~3 min)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;margin-bottom:1.2rem;font-size:0.82rem;color:var(--gray);line-height:1.6;">
+    💡 <strong style="color:var(--dark);">Spoken interaction</strong> (conversation) is not part of this screening — that is best assessed at interview stage where you can speak naturally with an Irish-speaking interviewer.
+  </div>
+
+  <div style="display:flex;gap:0.8rem;flex-wrap:wrap;">
+    <button class="btn btn-teal btn-lg" onclick="startPlacement()">Begin screening →</button>
+    <a href="candidate-dashboard.html" class="btn btn-ghost btn-lg">Not now</a>
+  </div>
+  <p style="font-size:0.78rem;color:var(--gray);margin-top:1rem;">Total time: approximately 20 minutes · Your result is immediate · You can re-sit after 90 days</p>
+</div>
+
+<!-- ══ SCREEN 1: PLACEMENT ══ -->
+<div class="screen" id="s1">
+  <div class="card">
+    <div class="card-title">Placement questions</div>
+    <div class="card-sub">5 quick questions to make sure you get questions at the right level. No timer — take your time.</div>
+    <div id="placementQ"></div>
+    <div class="nav-row">
+      <div class="nav-info" id="placementProg">Question 1 of 5</div>
+      <button class="btn btn-teal" id="placementNext" onclick="nextPlacement()" disabled>Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 2: LISTENING ══ -->
+<div class="screen" id="s2">
+  <div class="card">
+    <div class="card-title">🎧 Listening comprehension</div>
+    <div class="card-sub">Listen to the audio clip, then answer the questions. You may listen twice.</div>
+    <div id="listeningContent"></div>
+    <div class="nav-row">
+      <div class="nav-info" id="listeningProg"></div>
+      <button class="btn btn-teal" id="listeningNext" onclick="nextListening()" disabled>Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 3: READING / GAP-FILL ══ -->
+<div class="screen" id="s3">
+  <div class="card">
+    <div class="card-title">📝 Reading — gap fill</div>
+    <div class="card-sub">Read the passage and select the correct word for each gap. Click a gap to select it, then click a word below to fill it.</div>
+    <div id="readingContent"></div>
+    <div class="nav-row">
+      <div class="nav-info" id="readingProg"></div>
+      <button class="btn btn-teal" id="readingNext" onclick="goWriting()" disabled>Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 4: WRITING ══ -->
+<div class="screen" id="s4">
+  <div class="card">
+    <div class="card-title">✍️ Writing task</div>
+    <div class="card-sub">Write your response in Irish. Your writing is assessed automatically — scored on vocabulary range, grammatical accuracy and structure.</div>
+    <div class="q-indicator">Task</div>
+    <div class="q-text" id="writingPrompt"></div>
+    <div style="font-size:0.82rem;color:var(--teal);margin-bottom:0.8rem;" id="writingTarget"></div>
+    <div style="font-size:0.8rem;color:var(--gray);margin-bottom:0.8rem;font-style:italic;" id="writingExample"></div>
+    <div class="writing-wrap">
+      <textarea class="writing-input" id="writingArea" placeholder="Scríobh do fhreagra anseo..." oninput="updateWordCount()"></textarea>
+      <div class="word-count" id="wordCount">0 focail / words</div>
+    </div>
+    <div id="writingFeedback" style="display:none;"></div>
+    <div class="nav-row">
+      <div class="nav-info">Write in Irish · AI assessed</div>
+      <div style="display:flex;gap:0.7rem;">
+        <button class="btn btn-outline" id="scoreWritingBtn" onclick="scoreWriting()">Assess my writing</button>
+        <button class="btn btn-teal" id="writingNext" style="display:none;" onclick="goSpeaking()">Next: spoken sample →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 5: SPEAKING ══ -->
+<div class="screen" id="s5">
+  <div class="card">
+    <div class="card-title">🎤 Spoken sample</div>
+    <div class="card-sub">Read the passage below aloud and record yourself. This clip will be saved to your Language Passport so employers can hear your spoken Irish directly.</div>
+
+    <div class="notice" style="margin-bottom:1rem;">
+      <strong>What employers hear:</strong> This is not automatically scored. Employers listen to your clip themselves when they view your passport — they hear your accent, fluency, and confidence in a real piece of Irish text. There are no tricks in the passage; read it naturally.
+    </div>
+
+    <div class="speaking-passage" id="speakingPassage"></div>
+
+    <div class="record-area">
+      <div class="waveform" id="waveform">
+        <div class="w-bar" style="height:8px;"></div><div class="w-bar" style="height:14px;"></div>
+        <div class="w-bar" style="height:20px;"></div><div class="w-bar" style="height:10px;"></div>
+        <div class="w-bar" style="height:26px;"></div><div class="w-bar" style="height:16px;"></div>
+        <div class="w-bar" style="height:22px;"></div><div class="w-bar" style="height:8px;"></div>
+        <div class="w-bar" style="height:18px;"></div><div class="w-bar" style="height:24px;"></div>
+        <div class="w-bar" style="height:12px;"></div><div class="w-bar" style="height:20px;"></div>
+        <div class="w-bar" style="height:10px;"></div><div class="w-bar" style="height:16px;"></div>
+        <div class="w-bar" style="height:28px;"></div><div class="w-bar" style="height:14px;"></div>
+      </div>
+      <button class="record-btn idle" id="recordBtn" onclick="toggleRecording()">
+        <div class="rec-dot"></div>
+        <span id="recordLabel">Start recording</span>
+      </button>
+      <div class="record-status" id="recordStatus">Make sure you are in a quiet space before starting.</div>
+    </div>
+
+    <div id="clipSaved" style="display:none;" class="clip-saved">
+      ✓ Spoken sample saved to your Language Passport
+    </div>
+
+    <div class="nav-row">
+      <div class="nav-info">Employers listen to this directly — no automated scoring</div>
+      <button class="btn btn-teal" id="speakingNext" style="display:none;" onclick="showResult()">See my result →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 6: RESULT ══ -->
+<div class="screen" id="s6">
+  <div id="resultContent"></div>
+</div>
+
+<!-- ══ SCREEN 7: CREDENTIALS ══ -->
+<div class="screen" id="s7">
+  <div class="card">
+    <div class="card-title">Add supporting credentials</div>
+    <div class="card-sub">Qualifications such as your Leaving Cert grade or a TEG certificate are displayed separately on your passport alongside your screening result. They give employers additional context.</div>
+
+    <div class="notice" style="margin-bottom:1.2rem;">
+      <strong>These are separate from your screening result.</strong> They are not used to change your indicative level — they are additional information for employers, particularly useful if your formal qualification is at a different level to your screening score.
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:0.8rem;margin-bottom:1.2rem;" id="credList">
+      <!-- rendered by JS -->
+    </div>
+
+    <div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin-top:0.5rem;">
+      <button class="btn btn-ghost" onclick="window.location.href='candidate-passport.html'">Skip for now</button>
+      <button class="btn btn-teal" onclick="saveCredentials()">Save to passport →</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /assess-content -->
+
+<script>
+// ── SHARED UTILITIES ──────────────────────────────────────────────────────
+const POIST = {
+  getUser: () => JSON.parse(localStorage.getItem('poist_user') || 'null'),
+  setUser: (u) => localStorage.setItem('poist_user', JSON.stringify(u)),
+  cefrLevels: ['A1','A2','B1','B2','C1','C2'],
+  cefrLabel: {A1:'Beginner',A2:'Elementary',B1:'Intermediate',B2:'Upper-Intermediate',C1:'Advanced',C2:'Proficient'},
+};
+
+// ── ASSESSMENT CONTENT ────────────────────────────────────────────────────
+const ASSESSMENT = {
+  placement: [
+    { q:"Cad is brí le 'buíoch'?", opts:["Feargach / Angry","Buíoch / Grateful","Tuirseach / Tired","Sásta / Happy"], answer:1 },
+    { q:"Líon an bhearna: Tá sí _____ bliain d'aois.", opts:["fiche","fichid","fichead","fiche déag"], answer:2 },
+    { q:"Cén ceann acu seo atá ceart?", opts:["Chuaigh mé go dtí an siopa inné","Chuaigh mé ag an siopa inné","Téigh mé go dtí an siopa inné","Chuaigh mé don siopa inné"], answer:0 },
+    { q:"'Dá mbeadh airgead agam, cheannóinn carr' — what does 'dá' mean here?", opts:["Because","If","Although","When"], answer:1 },
+    { q:"Roghnaigh an leagan is foirmiúla:", opts:["Táim ag iarraidh labhairt leat faoin scéal","Ba mhaith liom do chuid ama a iarraidh le dul i gcomhairle leat","An féidir linn comhrá a bheith againn?","Caithfimid caint faoi seo"], answer:1 }
+  ],
+  listening: {
+    A1_A2: { audioText:"Dia duit. Is mise Seán. Tá mé cúig bliana fichead d'aois. Tá mé i mo chónaí i gCorcaigh. Oibrím i siopa leabhar. Is maith liom léamh agus ceol.", label:"Seán ag cur síos air féin", hint:"Seán is introducing himself.",
+      questions:[
+        { q:"Cá bhfuil cónaí ar Sheán?", opts:["Baile Átha Cliath","Gaillimh","Corcaigh","Luimneach"], answer:2 },
+        { q:"Cad é an post atá ag Seán?", opts:["Múinteoir","Oibríonn sé i siopa leabhar","Dochtúir","Feirmeoir"], answer:1 },
+        { q:"Cad is maith le Seán?", opts:["Spórt agus bia","Taisteal agus ceol","Léamh agus ceol","Scannáin agus leabhair"], answer:2 }
+      ]
+    },
+    B1_B2: { audioText:"Bhí cruinniú againn ar maidin le foireann na roinne. Pléadh ceisteanna tábhachtacha maidir le polasaí teanga na heagraíochta. Aontaíodh go gcuirfí tús le clár oiliúna Gaeilge do gach ball foirne ón gcéad lá de mhí na Samhna. Beidh an clár ar fáil ar líne agus i láthair freisin.", label:"Achoimre ar chruinniú", hint:"A summary of a workplace meeting.",
+      questions:[
+        { q:"Cad a pléadh ag an gcruinniú?", opts:["Buiséad na heagraíochta","Polasaí teanga na heagraíochta","Earcaíocht foirne nua","Pleananna don Nollaig"], answer:1 },
+        { q:"Cathain a thosóidh an clár oiliúna?", opts:["1 Meán Fómhair","1 Deireadh Fómhair","1 Samhain","1 Nollaig"], answer:2 },
+        { q:"Conas a bheidh an clár ar fáil?", opts:["Ar líne amháin","I láthair amháin","Ar líne agus i láthair","Trí chomhdháil físe"], answer:2 }
+      ]
+    },
+    C1_C2: { audioText:"Léiríonn an taighde is déanaí ó Ollscoil na Gaillimhe go bhfuil buntáistí suntasacha cognaíocha ag baint le hoideachas dátheangach. Tá scileanna réitigh fadhbanna agus solúbthacht mheabhrach níos fearr ag páistí a fhástar le dhá theanga. Cabhraíonn an dátheangachas freisin le cosc ar mheath cognaíoch ag staid níos déanaí sa saol.", label:"Torthaí taighde — an dátheangachas", hint:"Research findings on bilingualism.",
+      questions:[
+        { q:"Cad iad na buntáistí a luaitear?", opts:["Buntáistí sóisialta agus airgeadais","Scileanna cognaíocha agus cosaint ar mheath meabhrach","Deiseanna fostaíochta níos fearr","Scileanna cumarsáide"], answer:1 },
+        { q:"Cad a thugann an taighde le fios faoi dhaoine fásta?", opts:["Go bhfoghlaimíonn siad teangacha níos tapúla","Go gcabhraíonn an dátheangachas le cosc ar mheath cognaíoch","Go bhfuil sé deacair teanga nua a fhoghlaim","Go bhfuil tuirse teanga coitianta"], answer:1 }
+      ]
+    }
+  },
+  reading: {
+    A1_A2: {
+      template:"Is mise Máire. Tá mé i mo chónaí [0] Gaillimh. Tá mé ag obair [1] múinteoir i scoil áitiúil. Tá beirt pháistí [2]. Is maith liom [3] ag siúl cois farraige.",
+      blanks:[
+        { opts:["ar","i","ag","le"], answer:1 },
+        { opts:["mar","ag","le","ina"], answer:0 },
+        { opts:["agam","agat","aige","aici"], answer:0 },
+        { opts:["dul","bheith","ag dul","an dul"], answer:2 }
+      ]
+    },
+    B1_B2: {
+      template:"Tá athrú mór [0] ar an margadh fostaíochta in Éirinn le roinnt blianta anuas. [1] go bhfuil suas le daichead faoin gcéad d'fhostóirí sa earnáil phoiblí ag lorg iarrthóirí [2] cumas Gaeilge acu. [3] an t-éileamh seo de bharr Acht na dTeangacha Oifigiúla.",
+      blanks:[
+        { opts:["tagtha","tar éis","ag teacht","tiocfaidh"], answer:0 },
+        { opts:["Deirtear","Deir","Ráitear","Luadh"], answer:0 },
+        { opts:["a bhfuil","go bhfuil","nach bhfuil","ina bhfuil"], answer:0 },
+        { opts:["Eascraíonn","Tagann","Tógtar","Méadaíonn"], answer:0 }
+      ]
+    },
+    C1_C2: {
+      template:"Is cuid [0] de bheartas teanga na hÉireann é Acht na dTeangacha Oifigiúla, ach maíonn criticeóirí go bhfuil bearnaí [1] ann. Cé go gcuireann an tAcht oibleagáid [2] ar chomhlachtaí poiblí, níl socrú [3] déanta chun na hiarrthóirí cuí a aimsiú.",
+      blanks:[
+        { opts:["lárnach","tábhachtach","riachtanach","bunúsach"], answer:0 },
+        { opts:["suntasacha","móra","tromchúiseacha","soiléire"], answer:0 },
+        { opts:["dhlíthiúil","dhaingean","láidir","cinnte"], answer:0 },
+        { opts:["leordhóthanach","sásúil","oiriúnach","cuí"], answer:0 }
+      ]
+    }
+  },
+  writing: {
+    A1_A2: { prompt:"Scríobh cúig abairt faoi tú féin as Gaeilge.\n\nWrite five sentences about yourself in Irish — include your name, where you live, your job or studies, and one thing you enjoy.", target:"40–80 focail / words", example:"e.g. Is mise Síle. Tá mé i mo chónaí i gCorcaigh...", focus:"Basic vocabulary, present tense, personal pronouns" },
+    B1_B2: { prompt:"Scríobh ríomhphost gearr chuig fostóir (80–120 focal).\n\nWrite a short professional email in Irish to a potential employer expressing interest in an Irish language role. Mention your Irish level and one reason you want to work in an Irish-speaking environment.", target:"80–120 focail / words", example:"e.g. A [ainm] a chara, Scríobhim chugat maidir le...", focus:"Formal register, appropriate greeting, verbal noun usage" },
+    C1_C2: { prompt:"Scríobh alt gearr (120–180 focal) ag tabhairt do thuairim faoin ráiteas seo:\n\n'Tá dualgas ar gach eagraíocht phoiblí in Éirinn seirbhísí Gaeilge a chur ar fáil, ach níl na hacmhainní riachtanacha ar fáil chun é sin a dhéanamh i gceart.'\n\nGive your view with at least two reasons.", target:"120–180 focail / words", example:"e.g. Is ceist chasta í seo a bhfuil dhá thaobh léi...", focus:"Complex clauses, argument structure, academic register" }
+  },
+  speaking: {
+    A1_A2: { passage:"Is mise [d'ainm]. Tá mé i mo chónaí i [do chontae]. Tá mé ag obair mar [do phost]. Taitníonn Gaeilge liom go mór agus bainim úsáid aisti gach lá más féidir liom.", instruction:"Read this passage aloud at a natural pace. Replace the words in brackets with your own details.", tip:"Take your time. Employers are listening for your pronunciation and natural fluency — not perfection.", duration:45 },
+    B1_B2: { passage:"Tá ról tábhachtach ag an nGaeilge i mo shaol gairmiúil. Creideann mé go láidir gur féidir le cainteoirí Gaeilge luach ar leith a chur le heagraíochtaí poiblí, go háirithe agus an sprioc 2030 de chuid Acht na dTeangacha Oifigiúla le comhlíonadh.", instruction:"Read this passage aloud clearly. Focus on natural rhythm and pronunciation.", tip:"Imagine you are reading a report at a team meeting — professional but natural.", duration:60 },
+    C1_C2: { passage:"Léiríonn staitisticí le déanaí go bhfuil ganntanas gearrthéarmach ann maidir le cainteoirí Gaeilge inniúla sa tseirbhís phoiblí. Ní hamháin go gcruthaíonn sé seo dúshláin d'eagraíochtaí atá ag iarraidh a n-oibleagáidí reachtúla a chomhlíonadh, ach cuireann sé le caillteanas deiseanna do chainteoirí líofa atá ag lorg post ina n-úsáidfear a gcumas teanga.", instruction:"Read this passage aloud at a natural pace. This is a formal text — let that show in your delivery.", tip:"At this level, employers are listening for confident, fluent delivery with appropriate stress and intonation.", duration:90 }
+  },
+  scoring: {
+    thresholds:[{min:0,max:24,level:"A1"},{min:25,max:39,level:"A2"},{min:40,max:54,level:"B1"},{min:55,max:69,level:"B2"},{min:70,max:84,level:"C1"},{min:85,max:100,level:"C2"}],
+    borderlineMargin:4,
+    weights:{listening:0.30,reading:0.30,writing:0.25,speaking:0.15},
+    labels:{A1:"Beginner",A2:"Elementary",B1:"Intermediate",B2:"Upper-Intermediate",C1:"Advanced",C2:"Proficient"}
+  },
+  credentials:[
+    "Leaving Cert Higher H1","Leaving Cert Higher H2","Leaving Cert Higher H3",
+    "Leaving Cert Higher H4","Leaving Cert Higher H5","Leaving Cert Ordinary O1",
+    "Leaving Cert Ordinary O2–O3","TEG B2 certificate","TEG C1 certificate",
+    "TEG C2 certificate","Gaeltacht native speaker","Gaelscoil / Gaelcholáiste"
+  ]
+};
+
+// ── STATE ─────────────────────────────────────────────────────────────────
+const S = {
+  band:'B1_B2', pIdx:0, pScore:0,
+  lIdx:0, lAnswers:[], lPlays:0,
+  rAnswers:[], rActiveBlank:null, rFilled:{},
+  writingScore:0,
+  speakingDone:false,
+  scores:{listening:0,reading:0,writing:0,speaking:50},
+  mediaRecorder:null, audioChunks:[], isRecording:false, recTimer:null, recSecs:0
+};
+
+// ── PHASE NAVIGATION ──────────────────────────────────────────────────────
+function setPhase(n){
+  for(let i=0;i<=7;i++) document.getElementById('s'+i)?.classList.toggle('active', i===n);
+  ['ph0','ph1','ph2','ph3','ph4','ph5','ph6'].forEach((id,i)=>{
+    const el=document.getElementById(id); if(!el)return;
+    el.classList.remove('active','done');
+    if(i<n-1) el.classList.add('done');
+    else if(i===n-1) el.classList.add('active');
+    const line=document.getElementById('pl'+i);
+    if(line) line.classList.toggle('done', i<n-1);
+  });
+}
+
+function getUser(){
+  let u=POIST.getUser();
+  if(!u){u={role:'candidate',name:'Candidate',irishCefr:'',avatar:'👤'};POIST.setUser(u);}
+  return u;
+}
+
+// ── PLACEMENT ─────────────────────────────────────────────────────────────
+function startPlacement(){setPhase(1);renderPlacement();}
+function renderPlacement(){
+  const q=ASSESSMENT.placement[S.pIdx];
+  document.getElementById('placementProg').textContent=`Question ${S.pIdx+1} of ${ASSESSMENT.placement.length}`;
+  document.getElementById('placementQ').innerHTML=`
+    <div class="q-indicator">Placement question ${S.pIdx+1}</div>
+    <div class="q-text">${q.q}</div>
+    <div class="options">${q.opts.map((o,i)=>`
+      <button class="opt" onclick="selectP(${i},this)" id="popt${i}">
+        <div class="opt-key">${'ABCD'[i]}</div>${o}
+      </button>`).join('')}</div>`;
+  document.getElementById('placementNext').disabled=true;
+  S._pSel=null;
+}
+function selectP(idx,el){
+  document.querySelectorAll('#placementQ .opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected'); S._pSel=idx;
+  document.getElementById('placementNext').disabled=false;
+}
+function nextPlacement(){
+  if(S._pSel===ASSESSMENT.placement[S.pIdx].answer) S.pScore++;
+  S.pIdx++;
+  if(S.pIdx>=ASSESSMENT.placement.length){
+    S.band=S.pScore<=1?'A1_A2':S.pScore<=3?'B1_B2':'C1_C2';
+    startListening();
+  } else renderPlacement();
+}
+
+// ── LISTENING ─────────────────────────────────────────────────────────────
+function startListening(){setPhase(2);S.lIdx=0;S.lAnswers=[];S.lPlays=0;renderListening();}
+function renderListening(){
+  const clip=ASSESSMENT.listening[S.band]||ASSESSMENT.listening.B1_B2;
+  const q=clip.questions[S.lIdx];
+  const total=clip.questions.length;
+  document.getElementById('listeningProg').textContent=`Question ${S.lAnswers.length+1} of ${total}`;
+  document.getElementById('listeningContent').innerHTML=`
+    <div class="audio-player">
+      <button class="play-btn" id="playBtn" onclick="playClip()">▶</button>
+      <div class="audio-meta">
+        <div class="audio-label">${clip.label}</div>
+        <div class="audio-hint">${clip.hint} · Click to play</div>
+      </div>
+      <div class="play-count" id="playCount">2 plays remaining</div>
+    </div>
+    <div class="audio-transcript" id="clipHint">
+      [Audio in Irish — click play above]
+    </div>
+    <div class="q-indicator">Question ${S.lAnswers.length+1} of ${total}</div>
+    <div class="q-text">${q.q}</div>
+    <div class="options">${q.opts.map((o,i)=>`
+      <button class="opt" onclick="selectL(${i},${q.answer},this)" id="lopt${i}">
+        <div class="opt-key">${'ABCD'[i]}</div>${o}
+      </button>`).join('')}</div>`;
+  S.lPlays=0;
+  document.getElementById('listeningNext').disabled=true;
+}
+function playClip(){
+  const clip=ASSESSMENT.listening[S.band]||ASSESSMENT.listening.B1_B2;
+  if(S.lPlays>=2){document.getElementById('clipHint').textContent='Maximum plays used.';return;}
+  S.lPlays++;
+  const remaining=2-S.lPlays;
+  document.getElementById('playCount').textContent=`${remaining} play${remaining!==1?'s':''} remaining`;
+  document.getElementById('playBtn').textContent='⏸';
+  document.getElementById('clipHint').textContent='🔊 Playing...';
+  // Simulate playback — replace with real Abair API call in production
+  const words=clip.audioText.split(' ');let i=0;
+  const iv=setInterval(()=>{
+    i++;
+    if(i>=words.length){
+      clearInterval(iv);
+      document.getElementById('playBtn').textContent='▶';
+      document.getElementById('clipHint').textContent=remaining===0
+        ?`Transcript: "${clip.audioText}"`
+        :'[Audio finished]';
+    }
+  },110);
+}
+function selectL(idx,correct,el){
+  document.querySelectorAll('#listeningContent .opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected'); S._lSel=idx; S._lCorrect=correct;
+  document.getElementById('listeningNext').disabled=false;
+}
+function nextListening(){
+  S.lAnswers.push(S._lSel===S._lCorrect);
+  S.lIdx++;
+  const clip=ASSESSMENT.listening[S.band]||ASSESSMENT.listening.B1_B2;
+  if(S.lIdx>=clip.questions.length){
+    S.scores.listening=Math.round(S.lAnswers.filter(Boolean).length/S.lAnswers.length*100);
+    startReading();
+  } else renderListening();
+}
+
+// ── READING / GAP-FILL ────────────────────────────────────────────────────
+function startReading(){setPhase(3);renderReading();}
+function renderReading(){
+  const data=ASSESSMENT.reading[S.band]||ASSESSMENT.reading.B1_B2;
+  S.rFilled={};S.rActiveBlank=null;S.rAnswers=new Array(data.blanks.length).fill(null);
+  // Build passage HTML with clickable blanks
+  let passageHTML=data.template;
+  data.blanks.forEach((b,i)=>{
+    passageHTML=passageHTML.replace(`[${i}]`,`<span class="blank" id="blank${i}" onclick="selectBlank(${i})">___</span>`);
+  });
+  document.getElementById('readingProg').textContent=`Fill all ${data.blanks.length} gaps to continue`;
+  document.getElementById('readingContent').innerHTML=`
+    <div class="passage-box" id="passageBox">${passageHTML}</div>
+    <div style="font-size:0.82rem;color:var(--gray);margin-bottom:0.6rem;">Click a gap above, then click a word below to fill it.</div>
+    <div class="gap-opts" id="gapOpts">${data.blanks.flatMap(b=>b.opts).filter((v,i,a)=>a.indexOf(v)===i).sort(()=>Math.random()-0.5).map(w=>`
+      <button class="gap-opt" id="gw_${w.replace(/[^a-zA-ZÁáÉéÍíÓóÚú]/g,'_')}" onclick="fillBlank('${w}')">${w}</button>`).join('')}
+    </div>`;
+  document.getElementById('readingNext').disabled=true;
+}
+function selectBlank(idx){
+  document.querySelectorAll('.blank').forEach(b=>b.classList.remove('active'));
+  document.getElementById('blank'+idx).classList.add('active');
+  S.rActiveBlank=idx;
+}
+function fillBlank(word){
+  if(S.rActiveBlank===null)return;
+  const data=ASSESSMENT.reading[S.band]||ASSESSMENT.reading.B1_B2;
+  const idx=S.rActiveBlank;
+  // Remove previous fill for this blank from opts
+  const prev=S.rFilled[idx];
+  if(prev){
+    const prevEl=document.getElementById('gw_'+prev.replace(/[^a-zA-ZÁáÉéÍíÓóÚú]/g,'_'));
+    if(prevEl)prevEl.classList.remove('used');
+  }
+  // Fill this blank
+  S.rFilled[idx]=word;
+  const correct=data.blanks[idx].answer;
+  const wordIsCorrect=word===data.blanks[idx].opts[correct];
+  S.rAnswers[idx]=wordIsCorrect;
+  document.getElementById('blank'+idx).textContent=word;
+  document.getElementById('blank'+idx).classList.remove('active');
+  document.getElementById('blank'+idx).classList.add('filled');
+  const wordEl=document.getElementById('gw_'+word.replace(/[^a-zA-ZÁáÉéÍíÓóÚú]/g,'_'));
+  if(wordEl)wordEl.classList.add('used');
+  S.rActiveBlank=null;
+  // Check if all filled
+  if(Object.keys(S.rFilled).length>=data.blanks.length){
+    S.scores.reading=Math.round(S.rAnswers.filter(Boolean).length/S.rAnswers.length*100);
+    document.getElementById('readingNext').disabled=false;
+    document.getElementById('readingProg').textContent=`${S.rAnswers.filter(Boolean).length} of ${S.rAnswers.length} correct — click Next to continue`;
+  }
+}
+function goWriting(){setPhase(4);startWriting();}
+function startWriting(){
+  const task=ASSESSMENT.writing[S.band]||ASSESSMENT.writing.B1_B2;
+  document.getElementById('writingPrompt').innerText=task.prompt;
+  document.getElementById('writingTarget').textContent='Target: '+task.target;
+  document.getElementById('writingExample').textContent=task.example;
+}
+function updateWordCount(){
+  const text=document.getElementById('writingArea').value.trim();
+  const words=text?text.split(/\s+/).length:0;
+  const el=document.getElementById('wordCount');
+  el.textContent=`${words} focail / words`;
+  el.className='word-count'+(words>=40?' ok':'');
+}
+
+// ── WRITING ASSESSMENT ────────────────────────────────────────────────────
+function scoreWriting(){
+  const text=document.getElementById('writingArea').value.trim();
+  if(!text||text.split(/\s+/).length<8){
+    alert('Please write at least 8 words in Irish before submitting.');return;
+  }
+  const btn=document.getElementById('scoreWritingBtn');
+  btn.textContent='Assessing…'; btn.disabled=true;
+  // Simulate Claude API scoring — replace with real API call in production
+  // Real prompt would be: "Score this Irish writing sample against CEFR rubric criteria..."
+  setTimeout(()=>{
+    const words=text.split(/\s+/).length;
+    const hasIrish=/[áéíóú]|tá|is |agus|an |le |ar |do |sa |na |mo |go /i.test(text);
+    const hasFormal=/a chara|le meas|le dea|ba mhaith|measaim|creidim|áfach|ina theannta/i.test(text);
+    const hasComplex=/cé go|nuair|ó tharla|dá|ina|nach|ionas|ar choinníoll/i.test(text);
+    const hasMutation=/gCorcaigh|bhFáil|nGaillimh|dteanga|bhfuil|gcomhairle|gcuir/i.test(text);
+    let score=35;
+    if(hasIrish)score+=20;
+    if(words>=40)score+=10;
+    if(words>=80)score+=5;
+    if(hasFormal)score+=10;
+    if(hasComplex)score+=10;
+    if(hasMutation)score+=10;
+    score=Math.min(100,score);
+    S.scores.writing=score;
+    const band=score>=80?'C1–C2':score>=60?'B2':score>=45?'B1–B2':'A2–B1';
+    document.getElementById('writingFeedback').style.display='block';
+    document.getElementById('writingFeedback').innerHTML=`
+      <div class="ai-feedback">
+        <div class="ai-feedback-title">AI assessment — indicative result</div>
+        <div class="ai-criteria">
+          <div class="crit-row"><span class="crit-label">Overall band</span><span class="crit-val">${band}</span></div>
+          <div class="crit-row"><span class="crit-label">Irish detected</span><span class="crit-val">${hasIrish?'Yes':'Limited'}</span></div>
+          <div class="crit-row"><span class="crit-label">Word count</span><span class="crit-val">${words} words ${words>=40?'✓':''}</span></div>
+          <div class="crit-row"><span class="crit-label">Complex grammar</span><span class="crit-val">${hasComplex?'Present':'Not detected'}</span></div>
+          <div class="crit-row"><span class="crit-label">Formal register</span><span class="crit-val">${hasFormal?'Present':'Not detected'}</span></div>
+        </div>
+        <div style="margin-top:0.7rem;font-size:0.8rem;color:var(--teal-dark);font-style:italic;">This is an automated assessment — it gives an indicative result based on detectable language features. Your full written sample is also visible to employers on your passport.</div>
+      </div>`;
+    document.getElementById('writingNext').style.display='inline-flex';
+    btn.style.display='none';
+  },1800);
+}
+
+// ── SPEAKING ──────────────────────────────────────────────────────────────
+function goSpeaking(){setPhase(5);startSpeaking();}
+function startSpeaking(){
+  const task=ASSESSMENT.speaking[S.band]||ASSESSMENT.speaking.B1_B2;
+  document.getElementById('speakingPassage').innerHTML=`
+    <p>${task.passage}</p>
+    <p class="tip">${task.tip}</p>`;
+}
+function toggleRecording(){
+  if(S.isRecording)stopRecording(); else startRec();
+}
+function startRec(){
+  S.isRecording=true; S.audioChunks=[];
+  document.getElementById('recordBtn').className='record-btn recording';
+  document.getElementById('recordLabel').textContent='Recording — press to stop';
+  document.getElementById('recordStatus').textContent='Recording in progress. Read the passage above clearly.';
+  S._waveAnim=setInterval(()=>{
+    document.querySelectorAll('.w-bar').forEach(b=>{b.style.height=(Math.random()*28+4)+'px';});
+  },100);
+  S.recSecs=0;
+  S.recTimer=setInterval(()=>{
+    S.recSecs++;
+    document.getElementById('recordStatus').textContent=`Recording: ${S.recSecs}s`;
+  },1000);
+  if(navigator.mediaDevices?.getUserMedia){
+    navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+      S.mediaRecorder=new MediaRecorder(stream);
+      S.mediaRecorder.ondataavailable=e=>S.audioChunks.push(e.data);
+      S.mediaRecorder.start();
+    }).catch(()=>{});
+  }
+}
+function stopRecording(){
+  S.isRecording=false;
+  clearInterval(S._waveAnim); clearInterval(S.recTimer);
+  document.getElementById('recordBtn').className='record-btn done';
+  document.getElementById('recordLabel').textContent='Recording complete ✓';
+  document.querySelectorAll('.w-bar').forEach(b=>b.style.height='8px');
+  // Save clip
+  if(S.mediaRecorder&&S.mediaRecorder.state!=='inactive'){
+    S.mediaRecorder.stop();
+    S.mediaRecorder.onstop=()=>{
+      try{
+        const blob=new Blob(S.audioChunks,{type:'audio/webm'});
+        const url=URL.createObjectURL(blob);
+        localStorage.setItem('poist_speaking_clip',url);
+      }catch(e){}
+    };
+  }
+  localStorage.setItem('poist_speaking_clip','recorded');
+  localStorage.setItem('poist_speaking_band',S.band);
+  S.scores.speaking=60; // base score for completing the task
+  S.speakingDone=true;
+  document.getElementById('clipSaved').style.display='flex';
+  document.getElementById('recordStatus').textContent=`Clip saved (${S.recSecs}s). Your spoken sample is now part of your Language Passport.`;
+  document.getElementById('speakingNext').style.display='inline-flex';
+}
+
+// ── RESULT ────────────────────────────────────────────────────────────────
+function showResult(){
+  setPhase(6);
+  const w=ASSESSMENT.scoring.weights;
+  const composite=Math.round(
+    S.scores.listening*w.listening+
+    S.scores.reading*w.reading+
+    S.scores.writing*w.writing+
+    S.scores.speaking*w.speaking
+  );
+  const t=ASSESSMENT.scoring.thresholds.find(t=>composite>=t.min&&composite<=t.max)||ASSESSMENT.scoring.thresholds[0];
+  const label=ASSESSMENT.scoring.labels[t.level];
+  const borderline=ASSESSMENT.scoring.thresholds.some(th=>
+    Math.abs(composite-th.min)<=ASSESSMENT.scoring.borderlineMargin&&th!==t
+  );
+  // Save to user profile
+  const user=getUser();
+  user.irishCefr=t.level;
+  user.assessmentDate=new Date().toISOString().split('T')[0];
+  user.assessmentScores=S.scores;
+  POIST.setUser(user);
+
+  document.getElementById('resultContent').innerHTML=`
+    <div class="result-hero">
+      <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;opacity:0.55;margin-bottom:0.4rem;">Your indicative level</div>
+      <div class="result-level">${t.level}</div>
+      <div class="result-label">${label}</div>
+      <div class="result-score">Composite score: ${composite}/100</div>
+      <div class="skill-bars">
+        ${[['Listening','listening','🎧'],['Reading','reading','📝'],['Writing','writing','✍️'],['Speaking','speaking','🎤']].map(([l,k,icon])=>`
+          <div class="sk-row">
+            <div class="sk-label">${icon} ${l}</div>
+            <div class="sk-bg"><div class="sk-fill" style="width:${S.scores[k]}%"></div></div>
+            <div class="sk-pct">${S.scores[k]}%</div>
+          </div>`).join('')}
+      </div>
+      ${borderline?`<div class="borderline-note">Your score is close to a band boundary. Consider uploading a TEG certificate or Leaving Cert result if you believe your level may be higher.</div>`:''}
+      <div class="disclaimer">
+        This is a CEFR-referenced screening, not a formal certification. Your indicative level is based on your performance in this screening and is designed to give employers a useful starting point. It is not equivalent to a TEG certificate or other formal Irish language qualification.
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+      <div class="card">
+        <div class="card-title">What ${t.level} means</div>
+        <p style="font-size:0.87rem;color:var(--gray);line-height:1.65;">${{
+          A1:'You can understand and use very basic Irish phrases and expressions.',
+          A2:'You can communicate in simple, routine Irish tasks about familiar topics.',
+          B1:'You can deal with most everyday Irish situations and produce simple connected text.',
+          B2:'You can work independently in Irish across professional contexts with confidence. This is the most common employer requirement on poist.ie.',
+          C1:'You can express yourself fluently and spontaneously in Irish for professional purposes.',
+          C2:'Near-native proficiency. You can understand and express virtually anything in Irish with precision.'
+        }[t.level]}</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Your spoken sample</div>
+        <p style="font-size:0.87rem;color:var(--gray);line-height:1.65;margin-bottom:0.8rem;">Your spoken reading clip is saved to your Language Passport. Employers can listen to it before deciding to contact you.</p>
+        <div style="display:inline-flex;align-items:center;gap:0.4rem;background:var(--green-light);color:var(--green);border-radius:6px;padding:0.35rem 0.75rem;font-size:0.82rem;font-weight:600;">✓ Clip saved</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="card-title">What happens next</div>
+      <div style="display:flex;flex-direction:column;gap:0.6rem;font-size:0.87rem;color:var(--gray);">
+        <div>✓ Your indicative level <strong style="color:var(--dark);">${t.level} — ${label}</strong> is now shown on your Language Passport</div>
+        <div>✓ Your spoken reading sample is saved and visible to employers</div>
+        <div>✓ Your written sample is available to employers on your passport</div>
+        <div style="color:var(--teal);">→ You can add supporting credentials (Leaving Cert, TEG) to give employers additional context</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:0.8rem;flex-wrap:wrap;">
+      <button class="btn btn-teal btn-lg" onclick="setPhase(7);renderCredentials();">Add credentials →</button>
+      <a href="candidate-passport.html" class="btn btn-outline btn-lg">View my Passport</a>
+      <a href="candidate-dashboard.html" class="btn btn-ghost btn-lg">Dashboard</a>
+    </div>
+    <p style="font-size:0.78rem;color:var(--gray);margin-top:1rem;">You can re-sit this screening in 90 days</p>`;
+}
+
+// ── CREDENTIALS ───────────────────────────────────────────────────────────
+function renderCredentials(){
+  const creds=ASSESSMENT.credentials||['Leaving Cert Higher H1','TEG B2 certificate','Gaeltacht native speaker'];
+  document.getElementById('credList').innerHTML=creds.map((c,i)=>`
+    <label style="display:flex;align-items:center;gap:0.7rem;font-size:0.9rem;cursor:pointer;padding:0.6rem;border:1.5px solid var(--border);border-radius:8px;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="if(!document.getElementById('cred${i}').checked)this.style.borderColor='var(--border)'">
+      <input type="checkbox" id="cred${i}" style="width:16px;height:16px;flex-shrink:0;" onchange="this.parentElement.style.borderColor=this.checked?'var(--teal)':'var(--border)'">
+      <span>${c}</span>
+    </label>`).join('');
+}
+function saveCredentials(){
+  const creds=ASSESSMENT.credentials||[];
+  const selected=creds.filter((_,i)=>document.getElementById('cred'+i)?.checked);
+  const user=getUser();
+  user.credentials=selected;
+  POIST.setUser(user);
+  window.location.href='candidate-passport.html';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>poist.ie — Page Not Found</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* poist.ie base styles — shared across all pages */
+:root {
+  --teal:#1A7A6E;--teal-dark:#0f5a51;--teal-light:#E8F5F3;--teal-mid:#2a9d8f;
+  --gold:#F5C518;--gold-dark:#d4a800;
+  --dark:#1A1A2E;--gray:#6B7280;--cream:#F5F2ED;--border:#E5E7EB;--white:#ffffff;
+  --red:#dc2626;--green:#16a34a;
+  --sidebar-w:220px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:#F5F2ED;color:var(--dark);overflow-x:hidden;}
+input,select,textarea{font-family:'DM Sans',sans-serif;}
+.logo{text-decoration:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.65rem;letter-spacing:-0.03em;background:linear-gradient(90deg,#0f5a51,#2a9d8f);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+/* Layout */
+.app-shell{display:flex;min-height:100vh;}
+.main-area{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
+.page-content{flex:1;overflow-y:auto;padding:1.5rem;}
+
+/* Cards */
+.card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.4rem;}
+.card-sm{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1rem;}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:0.4rem;padding:0.6rem 1.2rem;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;border:none;transition:all 0.18s;text-decoration:none;}
+.btn-primary{background:var(--gold);color:var(--dark);}
+.btn-primary:hover{background:var(--gold-dark);transform:translateY(-1px);}
+.btn-teal{background:var(--teal);color:#fff;}
+.btn-teal:hover{background:var(--teal-dark);}
+.btn-outline{background:transparent;border:1.5px solid var(--teal);color:var(--teal);}
+.btn-outline:hover{background:var(--teal-light);}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--gray);}
+.btn-ghost:hover{border-color:var(--dark);color:var(--dark);}
+.btn-danger{background:#fef2f2;border:1.5px solid #fecaca;color:var(--red);}
+.btn-danger:hover{background:#fee2e2;}
+.btn-lg{padding:0.8rem 1.8rem;font-size:1rem;border-radius:10px;}
+
+/* Form elements */
+.form-group{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:1rem;}
+.form-label{font-size:0.85rem;font-weight:600;color:var(--dark);}
+.form-input{padding:0.65rem 0.9rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.9rem;color:var(--dark);background:var(--white);transition:border-color 0.18s;outline:none;}
+.form-input:focus{border-color:var(--teal);}
+.form-input.error{border-color:var(--red);}
+.form-hint{font-size:0.78rem;color:var(--gray);}
+.form-error{font-size:0.78rem;color:var(--red);}
+select.form-input{cursor:pointer;}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;padding:0.18rem 0.55rem;border-radius:4px;font-size:0.72rem;font-weight:700;}
+.badge-gold{background:var(--gold);color:var(--dark);}
+.badge-teal{background:var(--teal-light);color:var(--teal);}
+.badge-gray{background:#F3F4F6;color:var(--gray);}
+.badge-green{background:#dcfce7;color:var(--green);}
+.badge-red{background:#fef2f2;color:var(--red);}
+
+/* Stats grid */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem;}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.2rem;}
+.stat-num{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--teal);}
+.stat-label{font-size:0.78rem;color:var(--gray);margin-top:0.15rem;}
+
+/* CEFR scale */
+.cefr-scale{display:flex;gap:3px;}
+.cefr-pip{flex:1;height:6px;border-radius:3px;background:#E5E7EB;}
+.cefr-pip.on{background:var(--gold);}
+
+/* Section header */
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.section-hdr h2{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;}
+
+/* Verified badge */
+.verified{display:inline-flex;align-items:center;gap:0.3rem;background:#E8F5F3;color:var(--teal);font-size:0.72rem;font-weight:600;padding:0.18rem 0.55rem;border-radius:4px;}
+
+/* Animations */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
+.fade-in{animation:fadeIn 0.3s ease both;}
+
+/* Public nav */
+.pub-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;height:66px;display:flex;align-items:center;justify-content:space-between;}
+.pub-nav-links{display:flex;align-items:center;gap:1.8rem;}
+.pub-nav-links a{text-decoration:none;color:var(--gray);font-weight:500;font-size:0.93rem;transition:color 0.2s;}
+.pub-nav-links a:hover{color:var(--teal);}
+.pub-nav-cta{background:var(--gold);color:var(--dark)!important;padding:0.5rem 1.2rem;border-radius:7px;font-weight:600;font-size:0.88rem;}
+.pub-nav-cta:hover{background:var(--gold-dark)!important;}
+
+/* Responsive */
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .pub-nav-links{display:none;}
+}
+
+body{background:linear-gradient(160deg,#1A1A2E 0%,#0d3d38 60%,#1A7A6E 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:2rem;}
+</style>
+</head>
+<body>
+<div style="color:#fff;max-width:500px;">
+  <a href="index.html" style="text-decoration:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:2rem;letter-spacing:-.03em;color:#fff;display:block;margin-bottom:2.5rem;">poist.ie</a>
+  <div style="font-family:'Syne',sans-serif;font-size:6rem;font-weight:800;color:#F5C518;line-height:1;margin-bottom:1rem;">404</div>
+  <h1 style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;margin-bottom:.8rem;">Leathanach gan aimsiú</h1>
+  <p style="color:rgba(255,255,255,.65);font-size:1rem;line-height:1.7;margin-bottom:2rem;">Page not found. The page you're looking for doesn't exist or has moved.</p>
+  <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+    <a href="index.html" style="background:#F5C518;color:#1A1A2E;padding:.8rem 1.8rem;border-radius:10px;font-weight:700;text-decoration:none;">Go to Homepage</a>
+    <a href="jobs.html" style="background:rgba(255,255,255,.1);color:#fff;border:1.5px solid rgba(255,255,255,.3);padding:.8rem 1.8rem;border-radius:10px;font-weight:600;text-decoration:none;">Browse Jobs</a>
+  </div>
+</div>
+</body>
+</html>
