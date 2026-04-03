@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>poist.ie — Job Details</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal:#1A7A6E; --teal-dark:#0f5a51; --teal-light:#E8F5F3; --teal-mid:#2a9d8f;
+  --gold:#F5C518; --gold-dark:#d4a800;
+  --dark:#1A1A2E; --gray:#6B7280; --cream:#F5F2ED; --border:#E5E7EB; --white:#ffffff;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--dark);}
+
+/* NAV */
+.pub-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;height:66px;display:flex;align-items:center;justify-content:space-between;}
+.logo{text-decoration:none;font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:var(--teal);}
+.logo span{color:var(--dark);}
+.pub-nav-links{display:flex;align-items:center;gap:1.8rem;}
+.pub-nav-links a{text-decoration:none;color:var(--gray);font-weight:500;font-size:0.93rem;transition:color 0.2s;}
+.pub-nav-links a:hover{color:var(--teal);}
+.pub-nav-cta{background:var(--gold);color:var(--dark)!important;padding:0.5rem 1.2rem;border-radius:7px;font-weight:600;font-size:0.88rem;}
+.pub-nav-cta:hover{background:var(--gold-dark)!important;}
+
+/* LAYOUT */
+.page-wrap{max-width:1100px;margin:0 auto;padding:90px 2rem 4rem;display:grid;grid-template-columns:1fr 340px;gap:2rem;align-items:start;}
+
+/* BREADCRUMB */
+.breadcrumb{display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:var(--gray);margin-bottom:1.5rem;}
+.breadcrumb a{color:var(--teal);text-decoration:none;font-weight:500;}
+.breadcrumb a:hover{text-decoration:underline;}
+.breadcrumb span{color:var(--gray);}
+
+/* JOB HEADER */
+.job-header{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:2rem;margin-bottom:1.5rem;}
+.org-row{display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem;}
+.org-logo{width:64px;height:64px;border-radius:16px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;}
+.org-name{font-size:1rem;font-weight:600;color:var(--dark);margin-bottom:0.2rem;}
+.org-meta{font-size:0.85rem;color:var(--gray);}
+.job-title-main{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;line-height:1.2;margin-bottom:1rem;color:var(--dark);}
+.job-pills{display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:1.2rem;}
+.pill{display:inline-flex;align-items:center;gap:0.3rem;padding:0.35rem 0.8rem;border-radius:100px;font-size:0.8rem;font-weight:600;}
+.pill-gold{background:rgba(245,197,24,0.15);color:#8a6d00;border:1px solid rgba(245,197,24,0.4);}
+.pill-teal{background:var(--teal-light);color:var(--teal);border:1px solid rgba(26,122,110,0.2);}
+.pill-gray{background:#F3F4F6;color:var(--gray);border:1px solid var(--border);}
+.cefr-large{display:inline-flex;align-items:center;gap:0.6rem;background:var(--gold);color:var(--dark);padding:0.5rem 1rem;border-radius:10px;font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;}
+
+/* CONTENT SECTIONS */
+.content-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:1.8rem;margin-bottom:1.2rem;}
+.content-card h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:1rem;color:var(--dark);padding-bottom:0.6rem;border-bottom:2px solid var(--teal-light);}
+.body-text{font-size:0.92rem;line-height:1.8;color:#374151;white-space:pre-line;}
+.detail-list{display:flex;flex-direction:column;gap:0.8rem;}
+.detail-item{display:flex;align-items:flex-start;gap:0.8rem;font-size:0.9rem;}
+.detail-icon{width:32px;height:32px;border-radius:8px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.detail-label{font-size:0.75rem;color:var(--gray);margin-bottom:0.1rem;}
+.detail-value{font-weight:600;color:var(--dark);}
+
+/* SIDEBAR */
+.sidebar-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:1.6rem;position:sticky;top:82px;margin-bottom:1rem;}
+.sidebar-card h4{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;margin-bottom:1.2rem;}
+.apply-btn{display:block;width:100%;text-align:center;background:var(--gold);color:var(--dark);padding:1rem;border-radius:12px;font-weight:700;font-size:1.05rem;text-decoration:none;transition:all 0.2s;margin-bottom:0.8rem;}
+.apply-btn:hover{background:var(--gold-dark);transform:translateY(-2px);}
+.save-btn{display:block;width:100%;text-align:center;background:transparent;color:var(--teal);border:2px solid var(--teal);padding:0.85rem;border-radius:12px;font-weight:600;font-size:0.95rem;text-decoration:none;transition:all 0.2s;margin-bottom:1.2rem;cursor:pointer;}
+.save-btn:hover{background:var(--teal-light);}
+.sidebar-detail{display:flex;flex-direction:column;gap:0.8rem;padding-top:1rem;border-top:1px solid var(--border);}
+.sd-item{display:flex;justify-content:space-between;align-items:center;font-size:0.85rem;}
+.sd-label{color:var(--gray);}
+.sd-value{font-weight:600;color:var(--dark);}
+.deadline-warning{background:#FEF3CD;border:1px solid #FCD34D;border-radius:8px;padding:0.7rem 0.9rem;font-size:0.8rem;color:#92400E;margin-top:0.8rem;display:flex;align-items:center;gap:0.4rem;}
+
+/* SIMILAR JOBS */
+.similar-card{display:flex;flex-direction:column;gap:0.8rem;}
+.sim-job{background:var(--cream);border:1px solid var(--border);border-radius:12px;padding:1rem;text-decoration:none;color:var(--dark);transition:all 0.2s;display:block;}
+.sim-job:hover{border-color:var(--teal);background:var(--teal-light);}
+.sim-title{font-weight:700;font-size:0.88rem;color:var(--teal);margin-bottom:0.2rem;}
+.sim-org{font-size:0.78rem;color:var(--gray);}
+.sim-meta{display:flex;align-items:center;gap:0.4rem;margin-top:0.4rem;flex-wrap:wrap;}
+.sim-badge{background:var(--gold);color:var(--dark);font-size:0.68rem;font-weight:700;padding:0.12rem 0.45rem;border-radius:4px;}
+
+/* NOT FOUND */
+.not-found{text-align:center;padding:6rem 2rem;max-width:480px;margin:0 auto;}
+.not-found h2{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:700;margin-bottom:0.8rem;}
+.not-found p{color:var(--gray);margin-bottom:2rem;}
+
+/* TOAST */
+@keyframes slideUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+@media(max-width:900px){
+  .page-wrap{grid-template-columns:1fr;}
+  .sidebar-card{position:static;}
+  .pub-nav-links{display:none;}
+}
+</style>
+</head>
+<body>
+
+<nav class="pub-nav">
+  <a href="index.html" class="logo">poist<span>.ie</span></a>
+  <div class="pub-nav-links">
+    <a href="jobs.html" style="color:var(--teal);">Browse Jobs</a>
+    <a href="employers.html">For Employers</a>
+    <a href="cefr-guide.html">CEFR Guide</a>
+    <a href="login.html">Sign In</a>
+    <a href="register-candidate.html" class="pub-nav-cta">Get Started — Free</a>
+  </div>
+</nav>
+
+<div class="page-wrap" id="pageWrap">
+  <div id="mainCol">
+    <div class="not-found">
+      <div style="font-size:3rem;margin-bottom:1rem;">⏳</div>
+      <h2>Loading role…</h2>
+      <p>Fetching job details.</p>
+    </div>
+  </div>
+  <div id="sideCol"></div>
+</div>
+
+<script>
+// All demo jobs — same dataset as jobs.html
+// When Supabase is wired, replace this with a fetch from the jobs table by id
+const JOBS = [
+  { id:1, title:'Léiritheoir Faisnéise — Irish Language Documentary Producer', org:'TG4', location:'An Spidéal, Co. Galway', county:'Galway', type:'Full-time', cefr:'C1', sector:'Broadcasting', posted:'2 days ago', icon:'📺',
+    tagline:'Create award-winning Irish-language documentaries for Ireland\'s national broadcaster.',
+    desc:'This is a senior production role within TG4\'s documentary division, based at the broadcaster\'s headquarters in An Spidéal, Connemara. You will be responsible for the end-to-end production of Irish-language documentary content for broadcast and digital platforms.\n\nWorking with commissioning editors, directors and post-production teams, you will develop original documentary concepts, manage production budgets and schedules, and ensure all content meets TG4\'s editorial and language standards.\n\nThe role requires advanced Irish at C1 level or above, as all production meetings and editorial discussions are conducted through Irish.',
+    responsibilities:['Develop and pitch original documentary concepts','Manage production from pre-production through to delivery','Work with directors, cameramen and editors throughout production','Ensure content meets TG4 editorial guidelines and CEFR Irish language standards','Manage production budgets typically ranging from €80,000 to €250,000'],
+    requirements:['C1 Irish essential — all meetings conducted as Gaeilge','3+ years broadcast production experience','Degree in Media, Film or Communications (or equivalent)','Strong project management and budgeting skills','Experience with commissioning processes an advantage'],
+    salary:'€48,000 – €62,000', closing:'30 April 2026', experience:'3+ years broadcast production' },
+
+  { id:2, title:'Irish Language Officer — Oifigeach Gaeilge', org:'Galway City Council', location:'Galway', county:'Galway', type:'Full-time', cefr:'B2', sector:'Public Sector', posted:'1 day ago', icon:'🏛️',
+    tagline:'Help Galway City Council meet its Irish language obligations under the Official Languages Act.',
+    desc:'Galway City Council is seeking an Irish Language Officer to coordinate the delivery of its statutory Irish Language Scheme. This is a key role in ensuring the Council meets its obligations under the Official Languages (Amendment) Act 2021, including the 20% Irish-speaking staff target by 2030.\n\nYou will work across all Council departments to promote Irish language use, coordinate translations, develop staff training programmes and engage with the public and community groups through Irish.\n\nThe role is based at City Hall, Galway City, with occasional travel to community venues.',
+    responsibilities:['Coordinate delivery of the Council\'s Irish Language Scheme','Commission and review translations of official documents and signage','Develop and deliver Irish language training for Council staff','Represent the Council at Irish language events and community meetings','Prepare annual reports on Irish language activity for elected members'],
+    requirements:['B2 Irish minimum — B2 assessed at interview','Degree in Irish or related discipline, or equivalent experience','Knowledge of the Official Languages Acts 2003 and 2021','Excellent written and spoken Irish and English','Experience in public administration an advantage'],
+    salary:'€45,000 – €57,000', closing:'25 April 2026', experience:'2+ years in public sector or Irish language sector' },
+
+  { id:3, title:'Príomhfhorbróir — Tech Lead Gaeilge', org:'GlobalTech Ireland', location:'Cork · Hybrid', county:'Cork', type:'Full-time', cefr:'C1', sector:'Technology', posted:'3 days ago', icon:'💻',
+    tagline:'Lead a bilingual engineering team at one of Ireland\'s fastest-growing tech companies.',
+    desc:'GlobalTech Ireland is committed to building a bilingual workplace and is seeking a Tech Lead to manage a team of 8 engineers working on our enterprise SaaS platform. This is a rare opportunity to bring your technical skills and Irish language ability together in a forward-thinking tech environment.\n\nAll internal team communications, stand-ups and documentation for this team are conducted through Irish. You will report to the Engineering Director and work closely with Product, Design and QA.\n\nThe role is hybrid — 2 days per week at our Cork city office, remote otherwise.',
+    responsibilities:['Lead and mentor a team of 8 software engineers','Drive technical architecture decisions for the core platform','Conduct code reviews and set engineering standards','Work with Product to plan and deliver quarterly roadmaps','Foster a bilingual (Irish/English) team culture'],
+    requirements:['C1 Irish essential — team operates as Gaeilge','5+ years software engineering experience','2+ years in a technical leadership role','Strong knowledge of React, Node.js and cloud infrastructure','Experience with agile delivery methodologies'],
+    salary:'€95,000 – €120,000 + equity', closing:'10 May 2026', experience:'5+ years engineering, 2+ years leadership' },
+
+  { id:4, title:'Cruthaitheoir Ábhair — Irish Content Creator', org:'Creative Nua', location:'Galway · Part-time / Freelance', county:'Galway', type:'Part-time', cefr:'B2', sector:'Media', posted:'Today', icon:'✍️',
+    tagline:'Create compelling Irish-language content for brands and organisations across Ireland.',
+    desc:'Creative Nua is a leading Irish-language digital agency based in Galway, working with brands, public bodies and NGOs to create engaging Irish-language content. We are seeking a talented content creator to join our growing team on a part-time or freelance basis.\n\nYou will produce written, visual and video content in Irish across social media, web and print channels. You will work with our creative and strategy teams to develop content that is engaging, accurate and on-brand for a range of clients.\n\nThis is a flexible role suited to someone with strong Irish writing skills and a passion for digital content.',
+    responsibilities:['Write and edit Irish-language copy for social media, web and print','Create short-form video scripts and captions','Manage content calendars for 3–5 client accounts','Collaborate with designers and videographers','Proofread and quality-check all Irish-language outputs'],
+    requirements:['B2 Irish minimum — strong written Irish essential','1+ year experience in content creation, journalism or copywriting','Familiarity with social media platforms and digital tools','Portfolio of Irish-language written work','Video editing skills an advantage'],
+    salary:'€22–28 per hour (freelance) / €32,000–38,000 pro rata (part-time)', closing:'22 April 2026', experience:'1+ year content creation' },
+
+  { id:5, title:'Bainisteoir Pobail — Community Manager', org:'Startup Hub Limerick', location:'Limerick', county:'Limerick', type:'Full-time', cefr:'B1', sector:'Community', posted:'Today', icon:'👥',
+    tagline:'Build and manage a vibrant bilingual startup community in Limerick.',
+    desc:'Startup Hub Limerick is a co-working and incubation space committed to fostering innovation and the Irish language in the mid-west. We are seeking a Community Manager to grow and manage our member community of 150+ founders, freelancers and remote workers.\n\nYou will be the face of the Hub — organising events, welcoming members, managing communications and building partnerships with local businesses and educational institutions. The ability to engage members through Irish as well as English is important to our mission.',
+    responsibilities:['Manage day-to-day community operations and member relations','Organise 2–3 events per month including networking, workshops and pitch nights','Develop and manage bilingual (Irish/English) communications','Onboard new members and maintain strong retention rates','Build partnerships with local universities, councils and enterprise agencies'],
+    requirements:['B1 Irish minimum — comfortable conducting some conversations as Gaeilge','2+ years community management, events or hospitality experience','Excellent interpersonal and communication skills','Strong organisational ability and attention to detail','Interest in startups and entrepreneurship an advantage'],
+    salary:'€34,000 – €42,000', closing:'28 April 2026', experience:'2+ years community management or events' },
+];
+
+const cefrLabel = { A1:'Beginner', A2:'Elementary', B1:'Intermediate', B2:'Upper-Intermediate', C1:'Advanced', C2:'Proficient/Native' };
+
+function cefrBadge(level, large=false){
+  if(large) return `<div class="cefr-large">${level} <span style="font-size:0.8rem;font-weight:600;opacity:0.7;">${cefrLabel[level]||''}</span></div>`;
+  return `<span style="background:#F5C518;color:#1A1A2E;font-size:0.75rem;font-weight:700;padding:0.2rem 0.55rem;border-radius:5px;">${level}</span>`;
+}
+
+function toast(msg){
+  const t=document.createElement('div');
+  t.style.cssText=`position:fixed;bottom:1.5rem;right:1.5rem;background:#1A7A6E;color:#fff;padding:0.8rem 1.3rem;border-radius:10px;font-size:0.9rem;font-weight:500;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.2);animation:slideUp 0.3s ease;`;
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3000);
+}
+
+function render(){
+  const params = new URLSearchParams(window.location.search);
+  const id = parseInt(params.get('id'));
+  const job = JOBS.find(j => j.id === id);
+
+  if(!job){
+    document.getElementById('mainCol').innerHTML = `
+      <div class="not-found">
+        <div style="font-size:3rem;margin-bottom:1rem;">🔍</div>
+        <h2>Role not found</h2>
+        <p>This job may have been filled or the link may be incorrect.</p>
+        <a href="jobs.html" style="display:inline-flex;align-items:center;gap:0.5rem;background:var(--teal);color:#fff;padding:0.8rem 1.8rem;border-radius:10px;font-weight:600;text-decoration:none;">← Back to all jobs</a>
+      </div>`;
+    document.title = 'poist.ie — Job Not Found';
+    return;
+  }
+
+  document.title = `${job.title} — ${job.org} | poist.ie`;
+
+  // Similar jobs (same sector or same CEFR, excluding current)
+  const similar = JOBS.filter(j => j.id !== job.id && (j.sector === job.sector || j.cefr === job.cefr)).slice(0,3);
+
+  // MAIN COLUMN
+  document.getElementById('mainCol').innerHTML = `
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="jobs.html">← Browse Jobs</a>
+      <span>/</span>
+      <span>${job.sector}</span>
+      <span>/</span>
+      <span style="color:var(--dark);font-weight:500;">${job.title}</span>
+    </div>
+
+    <!-- Job Header -->
+    <div class="job-header">
+      <div class="org-row">
+        <div class="org-logo">${job.icon}</div>
+        <div>
+          <div class="org-name">${job.org}</div>
+          <div class="org-meta">📍 ${job.location} &nbsp;·&nbsp; ${job.type} &nbsp;·&nbsp; Posted ${job.posted}</div>
+        </div>
+      </div>
+      <h1 class="job-title-main">${job.title}</h1>
+      <div class="job-pills">
+        ${cefrBadge(job.cefr, true)}
+        <div class="pill pill-teal">${job.sector}</div>
+        <div class="pill pill-gray">${job.type}</div>
+        <div class="pill pill-gray">📍 ${job.location}</div>
+      </div>
+      <p style="font-size:1rem;color:var(--gray);line-height:1.6;font-style:italic;">${job.tagline}</p>
+    </div>
+
+    <!-- About the role -->
+    <div class="content-card">
+      <h3>About the Role</h3>
+      <p class="body-text">${job.desc}</p>
+    </div>
+
+    <!-- Responsibilities -->
+    <div class="content-card">
+      <h3>Key Responsibilities</h3>
+      <div style="display:flex;flex-direction:column;gap:0.7rem;">
+        ${job.responsibilities.map(r=>`
+          <div style="display:flex;gap:0.7rem;font-size:0.9rem;line-height:1.6;">
+            <span style="color:var(--teal);font-weight:700;flex-shrink:0;margin-top:0.05rem;">→</span>
+            <span>${r}</span>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- Requirements -->
+    <div class="content-card">
+      <h3>Requirements</h3>
+      <div style="display:flex;flex-direction:column;gap:0.7rem;">
+        ${job.requirements.map((r,i)=>`
+          <div style="display:flex;gap:0.7rem;font-size:0.9rem;line-height:1.6;${i===0?'background:rgba(245,197,24,0.08);border:1px solid rgba(245,197,24,0.3);border-radius:8px;padding:0.6rem 0.8rem;':''}">
+            <span style="color:${i===0?'#8a6d00':'var(--teal)'};font-weight:700;flex-shrink:0;margin-top:0.05rem;">${i===0?'🗣️':'✓'}</span>
+            <span>${r}</span>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- Key details -->
+    <div class="content-card">
+      <h3>Role Details</h3>
+      <div class="detail-list">
+        <div class="detail-item">
+          <div class="detail-icon">💰</div>
+          <div>
+            <div class="detail-label">Salary</div>
+            <div class="detail-value">${job.salary}</div>
+          </div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-icon">📍</div>
+          <div>
+            <div class="detail-label">Location</div>
+            <div class="detail-value">${job.location}</div>
+          </div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-icon">⏰</div>
+          <div>
+            <div class="detail-label">Contract Type</div>
+            <div class="detail-value">${job.type}</div>
+          </div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-icon">🗣️</div>
+          <div>
+            <div class="detail-label">Irish Level Required</div>
+            <div class="detail-value">${job.cefr} — ${cefrLabel[job.cefr]}</div>
+          </div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-icon">🎓</div>
+          <div>
+            <div class="detail-label">Experience</div>
+            <div class="detail-value">${job.experience}</div>
+          </div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-icon">📅</div>
+          <div>
+            <div class="detail-label">Closing Date</div>
+            <div class="detail-value">${job.closing}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA bar — mobile / bottom of content -->
+    <div style="background:var(--teal-dark);border-radius:16px;padding:1.8rem;text-align:center;display:none;" id="mobileCta">
+      <p style="color:rgba(255,255,255,0.8);font-size:0.88rem;margin-bottom:1rem;">Create a free Language Passport to apply — it takes 5 minutes.</p>
+      <a href="register-candidate.html" style="display:inline-flex;align-items:center;gap:0.5rem;background:var(--gold);color:var(--dark);padding:1rem 2rem;border-radius:10px;font-weight:700;font-size:1rem;text-decoration:none;">🎓 Apply Now — It's Free</a>
+    </div>
+
+    ${similar.length ? `
+    <!-- Similar roles -->
+    <div class="content-card">
+      <h3>Similar Roles</h3>
+      <div class="similar-card">
+        ${similar.map(s=>`
+          <a href="job.html?id=${s.id}" class="sim-job">
+            <div class="sim-title">${s.title}</div>
+            <div class="sim-org">${s.org} · ${s.location}</div>
+            <div class="sim-meta">
+              ${cefrBadge(s.cefr)}
+              <span class="pill pill-gray" style="font-size:0.75rem;padding:0.2rem 0.6rem;">${s.type}</span>
+              <span style="font-size:0.75rem;color:var(--gray);margin-left:auto;">${s.posted}</span>
+            </div>
+          </a>`).join('')}
+      </div>
+    </div>` : ''}
+  `;
+
+  // SIDEBAR
+  document.getElementById('sideCol').innerHTML = `
+    <div class="sidebar-card">
+      <h4>Apply for this role</h4>
+      <a href="register-candidate.html" class="apply-btn">🎓 Apply Now — Free</a>
+      <button class="save-btn" onclick="toast('Role saved! Sign in to view saved jobs.')">🔖 Save Role</button>
+      <div class="sidebar-detail">
+        <div class="sd-item">
+          <span class="sd-label">Irish Level</span>
+          <span class="sd-value">${job.cefr} ${cefrLabel[job.cefr]?'— '+cefrLabel[job.cefr]:''}</span>
+        </div>
+        <div class="sd-item">
+          <span class="sd-label">Salary</span>
+          <span class="sd-value" style="text-align:right;max-width:180px;">${job.salary}</span>
+        </div>
+        <div class="sd-item">
+          <span class="sd-label">Type</span>
+          <span class="sd-value">${job.type}</span>
+        </div>
+        <div class="sd-item">
+          <span class="sd-label">Sector</span>
+          <span class="sd-value">${job.sector}</span>
+        </div>
+        <div class="sd-item">
+          <span class="sd-label">Location</span>
+          <span class="sd-value">${job.location}</span>
+        </div>
+        <div class="sd-item">
+          <span class="sd-label">Closing</span>
+          <span class="sd-value">${job.closing}</span>
+        </div>
+      </div>
+      <div class="deadline-warning">
+        ⏰ Closes ${job.closing} — don't leave it late
+      </div>
+    </div>
+
+    <div class="sidebar-card" style="background:var(--teal-light);border-color:rgba(26,122,110,0.2);">
+      <h4 style="color:var(--teal-dark);">Not ready to apply yet?</h4>
+      <p style="font-size:0.85rem;color:var(--gray);margin-bottom:1rem;line-height:1.6;">Create a free Language Passport and go passive — employers can find you without you applying.</p>
+      <a href="register-candidate.html" style="display:block;text-align:center;background:var(--teal);color:#fff;padding:0.7rem;border-radius:8px;font-weight:600;font-size:0.88rem;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#0f5a51'" onmouseout="this.style.background='#1A7A6E'">Create Language Passport →</a>
+    </div>
+
+    <div class="sidebar-card" style="background:var(--dark);border:none;">
+      <h4 style="color:#fff;margin-bottom:0.5rem;">Share this role</h4>
+      <p style="font-size:0.82rem;color:rgba(255,255,255,0.55);margin-bottom:1rem;">Know someone who'd be perfect?</p>
+      <button onclick="copyLink()" style="width:100%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:0.7rem;border-radius:8px;font-weight:600;font-size:0.85rem;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">🔗 Copy Link</button>
+    </div>
+  `;
+}
+
+function copyLink(){
+  navigator.clipboard.writeText(window.location.href).then(()=>toast('Link copied!')).catch(()=>toast('Copy failed — try manually'));
+}
+
+render();
+</script>
+</body>
+</html>

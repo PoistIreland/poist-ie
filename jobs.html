@@ -4,7 +4,7 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>poist.ie — Browse Jobs</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<style>/* poist.ie base styles — shared across all pages */
+<style>
 :root {
   --teal:#1A7A6E;--teal-dark:#0f5a51;--teal-light:#E8F5F3;--teal-mid:#2a9d8f;
   --gold:#F5C518;--gold-dark:#d4a800;
@@ -17,16 +17,6 @@ body{font-family:'DM Sans',sans-serif;background:#F5F2ED;color:var(--dark);overf
 input,select,textarea{font-family:'DM Sans',sans-serif;}
 .logo{text-decoration:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.65rem;letter-spacing:-0.03em;background:linear-gradient(90deg,#0f5a51,#2a9d8f);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 
-/* Layout */
-.app-shell{display:flex;min-height:100vh;}
-.main-area{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
-.page-content{flex:1;overflow-y:auto;padding:1.5rem;}
-
-/* Cards */
-.card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.4rem;}
-.card-sm{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1rem;}
-
-/* Buttons */
 .btn{display:inline-flex;align-items:center;gap:0.4rem;padding:0.6rem 1.2rem;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;border:none;transition:all 0.18s;text-decoration:none;}
 .btn-primary{background:var(--gold);color:var(--dark);}
 .btn-primary:hover{background:var(--gold-dark);transform:translateY(-1px);}
@@ -36,52 +26,17 @@ input,select,textarea{font-family:'DM Sans',sans-serif;}
 .btn-outline:hover{background:var(--teal-light);}
 .btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--gray);}
 .btn-ghost:hover{border-color:var(--dark);color:var(--dark);}
-.btn-danger{background:#fef2f2;border:1.5px solid #fecaca;color:var(--red);}
-.btn-danger:hover{background:#fee2e2;}
 .btn-lg{padding:0.8rem 1.8rem;font-size:1rem;border-radius:10px;}
 
-/* Form elements */
-.form-group{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:1rem;}
-.form-label{font-size:0.85rem;font-weight:600;color:var(--dark);}
 .form-input{padding:0.65rem 0.9rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.9rem;color:var(--dark);background:var(--white);transition:border-color 0.18s;outline:none;}
 .form-input:focus{border-color:var(--teal);}
-.form-input.error{border-color:var(--red);}
-.form-hint{font-size:0.78rem;color:var(--gray);}
-.form-error{font-size:0.78rem;color:var(--red);}
 select.form-input{cursor:pointer;}
 
-/* Badges */
 .badge{display:inline-flex;align-items:center;padding:0.18rem 0.55rem;border-radius:4px;font-size:0.72rem;font-weight:700;}
 .badge-gold{background:var(--gold);color:var(--dark);}
 .badge-teal{background:var(--teal-light);color:var(--teal);}
 .badge-gray{background:#F3F4F6;color:var(--gray);}
-.badge-green{background:#dcfce7;color:var(--green);}
-.badge-red{background:#fef2f2;color:var(--red);}
 
-/* Stats grid */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem;}
-.stat-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.2rem;}
-.stat-num{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--teal);}
-.stat-label{font-size:0.78rem;color:var(--gray);margin-top:0.15rem;}
-
-/* CEFR scale */
-.cefr-scale{display:flex;gap:3px;}
-.cefr-pip{flex:1;height:6px;border-radius:3px;background:#E5E7EB;}
-.cefr-pip.on{background:var(--gold);}
-
-/* Section header */
-.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
-.section-hdr h2{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;}
-
-/* Verified badge */
-.verified{display:inline-flex;align-items:center;gap:0.3rem;background:#E8F5F3;color:var(--teal);font-size:0.72rem;font-weight:600;padding:0.18rem 0.55rem;border-radius:4px;}
-
-/* Animations */
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-@keyframes slideIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
-.fade-in{animation:fadeIn 0.3s ease both;}
-
-/* Public nav */
 .pub-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;height:66px;display:flex;align-items:center;justify-content:space-between;}
 .pub-nav-links{display:flex;align-items:center;gap:1.8rem;}
 .pub-nav-links a{text-decoration:none;color:var(--gray);font-weight:500;font-size:0.93rem;transition:color 0.2s;}
@@ -89,13 +44,9 @@ select.form-input{cursor:pointer;}
 .pub-nav-cta{background:var(--gold);color:var(--dark)!important;padding:0.5rem 1.2rem;border-radius:7px;font-weight:600;font-size:0.88rem;}
 .pub-nav-cta:hover{background:var(--gold-dark)!important;}
 
-/* Responsive */
 @media(max-width:768px){
-  .sidebar{display:none;}
-  .stats-grid{grid-template-columns:1fr 1fr;}
   .pub-nav-links{display:none;}
 }
-
 
 body{background:var(--cream);}
 .job-card{border:1px solid var(--border);border-radius:12px;padding:1.1rem;cursor:pointer;transition:all .18s;background:var(--white);}
@@ -119,7 +70,7 @@ body{background:var(--cream);}
 <div style="padding-top:66px;display:grid;grid-template-columns:380px 1fr;height:calc(100vh - 66px);">
   <div style="display:flex;flex-direction:column;border-right:1px solid var(--border);overflow:hidden;">
     <div style="padding:1rem;background:var(--white);border-bottom:1px solid var(--border);">
-      <input type="text" id="sQ" class="form-input" placeholder="Search jobs…" oninput="filt()" style="margin-bottom:.6rem;">
+      <input type="text" id="sQ" class="form-input" placeholder="Search jobs…" oninput="filt()" style="margin-bottom:.6rem;width:100%;">
       <div style="display:flex;gap:.5rem;">
         <select id="sCefr" class="form-input" style="flex:1;" onchange="filt()"><option value="">All levels</option><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option></select>
         <select id="sType" class="form-input" style="flex:1;" onchange="filt()"><option value="">All types</option><option>Full-time</option><option>Part-time</option><option>Contract</option></select>
@@ -142,114 +93,44 @@ body{background:var(--cream);}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 
-// poist.ie shared utilities
-// Replace localStorage calls with Supabase auth/db calls when going live
+const JOBS = [
+  { id:1, title:'Irish Language Officer', org:'Department of Education', location:'Dublin', county:'Dublin', type:'Full-time', cefr:'B2', sector:'Government', posted:'2 days ago', lat:53.349, lng:-6.260,
+    desc:'Lead Irish language strategy across the department, supporting the 2030 Official Languages Act targets.',
+    fullDesc:'This is a senior policy role within the Department of Education, focused on developing and implementing the department\'s Irish language strategy in line with the Official Languages (Amendment) Act 2021.\n\nYou will work closely with ministers, senior officials and external stakeholders to ensure the department meets its statutory obligations, including the 20% Irish-speaking recruitment target by 2030.',
+    salary:'€55,000 – €70,000', closing:'30 April 2026', experience:'3+ years in public policy or Irish language sector' },
+  { id:2, title:'Bainisteoir Tionscadail', org:'Údarás na Gaeltachta', location:'Galway', county:'Galway', type:'Full-time', cefr:'C1', sector:'Semi-state', posted:'1 day ago', lat:53.270, lng:-9.056,
+    desc:'Manage capital projects across Gaeltacht regions. Full Irish essential.',
+    fullDesc:'Údarás na Gaeltachta is seeking an experienced project manager to lead capital investment projects across Gaeltacht communities. You will oversee budgets, timelines and community stakeholder engagement for a portfolio of infrastructure and enterprise projects.\n\nFull fluency in Irish is essential as all internal operations are conducted through Irish.',
+    salary:'€50,000 – €65,000', closing:'25 April 2026', experience:'5+ years project management' },
+  { id:3, title:'Irish Language Teacher', org:'Coláiste Íde', location:'Dingle, Kerry', county:'Kerry', type:'Full-time', cefr:'C2', sector:'Education', posted:'3 days ago', lat:52.141, lng:-10.267,
+    desc:'Teach Irish at secondary level at a leading Irish-medium college.',
+    fullDesc:'Coláiste Íde is one of Ireland\'s most respected Irish-medium boarding schools, located in the heart of the Kerry Gaeltacht. We are seeking a passionate and qualified Irish language teacher to join our secondary school team.\n\nThe successful candidate will be a registered teacher with the Teaching Council and will have native or near-native fluency in Irish.',
+    salary:'Per Teaching Council pay scale', closing:'20 April 2026', experience:'Teaching Council registered' },
+  { id:4, title:'Communications Officer (Irish)', org:'HSE', location:'Cork', county:'Cork', type:'Full-time', cefr:'B2', sector:'Healthcare', posted:'Today', lat:51.898, lng:-8.475,
+    desc:'Produce Irish-language health communications for HSE Cork region.',
+    fullDesc:'The HSE is committed to providing health information in both official languages. This role involves creating, translating and editing Irish-language communications across digital, print and broadcast channels for the HSE South region.\n\nYou will work within the communications team to ensure all public-facing health messaging meets Irish language obligations under the Official Languages Act.',
+    salary:'€42,000 – €55,000', closing:'15 April 2026', experience:'2+ years in communications or journalism' },
+  { id:5, title:'Tech Lead Gaeilge', org:'GlobalTech Ireland', location:'Cork', county:'Cork', type:'Full-time', cefr:'B1', sector:'Technology', posted:'5 days ago', lat:51.903, lng:-8.468,
+    desc:'Lead a bilingual engineering team. Irish language skills valued but not essential at native level.',
+    fullDesc:'GlobalTech Ireland is building a bilingual engineering culture as part of its commitment to the Irish language in the tech sector. We are looking for a Tech Lead to manage a team of 6–8 engineers working on our enterprise SaaS platform.\n\nIrish language skills at B1 level or above are valued as the team works to create a bilingual workplace. Full technical fluency in English is required.',
+    salary:'€90,000 – €115,000', closing:'10 May 2026', experience:'5+ years software engineering, 2+ years leadership' },
+  { id:6, title:'Content Creator', org:'TG4', location:'Galway', county:'Galway', type:'Contract', cefr:'C1', sector:'Media', posted:'Today', lat:53.274, lng:-9.049,
+    desc:'Create engaging Irish-language video content for TG4 digital platforms.',
+    fullDesc:'TG4 is Ireland\'s Irish-language public service broadcaster. We are seeking a creative and digitally-savvy content creator to develop short-form video content for our social media and streaming platforms.\n\nThis is an 11-month contract based at our studios in An Spidéal, Connemara. The successful candidate will have fluent Irish, experience in video production and a strong understanding of digital audiences.',
+    salary:'€38,000 – €45,000 (pro rata)', closing:'22 April 2026', experience:'2+ years content creation or broadcast production' },
+  { id:7, title:'Irish Language Coordinator', org:'Limerick City Council', location:'Limerick', county:'Limerick', type:'Part-time', cefr:'B1', sector:'Government', posted:'1 week ago', lat:52.664, lng:-8.630,
+    desc:'Coordinate Irish language services for Limerick City Council.',
+    fullDesc:'Limerick City and County Council is seeking a part-time Irish Language Coordinator to support delivery of its Irish Language Scheme under the Official Languages Act. The role involves coordinating Irish language services across council departments, engaging with the public and promoting Irish in the community.\n\nThis is a 3-day-per-week role based at Limerick City Hall.',
+    salary:'€28,000 – €34,000 (pro rata)', closing:'28 April 2026', experience:'1+ year in Irish language or community development' },
+  { id:8, title:'Community Manager', org:'Conradh na Gaeilge', location:'Dublin', county:'Dublin', type:'Full-time', cefr:'C2', sector:'Non-profit', posted:'4 days ago', lat:53.342, lng:-6.268,
+    desc:'Manage community programmes and events promoting the Irish language.',
+    fullDesc:'Conradh na Gaeilge is Ireland\'s largest Irish language organisation, with branches across Ireland and internationally. We are seeking an energetic and experienced Community Manager to develop and manage our network of community programmes, workshops and cultural events.\n\nThe successful candidate will be passionate about the Irish language, have strong organisational and communication skills, and be comfortable working in a fast-paced voluntary and community sector environment. Full Irish at C2 level is essential.',
+    salary:'€38,000 – €46,000', closing:'18 April 2026', experience:'3+ years community development or non-profit management' },
+];
 
-const POIST = {
-  // ── Brand ──────────────────────────────────────────
-  logo: (dark = false) => `
-    <a href="index.html" style="text-decoration:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.65rem;letter-spacing:-0.03em;background:linear-gradient(90deg,${dark?'rgba(255,255,255,0.9),rgba(255,255,255,0.6)':'#0f5a51,#2a9d8f'});-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">poist.ie</a>`,
+const cefrLabel = { A1:'Beginner',A2:'Elementary',B1:'Intermediate',B2:'Upper-Intermediate',C1:'Advanced',C2:'Proficient' };
 
-  // ── Auth helpers (swap for Supabase auth) ──────────
-  getUser: () => JSON.parse(localStorage.getItem('poist_user') || 'null'),
-  setUser: (u) => localStorage.setItem('poist_user', JSON.stringify(u)),
-  logout: () => { localStorage.removeItem('poist_user'); window.location.href = 'login.html'; },
-  requireAuth: (role) => {
-    const u = POIST.getUser();
-    if (!u) { window.location.href = 'login.html'; return null; }
-    if (role && u.role !== role) { window.location.href = 'index.html'; return null; }
-    return u;
-  },
-
-  // ── CEFR helpers ───────────────────────────────────
-  cefrLevels: ['A1','A2','B1','B2','C1','C2'],
-  cefrLabel: { A1:'Beginner',A2:'Elementary',B1:'Intermediate',B2:'Upper-Intermediate',C1:'Advanced',C2:'Proficient/Native' },
-
-  // ── Demo seed data (replace with Supabase queries) ─
-  demoJobs: [
-    { id:1, title:'Irish Language Officer', org:'Department of Education', location:'Dublin', county:'Dublin', type:'Full-time', cefr:'B2', sector:'Government', posted:'2 days ago', lat:53.349, lng:-6.260, desc:'Lead Irish language strategy across the department, supporting the 2030 Official Languages Act targets.' },
-    { id:2, title:'Bainisteoir Tionscadail', org:'Údarás na Gaeltachta', location:'Galway', county:'Galway', type:'Full-time', cefr:'C1', sector:'Semi-state', posted:'1 day ago', lat:53.270, lng:-9.056, desc:'Manage capital projects across Gaeltacht regions. Full Irish essential.' },
-    { id:3, title:'Irish Language Teacher', org:'Coláiste Íde', location:'Dingle, Kerry', county:'Kerry', type:'Full-time', cefr:'C2', sector:'Education', posted:'3 days ago', lat:52.141, lng:-10.267, desc:'Teach Irish at secondary level at a leading Irish-medium college.' },
-    { id:4, title:'Communications Officer (Irish)', org:'HSE', location:'Cork', county:'Cork', type:'Full-time', cefr:'B2', sector:'Healthcare', posted:'Today', lat:51.898, lng:-8.475, desc:'Produce Irish-language health communications for HSE Cork region.' },
-    { id:5, title:'Tech Lead Gaeilge', org:'GlobalTech Ireland', location:'Cork', county:'Cork', type:'Full-time', cefr:'B1', sector:'Technology', posted:'5 days ago', lat:51.903, lng:-8.468, desc:'Lead a bilingual engineering team. Irish language skills valued but not essential at native level.' },
-    { id:6, title:'Content Creator', org:'TG4', location:'Galway', county:'Galway', type:'Contract', cefr:'C1', sector:'Media', posted:'Today', lat:53.274, lng:-9.049, desc:'Create engaging Irish-language video content for TG4 digital platforms.' },
-    { id:7, title:'Irish Language Coordinator', org:'Limerick City Council', location:'Limerick', county:'Limerick', type:'Part-time', cefr:'B1', sector:'Government', posted:'1 week ago', lat:52.664, lng:-8.630, desc:'Coordinate Irish language services for Limerick City Council.' },
-    { id:8, title:'Community Manager', org:'Conradh na Gaeilge', location:'Dublin', county:'Dublin', type:'Full-time', cefr:'C2', sector:'Non-profit', posted:'4 days ago', lat:53.342, lng:-6.268, desc:'Manage community programmes and events promoting the Irish language.' },
-  ],
-
-  demoCandidates: [
-    { id:1, name:'Síle Ní Bhriain', title:'Content Creator', location:'Galway', cefr:'B2', englishCefr:'C2', skills:['Content Writing','Public Speaking','Media Production'], available:'Passive', verified:true, avatar:'👩‍💼' },
-    { id:2, name:'Ciarán Mac Giolla', title:'Software Developer', location:'Dublin', cefr:'C1', englishCefr:'C2', skills:['React','Node.js','Irish Language Tech'], available:'Active', verified:true, avatar:'👨‍💻' },
-    { id:3, name:'Aoife Ní Fhaoláin', title:'Irish Language Officer', location:'Galway', cefr:'C2', englishCefr:'C2', skills:['Policy','Training','Communications'], available:'Passive', verified:true, avatar:'👩‍🏫' },
-    { id:4, name:'Seán Ó Briain', title:'Communications Manager', location:'Cork', cefr:'B2', englishCefr:'C1', skills:['PR','Social Media','Copywriting'], available:'Active', verified:false, avatar:'👨‍💼' },
-  ],
-
-  // ── Sidebar nav renderer ────────────────────────────
-  renderSidebar: (role, activePage) => {
-    const candidateLinks = [
-      { href:'candidate-dashboard.html', icon:'⊞', label:'Dashboard' },
-      { href:'candidate-jobs.html', icon:'🔍', label:'Find Jobs' },
-      { href:'candidate-passport.html', icon:'📋', label:'My Passport' },
-    ];
-    const employerLinks = [
-      { href:'employer-dashboard.html', icon:'⊞', label:'Dashboard' },
-      { href:'employer-search.html', icon:'🔍', label:'Find Candidates' },
-      { href:'employer-post-job.html', icon:'＋', label:'Post a Job' },
-    ];
-    const adminLinks = [
-      { href:'admin-dashboard.html', icon:'⊞', label:'Overview' },
-      { href:'admin-dashboard.html#jobs', icon:'📋', label:'Job Approvals' },
-      { href:'admin-dashboard.html#users', icon:'👥', label:'Users' },
-    ];
-    const links = role==='employer' ? employerLinks : role==='admin' ? adminLinks : candidateLinks;
-    return `
-      <aside style="width:220px;min-height:100vh;background:#0f5a51;display:flex;flex-direction:column;flex-shrink:0;">
-        <div style="padding:1.4rem 1.2rem 1rem;border-bottom:1px solid rgba(255,255,255,0.1);">
-          ${POIST.logo(true)}
-        </div>
-        <nav style="padding:0.8rem 0;flex:1;">
-          ${links.map(l=>`
-            <a href="${l.href}" style="display:flex;align-items:center;gap:0.7rem;padding:0.7rem 1.2rem;text-decoration:none;font-size:0.92rem;font-weight:500;border-radius:0;transition:background 0.15s;${activePage===l.href?'background:rgba(255,255,255,0.15);color:#fff;':'color:rgba(255,255,255,0.7);'}"
-               onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='${activePage===l.href?'rgba(255,255,255,0.15)':'transparent'}'">
-              <span style="font-size:1rem;width:20px;text-align:center;">${l.icon}</span>${l.label}
-            </a>`).join('')}
-        </nav>
-        <div style="padding:1rem 1.2rem;border-top:1px solid rgba(255,255,255,0.1);">
-          <button onclick="POIST.logout()" style="background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.7);padding:0.5rem 1rem;border-radius:6px;cursor:pointer;font-size:0.85rem;width:100%;text-align:left;">← Sign out</button>
-        </div>
-      </aside>`;
-  },
-
-  // ── Top bar for dashboards ──────────────────────────
-  renderTopBar: (title, user) => `
-    <div style="height:60px;background:#fff;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;flex-shrink:0;">
-      <h1 style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#1A1A2E;">${title}</h1>
-      <div style="display:flex;align-items:center;gap:0.8rem;">
-        <div style="width:32px;height:32px;border-radius:50%;background:#E8F5F3;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">${user?.avatar||'👤'}</div>
-        <span style="font-size:0.88rem;font-weight:500;color:#374151;">${user?.name||'User'}</span>
-      </div>
-    </div>`,
-
-  // ── CEFR badge ─────────────────────────────────────
-  cefrBadge: (level) => `<span style="background:#F5C518;color:#1A1A2E;font-size:0.7rem;font-weight:700;padding:0.18rem 0.5rem;border-radius:4px;">${level}</span>`,
-
-  // ── Toast notification ──────────────────────────────
-  toast: (msg, type='success') => {
-    const t = document.createElement('div');
-    const bg = type==='success'?'#1A7A6E':type==='error'?'#dc2626':'#1A1A2E';
-    t.style.cssText=`position:fixed;bottom:1.5rem;right:1.5rem;background:${bg};color:#fff;padding:0.8rem 1.3rem;border-radius:10px;font-size:0.9rem;font-weight:500;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.2);animation:slideIn 0.3s ease;`;
-    t.textContent=msg;
-    document.body.appendChild(t);
-    setTimeout(()=>t.remove(),3000);
-  },
-};
-
-// Demo login shortcut — remove when Supabase auth is live
-window.POIST = POIST;
-
-const _demo={candidate:{role:'candidate',name:'Síle Ní Bhriain',email:'sile@poist.ie',avatar:'👩\u200d💼',irishCefr:'B2',englishCefr:'C2',county:'Galway',jobTitle:'Content Creator',profileType:'active',skills:['Content Writing','Public Speaking','Media Production']},employer:{role:'employer',name:'Galway County Council',email:'hr@galway.ie',avatar:'🏛️',orgType:'Local authority',county:'Galway'},admin:{role:'admin',name:'Admin User',email:'admin@poist.ie',avatar:'⚙️'}};
-function getUser(role){let u=POIST.getUser();if(!u||(role&&u.role!==role)){u=_demo[role||'candidate'];POIST.setUser(u);}return u;}
-
+function cefrBadge(level){return `<span style="background:#F5C518;color:#1A1A2E;font-size:0.7rem;font-weight:700;padding:0.18rem 0.5rem;border-radius:4px;">${level}</span>`;}
 
 let activeJ=null;
 const map=L.map('map').setView([53.4,-8.0],7);
@@ -257,15 +138,60 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'�
 const gi=L.divIcon({html:`<div style="background:#F5C518;width:14px;height:14px;border-radius:50%;border:2px solid #d4a800;box-shadow:0 2px 6px rgba(0,0,0,.3);"></div>`,className:'',iconSize:[14,14]});
 const ai=L.divIcon({html:`<div style="background:#1A7A6E;width:18px;height:18px;border-radius:50%;border:2px solid #0f5a51;box-shadow:0 2px 8px rgba(26,122,110,.5);"></div>`,className:'',iconSize:[18,18]});
 let mk={};
-POIST.demoJobs.forEach(j=>{const m=L.marker([j.lat,j.lng],{icon:gi}).addTo(map);m.on('click',()=>showJ(j));mk[j.id]=m;});
+JOBS.forEach(j=>{const m=L.marker([j.lat,j.lng],{icon:gi}).addTo(map);m.on('click',()=>showJ(j));mk[j.id]=m;});
+
 window.filt=()=>{
   const q=document.getElementById('sQ').value.toLowerCase(),c=document.getElementById('sCefr').value,t=document.getElementById('sType').value;
-  const r=POIST.demoJobs.filter(j=>(!q||j.title.toLowerCase().includes(q)||j.org.toLowerCase().includes(q)||j.location.toLowerCase().includes(q))&&(!c||j.cefr===c)&&(!t||j.type===t));
-  document.getElementById('jCnt').textContent=`${r.length} Irish language jobs`;renderL(r);};
-function renderL(jobs){document.getElementById('jList').innerHTML=jobs.map(j=>`<div class="job-card ${activeJ===j.id?'sel':''}" onclick="showJ(POIST.demoJobs.find(x=>x.id===${j.id}))"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.3rem;"><div style="font-weight:700;font-size:.9rem;color:var(--teal);flex:1;">${j.title}</div>${POIST.cefrBadge(j.cefr)}</div><div style="font-size:.82rem;font-weight:500;margin-bottom:.15rem;">${j.org}</div><div style="font-size:.78rem;color:var(--gray);display:flex;gap:.6rem;align-items:center;">📍 ${j.location}<span class="badge badge-gray">${j.type}</span><span style="margin-left:auto;">${j.posted}</span></div></div>`).join('');}
-window.showJ=(j)=>{activeJ=j.id;map.setView([j.lat,j.lng],10);Object.values(mk).forEach(m=>m.setIcon(gi));mk[j.id].setIcon(ai);document.getElementById('jDetail').style.display='block';const loggedIn=!!POIST.getUser();document.getElementById('jDContent').innerHTML=`<div style="font-weight:700;font-size:1rem;color:var(--teal);margin-bottom:.2rem;padding-right:1.5rem;">${j.title}</div><div style="font-size:.85rem;font-weight:600;margin-bottom:.15rem;">${j.org}</div><div style="font-size:.8rem;color:var(--gray);margin-bottom:.8rem;">📍 ${j.location} · ${j.type} · ${j.posted}</div><div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.8rem;">${POIST.cefrBadge(j.cefr)}<span class="badge badge-teal">${j.sector}</span></div><p style="font-size:.82rem;color:var(--gray);line-height:1.6;margin-bottom:1rem;">${j.desc}</p>${loggedIn?`<button class="btn btn-primary btn-lg" style="width:100%;justify-content:center;" onclick="POIST.toast('Application submitted!');closeD();">Apply Now →</button>`:`<a href="register-candidate.html" class="btn btn-teal btn-lg" style="width:100%;justify-content:center;display:flex;">Create free profile to apply →</a>`}`;renderL(POIST.demoJobs);};
+  const r=JOBS.filter(j=>(!q||j.title.toLowerCase().includes(q)||j.org.toLowerCase().includes(q)||j.location.toLowerCase().includes(q))&&(!c||j.cefr===c)&&(!t||j.type===t));
+  document.getElementById('jCnt').textContent=`${r.length} Irish language jobs`;
+  renderL(r);
+};
+
+function renderL(jobs){
+  document.getElementById('jList').innerHTML=jobs.map(j=>`
+    <div class="job-card ${activeJ===j.id?'sel':''}" onclick="showJ(JOBS.find(x=>x.id===${j.id}))">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.3rem;">
+        <div style="font-weight:700;font-size:.9rem;color:var(--teal);flex:1;">${j.title}</div>
+        ${cefrBadge(j.cefr)}
+      </div>
+      <div style="font-size:.82rem;font-weight:500;margin-bottom:.15rem;">${j.org}</div>
+      <div style="font-size:.78rem;color:var(--gray);display:flex;gap:.6rem;align-items:center;">
+        📍 ${j.location}
+        <span class="badge badge-gray">${j.type}</span>
+        <span style="margin-left:auto;">${j.posted}</span>
+      </div>
+    </div>`).join('');
+}
+
+window.showJ=(j)=>{
+  activeJ=j.id;
+  map.setView([j.lat,j.lng],10);
+  Object.values(mk).forEach(m=>m.setIcon(gi));
+  mk[j.id].setIcon(ai);
+  document.getElementById('jDetail').style.display='block';
+  document.getElementById('jDContent').innerHTML=`
+    <div style="font-weight:700;font-size:1rem;color:var(--teal);margin-bottom:.2rem;padding-right:1.5rem;">${j.title}</div>
+    <div style="font-size:.85rem;font-weight:600;margin-bottom:.15rem;">${j.org}</div>
+    <div style="font-size:.8rem;color:var(--gray);margin-bottom:.8rem;">📍 ${j.location} · ${j.type} · ${j.posted}</div>
+    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.8rem;">
+      ${cefrBadge(j.cefr)}
+      <span class="badge badge-teal">${j.sector}</span>
+    </div>
+    <p style="font-size:.82rem;color:var(--gray);line-height:1.6;margin-bottom:1rem;">${j.desc}</p>
+    <!-- FIX: Both buttons go to job.html?id= for full spec -->
+    <a href="job.html?id=${j.id}" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;display:flex;margin-bottom:.5rem;">View Full Role →</a>
+    <a href="job.html?id=${j.id}" class="btn btn-teal btn-lg" style="width:100%;justify-content:center;display:flex;">Apply Now →</a>
+  `;
+  renderL(JOBS);
+};
+
 window.closeD=()=>{document.getElementById('jDetail').style.display='none';activeJ=null;};
 filt();
+
+// Pre-select job if arriving from a direct link with ?highlight=id
+const urlP=new URLSearchParams(window.location.search);
+const hId=urlP.get('highlight');
+if(hId){const j=JOBS.find(x=>x.id===parseInt(hId));if(j)setTimeout(()=>showJ(j),400);}
 
 </script>
 </body>
