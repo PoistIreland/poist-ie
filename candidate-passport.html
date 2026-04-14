@@ -27,28 +27,17 @@ input,select,textarea{font-family:'DM Sans',sans-serif;}
 .btn-outline:hover{background:var(--teal-light);}
 .btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--gray);}
 .btn-ghost:hover{border-color:var(--dark);color:var(--dark);}
+.btn-danger{background:#fef2f2;border:1.5px solid #fecaca;color:var(--red);}
+.btn-danger:hover{background:#fee2e2;}
 .btn-lg{padding:0.8rem 1.8rem;font-size:1rem;border-radius:10px;}
 .form-group{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:1rem;}
 .form-label{font-size:0.85rem;font-weight:600;color:var(--dark);}
-.form-input{padding:0.65rem 0.9rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.9rem;color:var(--dark);background:var(--white);transition:border-color 0.18s;outline:none;width:100%;}
+.form-input{padding:0.65rem 0.9rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.9rem;color:var(--dark);background:var(--white);transition:border-color 0.18s;outline:none;}
 .form-input:focus{border-color:var(--teal);}
 .form-hint{font-size:0.78rem;color:var(--gray);}
 select.form-input{cursor:pointer;}
-.badge-green{background:#dcfce7;color:var(--green);}
-.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
-.section-hdr h2{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;}
-.verified{display:inline-flex;align-items:center;gap:0.3rem;background:#E8F5F3;color:var(--teal);font-size:0.72rem;font-weight:600;padding:0.18rem 0.55rem;border-radius:4px;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-@keyframes slideIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
-.fade-in{animation:fadeIn 0.3s ease both;}
-/* Loading */
-#loadingScreen{position:fixed;inset:0;background:var(--cream);display:flex;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:1rem;}
-.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin 0.8s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-/* Passport-specific */
 .cefr-option{border:1.5px solid var(--border);border-radius:8px;padding:.6rem;cursor:pointer;font-weight:700;font-size:.9rem;color:var(--gray);transition:all .15s;text-align:center;background:var(--white);}
 .cefr-option.sel{border-color:var(--teal);background:var(--teal-light);color:var(--teal);}
-.cefr-option:hover{border-color:var(--teal-mid);}
 .skill-chip{background:var(--teal-light);color:var(--teal);padding:.28rem .65rem;border-radius:6px;font-size:.8rem;font-weight:600;display:inline-flex;align-items:center;gap:.3rem;}
 .skill-chip button{background:none;border:none;cursor:pointer;color:var(--teal);font-size:.95rem;padding:0;line-height:1;}
 .progress-bar{height:7px;background:var(--border);border-radius:4px;overflow:hidden;}
@@ -56,212 +45,190 @@ select.form-input{cursor:pointer;}
 .cefr-scale{display:flex;gap:3px;}
 .cefr-pip{flex:1;height:6px;border-radius:3px;background:#E5E7EB;}
 .cefr-pip.on{background:var(--gold);}
-/* Upload zone */
-.upload-zone{border:2px dashed var(--border);border-radius:10px;padding:1.2rem;text-align:center;cursor:pointer;transition:all .2s;}
-.upload-zone:hover,.upload-zone.drag{border-color:var(--teal);background:var(--teal-light);}
-.upload-zone input[type=file]{display:none;}
+/* Recording UI */
+.rec-idle{display:flex;align-items:center;gap:.6rem;}
+.rec-active{display:flex;align-items:center;gap:.6rem;}
+.rec-dot{width:10px;height:10px;border-radius:50%;background:var(--red);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+#loading-screen{position:fixed;inset:0;background:var(--cream);display:flex;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:1rem;}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
+.fade-in{animation:fadeIn 0.3s ease both;}
 @media(max-width:768px){.two-col{grid-template-columns:1fr!important;}}
 </style>
 </head>
 <body>
 
-<div id="loadingScreen">
+<div id="loading-screen">
   <div class="spinner"></div>
-  <div style="font-size:0.88rem;color:var(--gray);">Loading your passport…</div>
+  <span style="font-size:0.9rem;color:var(--gray);">Loading passport…</span>
 </div>
 
 <div class="app-shell" id="shell" style="display:none;"></div>
 
 <script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-const SUPABASE_URL      = 'https://kpfshjarepmazrgzffot.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwZnNoamFyZXBtYXpyZ3pmZm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM1OTkwMzMsImV4cCI6MjA1OTE3NTAzM30.6nMCmXFzKGJMOliGBMMO3MBoQYPTVBjCkN17xLc7tko';
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_URL = 'https://kpfshjarepmazrgzffot.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwZnNoamFyZXBtYXpyZ3pmZm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2MDI1NTUsImV4cCI6MjA1OTE3ODU1NX0.pjCXFhFHMl0A5XFM1KGQdEBQ_WmFAz_of0VdvXfJ_5k';
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-const LEVELS   = ['A1','A2','B1','B2','C1','C2'];
+const LEVELS = ['A1','A2','B1','B2','C1','C2'];
 const COUNTIES = ['Antrim','Armagh','Carlow','Cavan','Clare','Cork','Derry','Donegal','Down','Dublin','Fermanagh','Galway','Kerry','Kildare','Kilkenny','Laois','Leitrim','Limerick','Longford','Louth','Mayo','Meath','Monaghan','Offaly','Roscommon','Sligo','Tipperary','Tyrone','Waterford','Westmeath','Wexford','Wicklow'];
 
-// ── Mutable state (populated from Supabase) ───────────────────────────────────
-let userId    = null;
-let passport  = {
-  full_name:       '',
-  email:           '',
-  county:          '',
-  cefr_level:      'B1',
-  profile_type:    'active',
-  bio:             '',
-  skills:          [],
-  available_from:  '',
-  speaking_clip_url: null,
+// State
+let profile = {};       // from Supabase candidates row
+let userId = null;
+let pendingClipBlob = null;   // recorded audio not yet uploaded
+let existingClipUrl = null;   // already on Supabase storage
+
+// ── Helpers ────────────────────────────────────────────
+const logo = (dark=false) => `<a href="index.html" style="text-decoration:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.65rem;letter-spacing:-0.03em;background:linear-gradient(90deg,${dark?'rgba(255,255,255,0.9),rgba(255,255,255,0.6)':'#0f5a51,#2a9d8f'});-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">poist.ie</a>`;
+
+const toast = (msg, type='success') => {
+  const el = document.createElement('div');
+  const bg = type==='success'?'#1A7A6E':type==='error'?'#dc2626':'#1A1A2E';
+  el.style.cssText = `position:fixed;bottom:1.5rem;right:1.5rem;background:${bg};color:#fff;padding:0.8rem 1.3rem;border-radius:10px;font-size:0.9rem;font-weight:500;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.2);animation:slideIn 0.3s ease;`;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3500);
 };
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function toast(msg, type = 'success') {
-  const t = document.createElement('div');
-  const bg = type === 'success' ? '#1A7A6E' : type === 'error' ? '#dc2626' : '#1A1A2E';
-  t.style.cssText = `position:fixed;bottom:1.5rem;right:1.5rem;background:${bg};color:#fff;padding:0.8rem 1.3rem;border-radius:10px;font-size:0.9rem;font-weight:500;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.2);animation:slideIn 0.3s ease;`;
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 3500);
-}
-
-function logout() {
-  supabase.auth.signOut().then(() => { window.location.href = 'login.html'; });
-}
+const sidebar = () => `
+  <aside style="width:220px;min-height:100vh;background:#0f5a51;display:flex;flex-direction:column;flex-shrink:0;">
+    <div style="padding:1.4rem 1.2rem 1rem;border-bottom:1px solid rgba(255,255,255,0.1);">${logo(true)}</div>
+    <nav style="padding:0.8rem 0;flex:1;">
+      ${[
+        {href:'candidate-dashboard.html',icon:'⊞',label:'Dashboard'},
+        {href:'candidate-jobs.html',icon:'🔍',label:'Find Jobs'},
+        {href:'candidate-passport.html',icon:'📋',label:'My Passport',active:true},
+      ].map(l=>`
+        <a href="${l.href}" style="display:flex;align-items:center;gap:0.7rem;padding:0.7rem 1.2rem;text-decoration:none;font-size:0.92rem;font-weight:500;transition:background 0.15s;${l.active?'background:rgba(255,255,255,0.15);color:#fff;':'color:rgba(255,255,255,0.7);'}"
+           onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='${l.active?'rgba(255,255,255,0.15)':'transparent'}'">
+          <span style="font-size:1rem;width:20px;text-align:center;">${l.icon}</span>${l.label}
+        </a>`).join('')}
+    </nav>
+    <div style="padding:1rem 1.2rem;border-top:1px solid rgba(255,255,255,0.1);">
+      <button id="signout-btn" style="background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.7);padding:0.5rem 1rem;border-radius:6px;cursor:pointer;font-size:0.85rem;width:100%;text-align:left;">← Sign out</button>
+    </div>
+  </aside>`;
 
 function calcPct() {
   let s = 0;
-  if (passport.cefr_level)          s += 25;
-  if (passport.bio?.trim())          s += 20;
-  if ((passport.skills||[]).length >= 2) s += 20;
-  if (passport.county)               s += 15;
-  if (passport.profile_type)         s += 10;
-  if (passport.speaking_clip_url)    s += 10;
-  return Math.min(s, 100);
+  if (profile.cefr_level) s += 30;
+  if (profile.bio) s += 20;
+  if ((profile.skills||[]).length >= 2) s += 20;
+  if (profile.county) s += 15;
+  if (profile.profile_type) s += 15;
+  return s;
 }
 
-function cefrIndex(l) { return LEVELS.indexOf(l); }
-
-function renderPassportCard() {
-  const pct   = calcPct();
-  const irish = passport.cefr_level || 'B1';
-  const skills = (passport.skills || []);
-  return `
-    <div class="card" style="background:linear-gradient(145deg,var(--teal-dark),var(--teal));color:#fff;border:none;">
-      <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem;">
-        <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">👤</div>
-        <div>
-          <div style="font-family:'Syne',sans-serif;font-weight:700;">${passport.full_name || 'Your Name'}</div>
-          <div id="pvSub" style="font-size:.78rem;opacity:.7;">${passport.profile_type === 'active' ? 'Actively looking' : 'Open to offers'} · ${passport.county || 'County'}</div>
-        </div>
-      </div>
-      <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;opacity:.55;margin-bottom:.4rem;">Language Passport · poist.ie</div>
-
-      <!-- Irish CEFR -->
-      <div style="background:rgba(255,255,255,.13);border-radius:7px;padding:.75rem 1rem;margin-bottom:.7rem;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;font-size:.83rem;font-weight:600;">
-          Irish (Gaeilge)
-          <span id="pvIrishBadge" style="background:var(--gold);color:var(--dark);padding:.12rem .45rem;border-radius:4px;font-size:.7rem;font-weight:700;">${irish}</span>
-        </div>
-        <div class="cefr-scale" id="pvIrishScale">
-          ${LEVELS.map(l => `<div class="cefr-pip ${cefrIndex(l) <= cefrIndex(irish) ? 'on' : ''}"></div>`).join('')}
-        </div>
-        <div style="display:flex;justify-content:space-between;margin-top:.3rem;">
-          ${LEVELS.map(l => `<span style="font-size:.6rem;opacity:.55;">${l}</span>`).join('')}
-        </div>
-      </div>
-
-      <!-- Skills preview -->
-      <div id="pvSkills" style="display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.8rem;">
-        ${skills.length ? skills.map(s => `<span style="background:rgba(255,255,255,.15);border-radius:5px;padding:.2rem .5rem;font-size:.7rem;">${s}</span>`).join('') : '<span style="font-size:.75rem;opacity:.5;">Add skills below</span>'}
-      </div>
-
-      <!-- Speaking clip indicator -->
-      <div id="pvAudio" style="margin-bottom:.8rem;"></div>
-
-      <!-- Verified badge -->
-      <div style="display:inline-flex;align-items:center;gap:.3rem;background:rgba(245,197,24,.2);border:1px solid rgba(245,197,24,.35);color:var(--gold);padding:.25rem .6rem;border-radius:100px;font-size:.68rem;font-weight:600;">
-        ✓ Official Irish Candidate Verified
-      </div>
-
-      <!-- Completion bar -->
-      <div style="margin-top:1rem;">
-        <div style="display:flex;justify-content:space-between;font-size:.72rem;opacity:.7;margin-bottom:.3rem;">
-          <span>Passport completion</span>
-          <span id="pvPct">${pct}%</span>
-        </div>
-        <div style="height:5px;background:rgba(255,255,255,.2);border-radius:3px;">
-          <div id="pvPctBar" style="height:100%;width:${pct}%;background:var(--gold);border-radius:3px;transition:width .4s;"></div>
-        </div>
-      </div>
-    </div>`;
+function cefrPips(level) {
+  return LEVELS.map(l => `<div class="cefr-pip ${LEVELS.indexOf(l) <= LEVELS.indexOf(level) ? 'on' : ''}"></div>`).join('');
 }
 
-function renderSidebar() {
-  return `
-    <aside style="width:220px;min-height:100vh;background:#0f5a51;display:flex;flex-direction:column;flex-shrink:0;">
-      <div style="padding:1.4rem 1.2rem 1rem;border-bottom:1px solid rgba(255,255,255,0.1);">
-        <a href="index.html" style="text-decoration:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.65rem;letter-spacing:-0.03em;background:linear-gradient(90deg,rgba(255,255,255,0.9),rgba(255,255,255,0.6));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">poist.ie</a>
-      </div>
-      <nav style="padding:0.8rem 0;flex:1;">
-        ${[
-          { href:'candidate-dashboard.html', icon:'⊞', label:'Dashboard' },
-          { href:'candidate-jobs.html',      icon:'🔍', label:'Find Jobs' },
-          { href:'candidate-passport.html',  icon:'📋', label:'My Passport', active:true },
-        ].map(l => `
-          <a href="${l.href}" style="display:flex;align-items:center;gap:0.7rem;padding:0.7rem 1.2rem;text-decoration:none;font-size:0.92rem;font-weight:500;transition:background 0.15s;${l.active ? 'background:rgba(255,255,255,0.15);color:#fff;' : 'color:rgba(255,255,255,0.7);'}"
-             onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='${l.active ? 'rgba(255,255,255,0.15)' : 'transparent'}'">
-            <span style="font-size:1rem;width:20px;text-align:center;">${l.icon}</span>${l.label}
-          </a>`).join('')}
-      </nav>
-      <div style="padding:1rem 1.2rem;border-top:1px solid rgba(255,255,255,0.1);">
-        <button onclick="window._poistLogout()" style="background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.7);padding:0.5rem 1rem;border-radius:6px;cursor:pointer;font-size:0.85rem;width:100%;text-align:left;">← Sign out</button>
-      </div>
-    </aside>`;
-}
-
-function renderTopBar(name) {
-  return `
-    <div style="height:60px;background:#fff;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;flex-shrink:0;">
-      <h1 style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#1A1A2E;">My Language Passport</h1>
-      <div style="display:flex;align-items:center;gap:0.8rem;">
-        <div style="width:32px;height:32px;border-radius:50%;background:#E8F5F3;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">👤</div>
-        <span style="font-size:0.88rem;font-weight:500;color:#374151;">${name || 'Candidate'}</span>
-      </div>
-    </div>`;
-}
-
-// ── Render the full page into #shell ─────────────────────────────────────────
-
+// ── Render full page ───────────────────────────────────
 function renderPage() {
-  document.getElementById('shell').innerHTML = `
-    ${renderSidebar()}
-    <div class="main-area">
-      ${renderTopBar(passport.full_name)}
-      <div class="page-content fade-in">
-        <div style="max-width:900px;margin:0 auto;">
+  const pct = calcPct();
+  const skills = profile.skills || [];
 
-          <!-- Completion bar -->
+  document.getElementById('shell').innerHTML = `
+    ${sidebar()}
+    <div class="main-area">
+      <div style="height:60px;background:#fff;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;flex-shrink:0;">
+        <h1 style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;">My Language Passport</h1>
+        <div style="display:flex;align-items:center;gap:0.8rem;">
+          <div style="width:32px;height:32px;border-radius:50%;background:#E8F5F3;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">👤</div>
+          <span style="font-size:0.88rem;font-weight:500;color:#374151;">${profile.full_name||'Candidate'}</span>
+        </div>
+      </div>
+      <div class="page-content fade-in">
+        <div style="max-width:860px;margin:0 auto;">
+
+          <!-- Progress bar -->
           <div class="card" style="margin-bottom:1.2rem;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem;">
               <span style="font-weight:600;font-size:.9rem;">Passport completion</span>
-              <span id="pctLbl" style="font-family:'Syne',sans-serif;font-weight:800;color:var(--teal);">${calcPct()}%</span>
+              <span id="pctLbl" style="font-family:'Syne',sans-serif;font-weight:800;color:var(--teal);">${pct}%</span>
             </div>
-            <div class="progress-bar"><div class="progress-fill" id="pFill" style="width:${calcPct()}%"></div></div>
-            <p style="font-size:.82rem;color:var(--gray);margin-top:.5rem;">A complete passport gets 3× more employer views. Add a speaking clip to reach 100%.</p>
+            <div class="progress-bar"><div class="progress-fill" id="pFill" style="width:${pct}%"></div></div>
+            <p style="font-size:.82rem;color:var(--gray);margin-top:.5rem;">A complete passport gets 3× more employer views.</p>
           </div>
 
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;" class="two-col">
 
-            <!-- LEFT: Passport preview card (live updates) -->
-            <div id="passportPreview">
-              ${renderPassportCard()}
+            <!-- Passport preview card -->
+            <div>
+              <div class="card" style="background:linear-gradient(145deg,var(--teal-dark),var(--teal));color:#fff;border:none;">
+                <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem;">
+                  <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">👤</div>
+                  <div>
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;" id="pvName">${profile.full_name||'Your Name'}</div>
+                    <div id="pvSub" style="font-size:.78rem;opacity:.7;">${profile.profile_type||'Add role'} · ${profile.county||'Add county'}</div>
+                  </div>
+                </div>
+                <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;opacity:.55;margin-bottom:.4rem;">Language Passport · poist.ie</div>
+
+                <!-- Irish CEFR -->
+                <div style="background:rgba(255,255,255,.13);border-radius:7px;padding:.75rem 1rem;margin-bottom:.7rem;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;font-size:.83rem;font-weight:600;">
+                    Irish
+                    <span id="pvIrish" style="background:var(--gold);color:var(--dark);padding:.12rem .45rem;border-radius:4px;font-size:.7rem;font-weight:700;">${profile.cefr_level||'—'}</span>
+                  </div>
+                  <div class="cefr-scale" id="pvIrishScale">${cefrPips(profile.cefr_level||'A1')}</div>
+                  <div style="display:flex;justify-content:space-between;margin-top:.3rem;">${LEVELS.map(l=>`<span style="font-size:.6rem;opacity:.55;">${l}</span>`).join('')}</div>
+                </div>
+
+                <!-- Skills -->
+                <div id="pvSkills" style="display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.8rem;">
+                  ${skills.map(s=>`<span style="background:rgba(255,255,255,.15);border-radius:5px;padding:.2rem .5rem;font-size:.7rem;">${s}</span>`).join('')}
+                </div>
+
+                <!-- Speaking clip display -->
+                <div id="pvAudio" style="margin-bottom:.8rem;">
+                  ${existingClipUrl
+                    ? `<div style="background:rgba(255,255,255,.12);border-radius:8px;padding:.55rem .8rem;">
+                         <div style="font-size:.65rem;opacity:.55;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;">Speaking sample</div>
+                         <audio controls style="width:100%;height:28px;" src="${existingClipUrl}"></audio>
+                       </div>`
+                    : `<div style="font-size:.72rem;color:rgba(255,255,255,.5);font-style:italic;">No speaking sample yet — record below</div>`
+                  }
+                </div>
+
+                <div style="display:inline-flex;align-items:center;gap:.3rem;background:rgba(245,197,24,.2);border:1px solid rgba(245,197,24,.35);color:var(--gold);padding:.25rem .6rem;border-radius:100px;font-size:.68rem;font-weight:600;">✓ Official Irish Candidate · poist.ie</div>
+              </div>
             </div>
 
-            <!-- RIGHT: Edit forms -->
+            <!-- Edit panels -->
             <div style="display:flex;flex-direction:column;gap:.9rem;">
 
-              <!-- Irish CEFR -->
+              <!-- Irish proficiency -->
               <div class="card">
-                <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.9rem;">Irish proficiency (Gaeilge)</h3>
+                <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.9rem;">Irish proficiency</h3>
                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;" id="irishGrid">
-                  ${LEVELS.map(l => `<button class="cefr-option ${passport.cefr_level === l ? 'sel' : ''}" onclick="window._setCefr('${l}')">${l}</button>`).join('')}
+                  ${LEVELS.map(l=>`<button class="cefr-option ${profile.cefr_level===l?'sel':''}" data-level="${l}" data-grid="irishGrid" data-prop="cefr_level">${l}</button>`).join('')}
                 </div>
-                <p class="form-hint" style="margin-top:.5rem;">Select your honest current level — employers filter by this.</p>
               </div>
 
-              <!-- Profile type -->
+              <!-- Profile details -->
               <div class="card">
-                <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.8rem;">Availability</h3>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;">
-                  <button class="cefr-option ${passport.profile_type === 'active' ? 'sel' : ''}" onclick="window._setType('active')">🔍 Actively looking</button>
-                  <button class="cefr-option ${passport.profile_type === 'passive' ? 'sel' : ''}" onclick="window._setType('passive')">📬 Open to offers</button>
+                <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.8rem;">Profile details</h3>
+                <div class="form-group">
+                  <label class="form-label">Role / job title</label>
+                  <input type="text" id="profileType" class="form-input" value="${profile.profile_type||''}" placeholder="e.g. Irish Language Officer">
                 </div>
-                <div class="form-group" style="margin-top:.8rem;margin-bottom:0;">
-                  <label class="form-label">Available from</label>
-                  <input type="date" id="availFrom" class="form-input" value="${passport.available_from || ''}" oninput="window._setField('available_from', this.value)">
+                <div class="form-group">
+                  <label class="form-label">County</label>
+                  <select id="countysel" class="form-input">
+                    <option value="">Select county…</option>
+                    ${COUNTIES.map(c=>`<option value="${c}" ${profile.county===c?'selected':''}>${c}</option>`).join('')}
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label">Short bio</label>
+                  <textarea id="bio" class="form-input" rows="3" placeholder="Tell employers about yourself…">${profile.bio||''}</textarea>
                 </div>
               </div>
 
@@ -269,51 +236,56 @@ function renderPage() {
               <div class="card">
                 <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.8rem;">Skills</h3>
                 <div id="skillsDisplay" style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.8rem;">
-                  ${(passport.skills || []).map((s, i) => `<span class="skill-chip">${s}<button onclick="window._removeSkill(${i})">×</button></span>`).join('') || '<span style="font-size:.82rem;color:var(--gray);">No skills added yet</span>'}
+                  ${skills.map((s,i)=>`<span class="skill-chip">${s}<button data-skill-index="${i}">×</button></span>`).join('')}
                 </div>
                 <div style="display:flex;gap:.5rem;">
-                  <input type="text" id="skillInput" class="form-input" placeholder="Add a skill…" style="flex:1;" onkeydown="if(event.key==='Enter'){window._addSkill();}">
-                  <button class="btn btn-teal" onclick="window._addSkill()">Add</button>
+                  <input type="text" id="skillInput" class="form-input" placeholder="Add a skill…" style="flex:1;">
+                  <button class="btn btn-teal" id="addSkillBtn">Add</button>
                 </div>
                 <p class="form-hint" style="margin-top:.4rem;">e.g. Public Speaking, Teaching, Policy, Content Writing</p>
               </div>
 
-              <!-- Profile details -->
+              <!-- Speaking clip recorder -->
               <div class="card">
-                <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.8rem;">Profile details</h3>
-                <div class="form-group">
-                  <label class="form-label">Full name</label>
-                  <input type="text" id="fullName" class="form-input" value="${passport.full_name || ''}" oninput="window._setField('full_name', this.value)">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">County</label>
-                  <select id="countysel" class="form-input" onchange="window._setField('county', this.value)">
-                    <option value="">Select county…</option>
-                    ${COUNTIES.map(c => `<option value="${c}" ${passport.county === c ? 'selected' : ''}>${c}</option>`).join('')}
-                  </select>
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                  <label class="form-label">Short bio</label>
-                  <textarea id="bio" class="form-input" rows="3" placeholder="A sentence or two about your background and what you're looking for…" oninput="window._setField('bio', this.value)">${passport.bio || ''}</textarea>
-                </div>
-              </div>
+                <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.4rem;">Speaking sample</h3>
+                <p style="font-size:.82rem;color:var(--gray);margin-bottom:.9rem;">Record a 30–60 second clip speaking Irish. Saved with your passport when you click Save.</p>
 
-              <!-- Speaking clip upload -->
-              <div class="card">
-                <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.3rem;">🎤 Speaking clip</h3>
-                <p class="form-hint" style="margin-bottom:.9rem;">Upload a 30–60 second audio clip in Irish. Employers can listen before contacting you. MP3 or M4A, max 10MB.</p>
-                <div id="clipStatus">${renderClipStatus()}</div>
-                <div class="upload-zone" id="uploadZone" onclick="document.getElementById('clipFileInput').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="event.preventDefault();this.classList.remove('drag');window._handleClipDrop(event)">
-                  <input type="file" id="clipFileInput" accept="audio/mp3,audio/mpeg,audio/m4a,audio/mp4,audio/*" onchange="window._uploadClip(this.files[0])">
-                  <div style="font-size:1.5rem;margin-bottom:.4rem;">🎙️</div>
-                  <div style="font-weight:600;font-size:.88rem;margin-bottom:.2rem;">Click to upload or drag & drop</div>
-                  <div style="font-size:.78rem;color:var(--gray);">MP3 / M4A · max 10MB</div>
+                <div id="recPrompt" style="background:var(--teal-light);border-radius:8px;padding:.75rem 1rem;margin-bottom:.9rem;font-size:.85rem;color:var(--teal);">
+                  <strong>Prompt:</strong> Déan cur síos ort féin agus mínigh cén fáth a bhfuil tú ag lorg poist le Gaeilge.
+                  <div style="font-size:.75rem;opacity:.7;margin-top:.25rem;">(Describe yourself and explain why you are looking for a job through Irish.)</div>
+                </div>
+
+                <div id="recControls">
+                  <!-- Idle state -->
+                  <div id="recIdle">
+                    <button class="btn btn-teal" id="startRecBtn">🎤 Start Recording</button>
+                    ${pendingClipBlob
+                      ? `<span style="font-size:.8rem;color:var(--teal);margin-left:.7rem;">✓ New recording ready to save</span>`
+                      : existingClipUrl
+                        ? `<span style="font-size:.8rem;color:var(--gray);margin-left:.7rem;">Existing sample on file — record to replace</span>`
+                        : ''
+                    }
+                  </div>
+                  <!-- Active recording state (hidden by default) -->
+                  <div id="recActive" style="display:none;align-items:center;gap:.8rem;">
+                    <div class="rec-dot"></div>
+                    <span style="font-size:.88rem;font-weight:600;color:var(--red);">Recording…</span>
+                    <span id="recTimer" style="font-size:.85rem;color:var(--gray);">0:00</span>
+                    <button class="btn btn-danger" id="stopRecBtn">⏹ Stop</button>
+                  </div>
+                </div>
+
+                <!-- Playback (shown after recording) -->
+                <div id="recPlayback" style="display:${pendingClipBlob?'block':'none'};margin-top:.8rem;">
+                  <audio id="recAudio" controls style="width:100%;height:32px;"></audio>
+                  <button class="btn btn-ghost" id="discardRecBtn" style="margin-top:.5rem;font-size:.8rem;">✕ Discard & re-record</button>
                 </div>
               </div>
 
               <!-- Actions -->
-              <button class="btn btn-teal btn-lg" id="saveBtn" onclick="window._savePassport()" style="justify-content:center;">💾 Save Passport</button>
               <a href="assessment.html" class="btn btn-primary btn-lg" style="justify-content:center;display:flex;">🎯 Take Language Assessment →</a>
+              <button class="btn btn-teal btn-lg" id="saveBtn" style="justify-content:center;">💾 Save Passport</button>
+              <div id="saveStatus" style="text-align:center;font-size:.82rem;color:var(--gray);min-height:1.2rem;"></div>
 
             </div>
           </div>
@@ -321,251 +293,277 @@ function renderPage() {
       </div>
     </div>`;
 
-  // Expose toast globally (used by inline onclick)
-  window.toast = toast;
-  renderAudioPreview();
+  bindEvents();
 }
 
-// ── Speaking clip helpers ─────────────────────────────────────────────────────
-
-function renderClipStatus() {
-  if (!passport.speaking_clip_url) return '';
-  return `
-    <div style="background:var(--teal-light);border:1px solid rgba(26,122,110,.2);border-radius:8px;padding:.7rem .9rem;margin-bottom:.8rem;display:flex;align-items:center;justify-content:space-between;gap:.8rem;">
-      <div style="display:flex;align-items:center;gap:.5rem;">
-        <span style="color:var(--teal);">✓</span>
-        <span style="font-size:.85rem;font-weight:600;color:var(--teal);">Speaking clip uploaded</span>
-      </div>
-      <button onclick="window._removeClip()" style="background:none;border:none;cursor:pointer;font-size:.78rem;color:var(--gray);text-decoration:underline;">Remove</button>
-    </div>`;
-}
-
-function renderAudioPreview() {
-  const el = document.getElementById('pvAudio');
-  if (!el) return;
-  if (!passport.speaking_clip_url) {
-    el.innerHTML = '<span style="font-size:.72rem;opacity:.6;">No speaking clip yet — add one for +10%</span>';
-    return;
-  }
-  el.innerHTML = `
-    <div style="background:rgba(255,255,255,.12);border-radius:8px;padding:.55rem .8rem;">
-      <div style="font-size:.65rem;opacity:.55;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;">Speaking sample</div>
-      <audio controls style="width:100%;height:28px;" src="${passport.speaking_clip_url}"></audio>
-    </div>`;
-}
-
-// ── Reactive update helpers (called from onclick) ─────────────────────────────
-
-window._setCefr = (level) => {
-  passport.cefr_level = level;
-  document.querySelectorAll('#irishGrid .cefr-option').forEach(b => b.classList.remove('sel'));
-  event.target.classList.add('sel');
-  updatePreviews();
-};
-
-window._setType = (type) => {
-  passport.profile_type = type;
-  document.querySelectorAll('.cefr-option').forEach(b => {
-    if (b.textContent.includes('looking') || b.textContent.includes('offers')) b.classList.remove('sel');
+// ── Event bindings ─────────────────────────────────────
+function bindEvents() {
+  // Sign out
+  document.getElementById('signout-btn').addEventListener('click', async () => {
+    await sb.auth.signOut();
+    window.location.href = 'login.html';
   });
-  event.target.classList.add('sel');
-  updatePreviews();
-};
 
-window._setField = (prop, val) => {
-  passport[prop] = val;
-  updatePreviews();
-};
+  // CEFR buttons
+  document.querySelectorAll('[data-prop]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const prop = btn.dataset.prop;
+      const grid = btn.dataset.grid;
+      profile[prop] = btn.dataset.level;
+      document.querySelectorAll(`#${grid} .cefr-option`).forEach(b => b.classList.remove('sel'));
+      btn.classList.add('sel');
+      updatePreviews();
+    });
+  });
 
-window._addSkill = () => {
+  // Live field sync
+  document.getElementById('profileType').addEventListener('input', e => { profile.profile_type = e.target.value; updatePreviews(); });
+  document.getElementById('countysel').addEventListener('change', e => { profile.county = e.target.value; updatePreviews(); });
+  document.getElementById('bio').addEventListener('input', e => { profile.bio = e.target.value; updatePreviews(); });
+
+  // Skills
+  document.getElementById('addSkillBtn').addEventListener('click', addSkill);
+  document.getElementById('skillInput').addEventListener('keydown', e => { if (e.key === 'Enter') addSkill(); });
+  document.getElementById('skillsDisplay').addEventListener('click', e => {
+    const btn = e.target.closest('[data-skill-index]');
+    if (btn) removeSkill(parseInt(btn.dataset.skillIndex));
+  });
+
+  // Recording
+  document.getElementById('startRecBtn').addEventListener('click', startRecording);
+  document.getElementById('stopRecBtn').addEventListener('click', stopRecording);
+  document.getElementById('discardRecBtn').addEventListener('click', discardRecording);
+
+  // Save
+  document.getElementById('saveBtn').addEventListener('click', savePassport);
+
+  // If we have a pending blob already (page re-render), set up audio src
+  if (pendingClipBlob) {
+    const url = URL.createObjectURL(pendingClipBlob);
+    document.getElementById('recAudio').src = url;
+  }
+}
+
+// ── Skills ─────────────────────────────────────────────
+function addSkill() {
   const inp = document.getElementById('skillInput');
   const s = inp.value.trim();
-  if (s && !(passport.skills || []).includes(s)) {
-    passport.skills = [...(passport.skills || []), s];
+  if (s && !(profile.skills||[]).includes(s)) {
+    profile.skills = [...(profile.skills||[]), s];
     inp.value = '';
-    refreshSkillsDisplay();
+    refreshSkillsUI();
     updatePreviews();
   }
-};
-
-window._removeSkill = (i) => {
-  passport.skills.splice(i, 1);
-  refreshSkillsDisplay();
-  updatePreviews();
-};
-
-function refreshSkillsDisplay() {
-  const el = document.getElementById('skillsDisplay');
-  if (!el) return;
-  el.innerHTML = (passport.skills || []).length
-    ? passport.skills.map((s, i) => `<span class="skill-chip">${s}<button onclick="window._removeSkill(${i})">×</button></span>`).join('')
-    : '<span style="font-size:.82rem;color:var(--gray);">No skills added yet</span>';
 }
 
+function removeSkill(i) {
+  profile.skills.splice(i, 1);
+  refreshSkillsUI();
+  updatePreviews();
+}
+
+function refreshSkillsUI() {
+  document.getElementById('skillsDisplay').innerHTML =
+    (profile.skills||[]).map((s,i) => `<span class="skill-chip">${s}<button data-skill-index="${i}">×</button></span>`).join('');
+  // Re-bind remove buttons
+  document.getElementById('skillsDisplay').querySelectorAll('[data-skill-index]').forEach(btn => {
+    btn.addEventListener('click', () => removeSkill(parseInt(btn.dataset.skillIndex)));
+  });
+}
+
+// ── Live preview updates ───────────────────────────────
 function updatePreviews() {
   const pct = calcPct();
-  // Top bar
-  const pctLbl = document.getElementById('pctLbl');
-  const pFill  = document.getElementById('pFill');
-  if (pctLbl) pctLbl.textContent = pct + '%';
-  if (pFill)  pFill.style.width  = pct + '%';
-  // Re-render passport card preview
-  const preview = document.getElementById('passportPreview');
-  if (preview) {
-    preview.innerHTML = renderPassportCard();
-    renderAudioPreview();
+  document.getElementById('pctLbl').textContent = pct + '%';
+  document.getElementById('pFill').style.width = pct + '%';
+  document.getElementById('pvSub').textContent = `${profile.profile_type||'Add role'} · ${profile.county||'Add county'}`;
+  document.getElementById('pvIrish').textContent = profile.cefr_level || '—';
+  document.getElementById('pvIrishScale').innerHTML = cefrPips(profile.cefr_level || 'A1');
+  document.getElementById('pvSkills').innerHTML =
+    (profile.skills||[]).map(s => `<span style="background:rgba(255,255,255,.15);border-radius:5px;padding:.2rem .5rem;font-size:.7rem;">${s}</span>`).join('');
+}
+
+// ── Recording ──────────────────────────────────────────
+let mediaRecorder = null;
+let recordedChunks = [];
+let timerInterval = null;
+let recordingSeconds = 0;
+
+async function startRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    recordedChunks = [];
+    recordingSeconds = 0;
+    mediaRecorder = new MediaRecorder(stream);
+
+    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+    mediaRecorder.onstop = () => {
+      stream.getTracks().forEach(t => t.stop());
+      const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+      pendingClipBlob = blob;
+
+      const url = URL.createObjectURL(blob);
+      const audioEl = document.getElementById('recAudio');
+      audioEl.src = url;
+
+      document.getElementById('recActive').style.display = 'none';
+      document.getElementById('recIdle').style.display = 'block';
+      document.getElementById('recPlayback').style.display = 'block';
+      document.getElementById('startRecBtn').textContent = '🎤 Re-record';
+      document.getElementById('startRecBtn').nextElementSibling && document.getElementById('startRecBtn').nextElementSibling.remove();
+      // Show pending indicator
+      const pending = document.createElement('span');
+      pending.style.cssText = 'font-size:.8rem;color:var(--teal);margin-left:.7rem;';
+      pending.textContent = '✓ New recording ready to save';
+      document.getElementById('recIdle').appendChild(pending);
+
+      clearInterval(timerInterval);
+    };
+
+    mediaRecorder.start(250);
+    document.getElementById('recIdle').style.display = 'none';
+    document.getElementById('recActive').style.display = 'flex';
+
+    timerInterval = setInterval(() => {
+      recordingSeconds++;
+      const m = Math.floor(recordingSeconds / 60);
+      const s = String(recordingSeconds % 60).padStart(2, '0');
+      document.getElementById('recTimer').textContent = `${m}:${s}`;
+      if (recordingSeconds >= 120) stopRecording(); // auto-stop at 2 min
+    }, 1000);
+
+  } catch (err) {
+    toast('Microphone access denied — please allow mic access and try again.', 'error');
   }
 }
 
-// ── Speaking clip upload to Supabase Storage ──────────────────────────────────
-
-window._handleClipDrop = (e) => {
-  const file = e.dataTransfer.files[0];
-  if (file) window._uploadClip(file);
-};
-
-window._uploadClip = async (file) => {
-  if (!file) return;
-  if (file.size > 10 * 1024 * 1024) { toast('File too large — max 10MB', 'error'); return; }
-
-  const zone = document.getElementById('uploadZone');
-  zone.innerHTML = `
-    <div style="font-size:1.2rem;margin-bottom:.3rem;">⏳</div>
-    <div style="font-weight:600;font-size:.85rem;">Uploading…</div>`;
-
-  const ext      = file.name.split('.').pop() || 'mp3';
-  const filePath = `${userId}/speaking-clip.${ext}`;
-
-  // Remove existing clip first (ignore error)
-  await supabase.storage.from('speaking-clips').remove([filePath]);
-
-  const { error: upErr } = await supabase.storage
-    .from('speaking-clips')
-    .upload(filePath, file, { upsert: true, contentType: file.type });
-
-  if (upErr) {
-    toast('Upload failed: ' + upErr.message, 'error');
-    zone.innerHTML = `
-      <div style="font-size:1.5rem;margin-bottom:.4rem;">🎙️</div>
-      <div style="font-weight:600;font-size:.88rem;margin-bottom:.2rem;">Click to upload or drag & drop</div>
-      <div style="font-size:.78rem;color:var(--gray);">MP3 / M4A · max 10MB</div>`;
-    return;
+function stopRecording() {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.stop();
   }
+  clearInterval(timerInterval);
+}
 
-  // Get public URL (bucket is private — use signed URL)
-  const { data: signedData } = await supabase.storage
-    .from('speaking-clips')
-    .createSignedUrl(filePath, 60 * 60 * 24 * 7); // 7-day signed URL
+function discardRecording() {
+  pendingClipBlob = null;
+  document.getElementById('recPlayback').style.display = 'none';
+  document.getElementById('recAudio').src = '';
+  document.getElementById('startRecBtn').textContent = '🎤 Start Recording';
+  // Remove pending indicator if present
+  const indicator = document.getElementById('recIdle').querySelector('span');
+  if (indicator) indicator.remove();
+}
 
-  const url = signedData?.signedUrl || null;
-
-  // Save URL to candidates table immediately
-  await supabase.from('candidates').update({ speaking_clip_url: url }).eq('id', userId);
-
-  passport.speaking_clip_url = url;
-  toast('Speaking clip uploaded! ✓');
-
-  // Refresh clip status area and re-render zone
-  document.getElementById('clipStatus').innerHTML = renderClipStatus();
-  zone.innerHTML = `
-    <div style="font-size:1.5rem;margin-bottom:.4rem;">🎙️</div>
-    <div style="font-weight:600;font-size:.88rem;margin-bottom:.2rem;">Click to replace clip</div>
-    <div style="font-size:.78rem;color:var(--gray);">MP3 / M4A · max 10MB</div>`;
-
-  updatePreviews();
-};
-
-window._removeClip = async () => {
-  if (!confirm('Remove your speaking clip?')) return;
-  await supabase.from('candidates').update({ speaking_clip_url: null }).eq('id', userId);
-  passport.speaking_clip_url = null;
-  document.getElementById('clipStatus').innerHTML = '';
-  updatePreviews();
-  toast('Speaking clip removed');
-};
-
-// ── Save passport to Supabase candidates table ────────────────────────────────
-
-window._savePassport = async () => {
+// ── Save passport ──────────────────────────────────────
+async function savePassport() {
   const btn = document.getElementById('saveBtn');
-  btn.textContent = 'Saving…';
+  const status = document.getElementById('saveStatus');
   btn.disabled = true;
+  btn.textContent = '💾 Saving…';
+  status.textContent = '';
 
-  const updates = {
-    full_name:         passport.full_name,
-    county:            passport.county,
-    cefr_level:        passport.cefr_level,
-    profile_type:      passport.profile_type,
-    bio:               passport.bio,
-    skills:            passport.skills || [],
-    available_from:    passport.available_from || null,
-  };
+  try {
+    let clipUrl = profile.speaking_clip_url || null;
 
-  const { error } = await supabase
-    .from('candidates')
-    .update(updates)
-    .eq('id', userId);
+    // 1. Upload new speaking clip if recorded
+    if (pendingClipBlob) {
+      status.textContent = 'Uploading speaking clip…';
+      const ext = 'webm';
+      const path = `${userId}/clip-${Date.now()}.${ext}`;
+      const { error: uploadErr } = await sb.storage
+        .from('speaking-clips')
+        .upload(path, pendingClipBlob, { contentType: 'audio/webm', upsert: true });
 
-  btn.textContent = '💾 Save Passport';
-  btn.disabled = false;
+      if (uploadErr) throw new Error('Speaking clip upload failed: ' + uploadErr.message);
 
-  if (error) {
-    toast('Save failed: ' + error.message, 'error');
-  } else {
-    toast('Passport saved! ✓');
+      // Get public URL (storage is private — use signed URL for playback)
+      const { data: signed } = await sb.storage
+        .from('speaking-clips')
+        .createSignedUrl(path, 60 * 60 * 24 * 365); // 1 year
+
+      clipUrl = signed?.signedUrl || null;
+      existingClipUrl = clipUrl;
+      pendingClipBlob = null;
+
+      // Update preview
+      document.getElementById('pvAudio').innerHTML = `
+        <div style="background:rgba(255,255,255,.12);border-radius:8px;padding:.55rem .8rem;">
+          <div style="font-size:.65rem;opacity:.55;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;">Speaking sample</div>
+          <audio controls style="width:100%;height:28px;" src="${clipUrl}"></audio>
+        </div>`;
+    }
+
+    // 2. Build update payload — only columns that exist on candidates table
+    const updates = {
+      cefr_level: profile.cefr_level || null,
+      profile_type: profile.profile_type || null,
+      bio: profile.bio || null,
+      county: profile.county || null,
+      skills: profile.skills || [],
+      speaking_clip_url: clipUrl,
+    };
+
+    status.textContent = 'Saving profile…';
+    const { error: updateErr } = await sb
+      .from('candidates')
+      .update(updates)
+      .eq('id', userId);
+
+    if (updateErr) throw new Error('Profile save failed: ' + updateErr.message);
+
+    // Update local profile state
+    Object.assign(profile, updates);
+
+    toast('Passport saved!');
+    status.textContent = `Last saved ${new Date().toLocaleTimeString('en-IE')}`;
+
+  } catch (err) {
+    console.error(err);
+    toast(err.message || 'Save failed — please try again.', 'error');
+    status.textContent = '';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '💾 Save Passport';
   }
-};
+}
 
-// ── Main init ─────────────────────────────────────────────────────────────────
-
+// ── Init ───────────────────────────────────────────────
 async function init() {
-  // 1. Check session
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) {
-    window.location.href = 'login.html';
-    return;
-  }
-
+  // 1. Session check
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'login.html'; return; }
   userId = session.user.id;
 
-  // 2. Load candidate row
-  const { data: candidate, error } = await supabase
+  // 2. Load candidate profile
+  const { data: candidate, error } = await sb
     .from('candidates')
-    .select('full_name, email, county, cefr_level, profile_type, bio, skills, available_from, speaking_clip_url, assessment_completed, verified')
+    .select('*')
     .eq('id', userId)
     .single();
 
   if (error || !candidate) {
-    // Could be an employer who navigated here
-    window.location.href = 'employer-dashboard.html';
+    window.location.href = 'register-candidate.html';
     return;
   }
 
-  // 3. Populate state from DB
-  passport = {
-    full_name:         candidate.full_name        || '',
-    email:             candidate.email             || session.user.email || '',
-    county:            candidate.county            || '',
-    cefr_level:        candidate.cefr_level        || 'B1',
-    profile_type:      candidate.profile_type      || 'active',
-    bio:               candidate.bio               || '',
-    skills:            candidate.skills            || [],
-    available_from:    candidate.available_from    || '',
-    speaking_clip_url: candidate.speaking_clip_url || null,
-    assessment_completed: candidate.assessment_completed || false,
-    verified:          candidate.verified          || false,
-  };
+  profile = { ...candidate };
+  existingClipUrl = candidate.speaking_clip_url || null;
 
-  // 4. Expose logout globally
-  window._poistLogout = logout;
-
-  // 5. Hide loading, render page
-  document.getElementById('loadingScreen').style.display = 'none';
+  // 3. Render
+  document.getElementById('loading-screen').style.display = 'none';
   document.getElementById('shell').style.display = 'flex';
   renderPage();
 }
 
-init();
+init().catch(err => {
+  console.error(err);
+  document.getElementById('loading-screen').innerHTML = `
+    <div style="text-align:center;padding:2rem;">
+      <div style="font-size:2rem;margin-bottom:1rem;">⚠️</div>
+      <p style="color:#dc2626;font-weight:600;margin-bottom:1rem;">Could not load passport</p>
+      <a href="login.html" style="color:#1A7A6E;text-decoration:underline;">Back to login</a>
+    </div>`;
+});
 </script>
 </body>
 </html>
