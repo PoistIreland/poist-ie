@@ -7,327 +7,165 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --teal: #1A7A6E;
-    --teal-dark: #0f5a51;
-    --teal-light: #E8F5F3;
-    --teal-mid: #2a9d8f;
-    --gold: #F5C518;
-    --gold-dark: #d4a800;
-    --dark: #1A1A2E;
-    --gray: #6B7280;
-    --light: #F9FAFB;
-    --border: #E5E7EB;
-    --white: #ffffff;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --teal:#1A7A6E; --teal-dark:#0f5a51; --teal-mid:#2a9d8f; --teal-light:#E8F5F3;
+  --gold:#F5C518; --gold-dark:#d4a800;
+  --navy:#1A1A2E; --gray:#6B7280; --light:#F9FAFB; --border:#E5E7EB; --white:#ffffff;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--navy);overflow-x:hidden;}
+h1,h2,h3,h4,h5,h6{font-family:'Syne',sans-serif;}
+a{text-decoration:none;}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--white);
-    color: var(--dark);
-    overflow-x: hidden;
-  }
+@keyframes fade-up  {from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fade-down{from{opacity:0;transform:translateY(-12px);}to{opacity:1;transform:translateY(0);}}
+.fade-up  {animation:fade-up   0.8s ease both;}
+.fade-up-1{animation:fade-up   0.8s ease 0.10s both;}
+.fade-up-2{animation:fade-up   0.8s ease 0.20s both;}
+.fade-up-3{animation:fade-up   0.8s ease 0.35s both;}
+.fade-down{animation:fade-down 0.8s ease both;}
 
-  /* NAV */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    height: 68px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .nav-logo {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.6rem; font-weight: 800;
-    color: var(--teal); text-decoration: none;
-    display: flex; align-items: center; gap: 0.3rem;
-  }
-  .nav-logo span { color: var(--dark); }
-  .nav-links { display: flex; align-items: center; gap: 2rem; }
-  .nav-links a { text-decoration: none; color: var(--gray); font-weight: 500; font-size: 0.95rem; transition: color 0.2s; }
-  .nav-links a:hover { color: var(--teal); }
-  .nav-cta {
-    background: var(--gold); color: var(--dark);
-    padding: 0.55rem 1.3rem; border-radius: 8px;
-    font-weight: 600; font-size: 0.9rem; text-decoration: none;
-    transition: background 0.2s, transform 0.15s;
-  }
-  .nav-cta:hover { background: var(--gold-dark); transform: translateY(-1px); }
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 2rem;height:68px;display:flex;align-items:center;justify-content:space-between;}
+.nav-logo{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;background:linear-gradient(90deg,var(--teal-dark),var(--teal-mid));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-logo span{-webkit-text-fill-color:var(--navy);}
+.nav-links{display:flex;align-items:center;gap:2rem;}
+.nav-links a{color:var(--gray);font-weight:500;font-size:0.95rem;transition:color 0.2s;}
+.nav-links a:hover{color:var(--teal);}
+.nav-cta{background:var(--gold);color:var(--navy);padding:0.5rem 1.3rem;border-radius:8px;font-weight:600;font-size:0.9rem;transition:background 0.2s,transform 0.15s;}
+.nav-cta:hover{background:var(--gold-dark);transform:translateY(-1px);}
 
-  /* HERO */
-  .hero {
-    min-height: 100vh;
-    background: linear-gradient(160deg, var(--dark) 0%, #0d3d38 50%, var(--teal-dark) 100%);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 120px 2rem 80px;
-    position: relative; overflow: hidden;
-  }
-  .hero::before {
-    content: '';
-    position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse 60% 50% at 20% 50%, rgba(26,122,110,0.3) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 60% at 80% 30%, rgba(245,197,24,0.08) 0%, transparent 60%);
-  }
-  .hero-grid {
-    position: absolute; inset: 0; opacity: 0.04;
-    background-image: linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px);
-    background-size: 60px 60px;
-  }
-  .hero-content { position: relative; z-index: 1; text-align: center; max-width: 800px; }
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    background: rgba(245,197,24,0.15); border: 1px solid rgba(245,197,24,0.3);
-    color: var(--gold); padding: 0.4rem 1rem; border-radius: 100px;
-    font-size: 0.85rem; font-weight: 600; margin-bottom: 2rem;
-    animation: fadeDown 0.8s ease both;
-  }
-  .hero-badge::before { content: '🍀'; }
-  .hero h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(2.8rem, 7vw, 5.5rem);
-    font-weight: 800; color: var(--white);
-    line-height: 1.05; margin-bottom: 1.5rem;
-    animation: fadeUp 0.9s ease 0.1s both;
-  }
-  .hero h1 em { color: var(--gold); font-style: normal; }
-  .hero p {
-    font-size: clamp(1rem, 2.5vw, 1.25rem);
-    color: rgba(255,255,255,0.75);
-    max-width: 560px; margin: 0 auto 3.5rem;
-    line-height: 1.7;
-    animation: fadeUp 0.9s ease 0.2s both;
-  }
+/* HERO */
+.hero{min-height:100vh;background:linear-gradient(160deg,var(--navy) 0%,#0d3d38 50%,var(--teal-dark) 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:120px 2rem 80px;position:relative;overflow:hidden;}
+.hero-grid{position:absolute;inset:0;opacity:0.04;background-image:linear-gradient(rgba(255,255,255,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.5) 1px,transparent 1px);background-size:60px 60px;}
+.hero-glow{position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 20% 50%,rgba(26,122,110,.3) 0%,transparent 70%),radial-gradient(ellipse 40% 60% at 80% 30%,rgba(245,197,24,.08) 0%,transparent 60%);}
+.hero-content{position:relative;z-index:1;text-align:center;max-width:800px;}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(245,197,24,.15);border:1px solid rgba(245,197,24,.3);color:var(--gold);padding:.4rem 1rem;border-radius:100px;font-size:.85rem;font-weight:600;margin-bottom:2rem;}
+.hero h1{font-size:clamp(2.8rem,7vw,5.5rem);font-weight:800;color:#fff;line-height:1.05;margin-bottom:1.5rem;}
+.hero h1 em{color:var(--gold);font-style:normal;}
+.hero p{font-size:clamp(1rem,2.5vw,1.2rem);color:rgba(255,255,255,.7);max-width:560px;margin:0 auto 3.5rem;line-height:1.7;}
+.hero-split{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;width:100%;max-width:700px;}
+.split-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:2rem 1.8rem;color:#fff;transition:all .3s;text-align:left;position:relative;overflow:hidden;}
+.split-card::before{content:'';position:absolute;inset:0;border-radius:20px;opacity:0;transition:opacity .3s;}
+.split-card.candidate::before{background:linear-gradient(135deg,rgba(26,122,110,.4),rgba(42,157,143,.2));}
+.split-card.employer::before{background:linear-gradient(135deg,rgba(245,197,24,.2),rgba(212,168,0,.1));}
+.split-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.25);}
+.split-card:hover::before{opacity:1;}
+.split-card .card-icon{font-size:2.5rem;margin-bottom:1rem;display:block;}
+.split-card h3{font-size:1.25rem;font-weight:700;margin-bottom:.6rem;}
+.split-card p{font-size:.9rem;color:rgba(255,255,255,.6);line-height:1.5;}
+.card-arrow{display:inline-flex;align-items:center;gap:.4rem;margin-top:1.2rem;font-size:.85rem;font-weight:600;transition:gap .2s;}
+.split-card.candidate .card-arrow{color:var(--teal-mid);}
+.split-card.employer  .card-arrow{color:var(--gold);}
+.split-card:hover .card-arrow{gap:.7rem;}
 
-  /* SPLIT CARDS */
-  .hero-split {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 1.5rem; width: 100%; max-width: 700px;
-    animation: fadeUp 0.9s ease 0.35s both;
-  }
-  .split-card {
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 20px; padding: 2rem 1.8rem;
-    text-decoration: none; color: var(--white);
-    transition: all 0.3s ease; cursor: pointer;
-    position: relative; overflow: hidden;
-    text-align: left;
-  }
-  .split-card::before {
-    content: ''; position: absolute; inset: 0;
-    border-radius: 20px; opacity: 0; transition: opacity 0.3s;
-  }
-  .split-card.candidate::before { background: linear-gradient(135deg, rgba(26,122,110,0.4), rgba(42,157,143,0.2)); }
-  .split-card.employer::before { background: linear-gradient(135deg, rgba(245,197,24,0.2), rgba(212,168,0,0.1)); }
-  .split-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.25); }
-  .split-card:hover::before { opacity: 1; }
-  .split-card .card-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
-  .split-card h3 { font-family: 'Syne', sans-serif; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.6rem; }
-  .split-card p { font-size: 0.9rem; color: rgba(255,255,255,0.65); line-height: 1.5; }
-  .split-card .card-arrow {
-    display: inline-flex; align-items: center; gap: 0.4rem;
-    margin-top: 1.2rem; font-size: 0.85rem; font-weight: 600;
-    transition: gap 0.2s;
-  }
-  .split-card.candidate .card-arrow { color: var(--teal-mid); }
-  .split-card.employer .card-arrow { color: var(--gold); }
-  .split-card:hover .card-arrow { gap: 0.7rem; }
+/* TRUST BAR */
+.trust-bar{background:var(--light);border-top:1px solid var(--border);padding:1.2rem 2rem;display:flex;align-items:center;justify-content:center;gap:3rem;flex-wrap:wrap;}
+.trust-item{display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:var(--gray);font-weight:500;}
+.trust-item strong{color:var(--navy);}
 
-  /* TRUST BAR */
-  .trust-bar {
-    background: var(--light); border-top: 1px solid var(--border);
-    padding: 1.2rem 2rem;
-    display: flex; align-items: center; justify-content: center; gap: 3rem;
-    flex-wrap: wrap;
-  }
-  .trust-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--gray); font-weight: 500; }
-  .trust-item strong { color: var(--dark); }
+/* SECTIONS */
+section{padding:80px 2rem;}
+.container{max-width:1100px;margin:0 auto;}
+.section-label{display:inline-block;background:var(--teal-light);color:var(--teal);font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.3rem .8rem;border-radius:100px;margin-bottom:1rem;}
+.section-label.gold{background:rgba(245,197,24,.15);color:var(--gold-dark);}
+.section-title{font-size:clamp(2rem,4vw,3rem);font-weight:700;line-height:1.15;margin-bottom:1rem;}
+.section-sub{font-size:1.05rem;color:var(--gray);max-width:580px;line-height:1.7;}
 
-  /* SECTIONS */
-  section { padding: 80px 2rem; }
-  .container { max-width: 1100px; margin: 0 auto; }
-  .section-label {
-    display: inline-block;
-    background: var(--teal-light); color: var(--teal);
-    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em;
-    text-transform: uppercase; padding: 0.3rem 0.8rem; border-radius: 100px;
-    margin-bottom: 1rem;
-  }
-  .section-title {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(2rem, 4vw, 3rem); font-weight: 700;
-    line-height: 1.1; margin-bottom: 1rem;
-  }
-  .section-sub { font-size: 1.1rem; color: var(--gray); max-width: 580px; line-height: 1.7; }
+/* HOW IT WORKS */
+.how-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
+.steps{display:flex;flex-direction:column;gap:2rem;margin-top:2.5rem;}
+.step{display:flex;gap:1.2rem;align-items:flex-start;}
+.step-num{width:44px;height:44px;border-radius:12px;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;flex-shrink:0;}
+.step h4{font-weight:600;margin-bottom:.3rem;font-family:'DM Sans',sans-serif;}
+.step p{font-size:.9rem;color:var(--gray);line-height:1.6;}
 
-  /* HOW IT WORKS */
-  .how-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
-  .steps { display: flex; flex-direction: column; gap: 2rem; margin-top: 2.5rem; }
-  .step { display: flex; gap: 1.2rem; align-items: flex-start; }
-  .step-num {
-    width: 44px; height: 44px; border-radius: 12px;
-    background: var(--teal); color: var(--white);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem;
-    flex-shrink: 0;
-  }
-  .step h4 { font-weight: 600; margin-bottom: 0.3rem; }
-  .step p { font-size: 0.9rem; color: var(--gray); line-height: 1.6; }
+/* PASSPORT CARD */
+.passport-card{background:linear-gradient(145deg,var(--teal-dark),var(--teal));border-radius:28px;padding:2rem;box-shadow:0 24px 60px rgba(26,122,110,.35);color:#fff;position:relative;overflow:hidden;}
+.passport-card::before{content:'🍀';position:absolute;right:1.5rem;top:1.5rem;font-size:3rem;opacity:.2;}
+.passport-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;}
+.passport-avatar{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:1.5rem;}
+.passport-name{font-size:1.1rem;font-weight:700;}
+.passport-sub{font-size:.8rem;opacity:.65;}
+.passport-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;opacity:.5;margin-bottom:.5rem;}
+.cefr-bar{background:rgba(255,255,255,.12);border-radius:12px;padding:.85rem 1rem;margin-bottom:1rem;}
+.cefr-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;font-size:.85rem;font-weight:600;}
+.cefr-scale{display:flex;gap:4px;margin-top:.4rem;}
+.cefr-pip{flex:1;height:8px;border-radius:100px;background:rgba(255,255,255,.18);}
+.cefr-pip.on{background:var(--gold);}
+.cefr-labels{display:flex;justify-content:space-between;margin-top:.4rem;}
+.cefr-labels span{font-size:.65rem;opacity:.55;}
+.cefr-badge-sm{background:var(--gold);color:var(--navy);font-size:.72rem;font-weight:700;padding:.2rem .55rem;border-radius:6px;}
+.verified-badge{display:inline-flex;align-items:center;gap:.4rem;background:rgba(245,197,24,.2);border:1px solid rgba(245,197,24,.4);color:var(--gold);padding:.35rem .85rem;border-radius:100px;font-size:.75rem;font-weight:600;margin-top:1rem;}
 
-  /* PASSPORT MOCKUP */
-  .passport-card {
-    background: linear-gradient(145deg, var(--teal-dark), var(--teal));
-    border-radius: 24px; padding: 2rem;
-    box-shadow: 0 24px 60px rgba(26,122,110,0.35);
-    color: var(--white);
-    position: relative; overflow: hidden;
-  }
-  .passport-card::before {
-    content: '🍀';
-    position: absolute; right: 1.5rem; top: 1.5rem;
-    font-size: 3rem; opacity: 0.2;
-  }
-  .passport-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
-  .passport-avatar {
-    width: 52px; height: 52px; border-radius: 50%;
-    background: rgba(255,255,255,0.2);
-    display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
-  }
-  .passport-name { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; }
-  .passport-sub { font-size: 0.8rem; opacity: 0.7; }
-  .passport-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.6; margin-bottom: 0.5rem; }
-  .cefr-bar { background: rgba(255,255,255,0.15); border-radius: 8px; padding: 0.8rem 1rem; margin-bottom: 1rem; }
-  .cefr-scale { display: flex; gap: 0.4rem; margin-top: 0.5rem; }
-  .cefr-dot { flex: 1; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.2); }
-  .cefr-dot.active { background: var(--gold); }
-  .cefr-labels { display: flex; justify-content: space-between; margin-top: 0.4rem; }
-  .cefr-labels span { font-size: 0.65rem; opacity: 0.6; }
-  .verified-badge {
-    display: inline-flex; align-items: center; gap: 0.4rem;
-    background: rgba(245,197,24,0.2); border: 1px solid rgba(245,197,24,0.4);
-    color: var(--gold); padding: 0.35rem 0.8rem; border-radius: 100px;
-    font-size: 0.75rem; font-weight: 600; margin-top: 1rem;
-  }
+/* FEATURES */
+.features-bg{background:var(--light);}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem;}
+.feature-card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:1.8rem;transition:all .3s;}
+.feature-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.08);border-color:var(--teal);}
+.feature-icon{width:52px;height:52px;border-radius:14px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1.2rem;}
+.feature-card h4{font-weight:700;margin-bottom:.6rem;}
+.feature-card p{font-size:.9rem;color:var(--gray);line-height:1.6;}
 
-  /* FEATURES */
-  .features-bg { background: var(--light); }
-  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; }
-  .feature-card {
-    background: var(--white); border: 1px solid var(--border);
-    border-radius: 16px; padding: 1.8rem;
-    transition: all 0.3s; cursor: default;
-  }
-  .feature-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.08); border-color: var(--teal); }
-  .feature-icon {
-    width: 52px; height: 52px; border-radius: 14px;
-    background: var(--teal-light); color: var(--teal);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.4rem; margin-bottom: 1.2rem;
-  }
-  .feature-card h4 { font-family: 'Syne', sans-serif; font-weight: 700; margin-bottom: 0.6rem; }
-  .feature-card p { font-size: 0.9rem; color: var(--gray); line-height: 1.6; }
+/* MAP */
+.map-section{background:var(--navy);color:#fff;}
+.map-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;margin-top:3rem;}
+.stat-row{display:flex;gap:1rem;margin-bottom:1rem;}
+.stat-box{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:1.2rem;text-align:center;}
+.stat-num{font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;color:var(--gold);}
+.stat-label{font-size:.8rem;color:rgba(255,255,255,.4);margin-top:.2rem;}
+.map-mock{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:1.5rem;}
+.map-ireland{width:100%;aspect-ratio:3/4;background:linear-gradient(135deg,#1e3a36,#2a5550);border-radius:12px;position:relative;display:flex;align-items:center;justify-content:center;}
+.map-pins{position:absolute;inset:0;}
+.pin{position:absolute;width:14px;height:14px;background:var(--gold);border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 0 10px rgba(245,197,24,.6);}
+.pin::after{content:'';position:absolute;inset:3px;background:#fff;border-radius:50%;}
 
-  /* MAP SECTION */
-  .map-section { background: var(--dark); color: var(--white); }
-  .map-section .section-sub { color: rgba(255,255,255,0.6); }
-  .map-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; margin-top: 3rem; }
-  .map-mock {
-    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 20px; padding: 1.5rem;
-    position: relative; overflow: hidden;
-  }
-  .map-ireland {
-    width: 100%; aspect-ratio: 3/4;
-    background: linear-gradient(135deg, #1e3a36, #2a5550);
-    border-radius: 12px; position: relative;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .map-pins { position: absolute; inset: 0; }
-  .pin {
-    position: absolute; width: 14px; height: 14px;
-    background: var(--gold); border-radius: 50% 50% 50% 0;
-    transform: rotate(-45deg); box-shadow: 0 0 10px rgba(245,197,24,0.6);
-  }
-  .pin::after { content: ''; position: absolute; inset: 3px; background: var(--white); border-radius: 50%; }
-  .map-stat { display: flex; flex-direction: column; gap: 1.5rem; }
-  .stat-row { display: flex; gap: 1rem; }
-  .stat-box {
-    flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 14px; padding: 1.2rem; text-align: center;
-  }
-  .stat-num { font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; color: var(--gold); }
-  .stat-label { font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 0.2rem; }
+/* TESTIMONIALS */
+.test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem;}
+.test-card{border:1px solid var(--border);border-radius:20px;padding:1.8rem;position:relative;transition:all .3s;}
+.test-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.07);border-color:var(--teal-light);}
+.test-card::before{content:'"';font-family:'Syne',sans-serif;font-size:5rem;color:var(--teal-light);position:absolute;top:-.5rem;left:1.2rem;line-height:1;}
+.test-card p{font-size:.95rem;line-height:1.7;margin-bottom:1.2rem;position:relative;z-index:1;}
+.test-author{display:flex;align-items:center;gap:.8rem;}
+.test-avatar{width:42px;height:42px;border-radius:50%;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
+.test-name{font-weight:600;font-size:.9rem;}
+.test-role{font-size:.8rem;color:var(--gray);}
+.cefr-tag{display:inline-block;background:var(--gold);color:var(--navy);font-size:.7rem;font-weight:700;padding:.15rem .5rem;border-radius:4px;margin-left:.4rem;}
 
-  /* TESTIMONIALS */
-  .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; }
-  .testimonial { border: 1px solid var(--border); border-radius: 16px; padding: 1.8rem; position: relative; }
-  .testimonial::before { content: '"'; font-family: 'Syne', sans-serif; font-size: 5rem; color: var(--teal-light); position: absolute; top: -0.5rem; left: 1.2rem; line-height: 1; }
-  .testimonial p { font-size: 0.95rem; line-height: 1.7; color: var(--dark); margin-bottom: 1.2rem; position: relative; z-index: 1; }
-  .testimonial-author { display: flex; align-items: center; gap: 0.8rem; }
-  .t-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--teal-light); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
-  .t-name { font-weight: 600; font-size: 0.9rem; }
-  .t-role { font-size: 0.8rem; color: var(--gray); }
-  .cefr-tag { display: inline-block; background: var(--gold); color: var(--dark); font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px; margin-left: 0.4rem; }
+/* CTA */
+.cta-section{background:linear-gradient(135deg,var(--teal-dark),var(--teal));color:#fff;text-align:center;}
+.cta-section .section-title{color:#fff;max-width:600px;margin:0 auto 1rem;}
+.cta-section .section-sub{color:rgba(255,255,255,.7);margin:0 auto 3rem;}
+.cta-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
+.btn-gold{background:var(--gold);color:var(--navy);padding:.9rem 2rem;border-radius:12px;font-weight:700;font-size:1rem;display:inline-flex;align-items:center;gap:.5rem;transition:all .2s;}
+.btn-gold:hover{background:var(--gold-dark);transform:translateY(-2px);}
+.btn-outline-white{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.35);padding:.9rem 2rem;border-radius:12px;font-weight:600;font-size:1rem;display:inline-flex;align-items:center;gap:.5rem;transition:all .2s;}
+.btn-outline-white:hover{border-color:#fff;background:rgba(255,255,255,.1);}
 
-  /* CTA SECTION */
-  .cta-section {
-    background: linear-gradient(135deg, var(--teal-dark), var(--teal));
-    color: var(--white); text-align: center;
-  }
-  .cta-section .section-title { color: var(--white); max-width: 600px; margin: 0 auto 1rem; }
-  .cta-section .section-sub { color: rgba(255,255,255,0.75); margin: 0 auto 3rem; }
-  .cta-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-  .btn-primary {
-    background: var(--gold); color: var(--dark);
-    padding: 0.9rem 2rem; border-radius: 10px;
-    font-weight: 700; font-size: 1rem; text-decoration: none;
-    transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;
-  }
-  .btn-primary:hover { background: var(--gold-dark); transform: translateY(-2px); }
-  .btn-outline {
-    background: transparent; color: var(--white);
-    border: 2px solid rgba(255,255,255,0.4);
-    padding: 0.9rem 2rem; border-radius: 10px;
-    font-weight: 600; font-size: 1rem; text-decoration: none;
-    transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;
-  }
-  .btn-outline:hover { border-color: var(--white); background: rgba(255,255,255,0.1); }
+/* FOOTER */
+footer{background:var(--navy);color:rgba(255,255,255,.55);padding:4rem 2rem 2rem;}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;max-width:1100px;margin:0 auto 3rem;}
+.footer-logo{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1rem;display:block;background:linear-gradient(90deg,var(--teal-dark),var(--teal-mid));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.footer-logo span{-webkit-text-fill-color:rgba(255,255,255,.3);}
+.footer-brand p{font-size:.9rem;line-height:1.7;}
+footer h5{color:#fff;font-weight:700;margin-bottom:1rem;font-size:.9rem;}
+footer ul{list-style:none;display:flex;flex-direction:column;gap:.6rem;}
+footer ul li a{color:rgba(255,255,255,.45);font-size:.875rem;transition:color .2s;}
+footer ul li a:hover{color:#fff;}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:2rem;display:flex;justify-content:space-between;align-items:center;max-width:1100px;margin:0 auto;font-size:.8rem;flex-wrap:wrap;gap:.5rem;}
 
-  /* FOOTER */
-  footer { background: var(--dark); color: rgba(255,255,255,0.6); padding: 4rem 2rem 2rem; }
-  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; max-width: 1100px; margin: 0 auto 3rem; }
-  .footer-brand .nav-logo { font-size: 1.4rem; margin-bottom: 1rem; display: block; }
-  .footer-brand p { font-size: 0.9rem; line-height: 1.7; }
-  footer h5 { color: var(--white); font-family: 'Syne', sans-serif; font-weight: 700; margin-bottom: 1rem; font-size: 0.9rem; }
-  footer ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
-  footer ul li a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.875rem; transition: color 0.2s; }
-  footer ul li a:hover { color: var(--white); }
-  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem; display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: 0 auto; font-size: 0.8rem; }
-
-  /* ANIMATIONS */
-  @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
-  @keyframes fadeDown { from { opacity:0; transform:translateY(-12px); } to { opacity:1; transform:translateY(0); } }
-
-  /* RESPONSIVE */
-  @media (max-width: 768px) {
-    .hero-split { grid-template-columns: 1fr; max-width: 360px; }
-    .how-grid, .map-grid { grid-template-columns: 1fr; }
-    .features-grid { grid-template-columns: 1fr; }
-    .testimonials-grid { grid-template-columns: 1fr; }
-    .footer-grid { grid-template-columns: 1fr 1fr; }
-    .nav-links { display: none; }
-    .trust-bar { gap: 1.5rem; }
-  }
+@media(max-width:768px){
+  .hero-split,.how-grid,.map-grid{grid-template-columns:1fr;}
+  .features-grid,.test-grid{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .nav-links{display:none;}
+  .trust-bar{gap:1.5rem;}
+  .hero-split{max-width:360px;}
+}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <a href="index.html" class="nav-logo">poist<span>.ie</span></a>
   <div class="nav-links">
@@ -339,14 +177,14 @@
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
   <div class="hero-content">
-    <div class="hero-badge">Ireland's Irish Language Jobs Platform</div>
-    <h1>Your <em>Gaeilge</em> is your<br>greatest career asset</h1>
-    <p>Connect with employers who value your Irish language skills. From Gaeltacht communities to Dublin's tech sector — your bilingual advantage starts here.</p>
-    <div class="hero-split">
+    <div class="hero-badge fade-down">🍀 Ireland's Irish Language Jobs Platform</div>
+    <h1 class="fade-up">Your <em>Gaeilge</em> is your<br>greatest career asset</h1>
+    <p class="fade-up-1">Connect with employers who value your Irish language skills. From Gaeltacht communities to Dublin's tech sector — your bilingual advantage starts here.</p>
+    <div class="hero-split fade-up-3">
       <a href="candidates.html" class="split-card candidate">
         <span class="card-icon">🎓</span>
         <h3>I'm a Candidate</h3>
@@ -363,7 +201,6 @@
   </div>
 </section>
 
-<!-- TRUST BAR -->
 <div class="trust-bar">
   <div class="trust-item"><span>✓</span> <strong>CEFR Verified</strong> Candidates</div>
   <div class="trust-item"><span>🗺️</span> Map-First Search <strong>Across Ireland</strong></div>
@@ -371,7 +208,6 @@
   <div class="trust-item"><span>⚡</span> <strong>Free</strong> Language Passport</div>
 </div>
 
-<!-- HOW IT WORKS -->
 <section>
   <div class="container">
     <div class="how-grid">
@@ -380,68 +216,29 @@
         <h2 class="section-title">Your Language Passport opens every door</h2>
         <p class="section-sub">poist.ie uses the CEFR framework to match Irish-speaking candidates with employers who need exactly your level of Gaeilge.</p>
         <div class="steps">
-          <div class="step">
-            <div class="step-num">1</div>
-            <div>
-              <h4>Build your Language Passport</h4>
-              <p>Select your CEFR level (A1–C2) for Irish and English. No CV required — create a passive profile in under 5 minutes.</p>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-num">2</div>
-            <div>
-              <h4>Get matched with verified roles</h4>
-              <p>Our map-first search surfaces opportunities across Ireland filtered to your exact proficiency and location.</p>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-num">3</div>
-            <div>
-              <h4>Apply with confidence</h4>
-              <p>Employers see your Language Passport and know precisely what you can do in Irish. No more guessing games.</p>
-            </div>
-          </div>
+          <div class="step"><div class="step-num">1</div><div><h4>Build your Language Passport</h4><p>Select your CEFR level (A1–C2) for Irish and English. No CV required — create a passive profile in under 5 minutes.</p></div></div>
+          <div class="step"><div class="step-num">2</div><div><h4>Get matched with verified roles</h4><p>Our map-first search surfaces opportunities across Ireland filtered to your exact proficiency and location.</p></div></div>
+          <div class="step"><div class="step-num">3</div><div><h4>Apply with confidence</h4><p>Employers see your Language Passport and know precisely what you can do in Irish. No more guessing games.</p></div></div>
         </div>
       </div>
       <div>
         <div class="passport-card">
           <div class="passport-header">
             <div class="passport-avatar">👩‍💼</div>
-            <div>
-              <div class="passport-name">Síle Ní Bhriain</div>
-              <div class="passport-sub">Content Creator · Galway</div>
-            </div>
+            <div><div class="passport-name">Síle Ní Bhriain</div><div class="passport-sub">Content Creator · Galway</div></div>
           </div>
-          <div class="passport-label">Language Passport</div>
+          <div class="passport-label">Language Passport · poist.ie</div>
           <div class="cefr-bar">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
-              <span style="font-size:0.85rem;font-weight:600;">Gaeilge / Irish</span>
-              <span style="background:var(--gold);color:var(--dark);padding:0.2rem 0.6rem;border-radius:6px;font-size:0.75rem;font-weight:700;">B2 Fluent</span>
-            </div>
+            <div class="cefr-row"><span>Gaeilge / Irish</span><span class="cefr-badge-sm">B2 Fluent</span></div>
             <div class="cefr-scale">
-              <div class="cefr-dot active"></div>
-              <div class="cefr-dot active"></div>
-              <div class="cefr-dot active"></div>
-              <div class="cefr-dot active"></div>
-              <div class="cefr-dot"></div>
-              <div class="cefr-dot"></div>
+              <div class="cefr-pip on"></div><div class="cefr-pip on"></div><div class="cefr-pip on"></div><div class="cefr-pip on"></div><div class="cefr-pip"></div><div class="cefr-pip"></div>
             </div>
-            <div class="cefr-labels">
-              <span>A1</span><span>A2</span><span>B1</span><span>B2</span><span>C1</span><span>C2</span>
-            </div>
+            <div class="cefr-labels"><span>A1</span><span>A2</span><span>B1</span><span>B2</span><span>C1</span><span>C2</span></div>
           </div>
           <div class="cefr-bar">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
-              <span style="font-size:0.85rem;font-weight:600;">English</span>
-              <span style="background:rgba(255,255,255,0.2);color:var(--white);padding:0.2rem 0.6rem;border-radius:6px;font-size:0.75rem;font-weight:700;">C2 Proficient</span>
-            </div>
+            <div class="cefr-row"><span>English</span><span style="background:rgba(255,255,255,.2);color:#fff;font-size:.72rem;font-weight:700;padding:.2rem .55rem;border-radius:6px;">C2 Proficient</span></div>
             <div class="cefr-scale">
-              <div class="cefr-dot active"></div>
-              <div class="cefr-dot active"></div>
-              <div class="cefr-dot active"></div>
-              <div class="cefr-dot active"></div>
-              <div class="cefr-dot active"></div>
-              <div class="cefr-dot active"></div>
+              <div class="cefr-pip on"></div><div class="cefr-pip on"></div><div class="cefr-pip on"></div><div class="cefr-pip on"></div><div class="cefr-pip on"></div><div class="cefr-pip on"></div>
             </div>
           </div>
           <div class="verified-badge">✓ Official Irish Candidate Verified</div>
@@ -451,191 +248,94 @@
   </div>
 </section>
 
-<!-- FEATURES -->
 <section class="features-bg">
   <div class="container">
     <div style="text-align:center;max-width:600px;margin:0 auto 3rem;">
       <span class="section-label">Platform Features</span>
       <h2 class="section-title">Built around Irish language careers</h2>
-      <p class="section-sub">Every feature designed to make Gaeilge a genuine advantage in your job search.</p>
+      <p class="section-sub" style="margin:0 auto;">Every feature designed to make Gaeilge a genuine advantage in your job search.</p>
     </div>
     <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">🗺️</div>
-        <h4>Map-First Search</h4>
-        <p>Discover jobs geographically across all 32 counties. Filter by location, sector and Irish proficiency level in one view.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">📋</div>
-        <h4>Language Passport</h4>
-        <p>Your CEFR-verified profile tells employers exactly what you can do in Irish. Build it in minutes, no CV needed.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🎯</div>
-        <h4>Precision Matching</h4>
-        <p>AI-powered matching connects candidates and employers based on verified language level, not just keywords.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">✅</div>
-        <h4>CEFR Verification</h4>
-        <p>Every candidate's Irish level is verified using the CEFR framework. Employers know exactly what they're getting.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🔔</div>
-        <h4>Passive Discovery</h4>
-        <p>Not actively looking? Create a passive profile and let employers find you when the right role comes up.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">📊</div>
-        <h4>Talent Pipeline</h4>
-        <p>Employers build searchable talent pipelines of Irish speakers, filtered by region, level and skills.</p>
-      </div>
+      <div class="feature-card"><div class="feature-icon">🗺️</div><h4>Map-First Search</h4><p>Discover jobs geographically across all 32 counties. Filter by location, sector and Irish proficiency level in one view.</p></div>
+      <div class="feature-card"><div class="feature-icon">📋</div><h4>Language Passport</h4><p>Your CEFR-verified profile tells employers exactly what you can do in Irish. Build it in minutes, no CV needed.</p></div>
+      <div class="feature-card"><div class="feature-icon">🎯</div><h4>Precision Matching</h4><p>AI-powered matching connects candidates and employers based on verified language level, not just keywords.</p></div>
+      <div class="feature-card"><div class="feature-icon">✅</div><h4>CEFR Verification</h4><p>Every candidate's Irish level is verified using the CEFR framework. Employers know exactly what they're getting.</p></div>
+      <div class="feature-card"><div class="feature-icon">🔔</div><h4>Passive Discovery</h4><p>Not actively looking? Create a passive profile and let employers find you when the right role comes up.</p></div>
+      <div class="feature-card"><div class="feature-icon">📊</div><h4>Talent Pipeline</h4><p>Employers build searchable talent pipelines of Irish speakers, filtered by region, level and skills.</p></div>
     </div>
   </div>
 </section>
 
-<!-- MAP SECTION -->
 <section class="map-section">
   <div class="container">
     <div class="map-grid">
       <div>
-        <span class="section-label" style="background:rgba(245,197,24,0.15);color:var(--gold);">Opportunities Across Ireland</span>
-        <h2 class="section-title">From Donegal to Cork, Irish speakers are in demand</h2>
-        <p class="section-sub">poist.ie maps Irish-speaking opportunities across the entire country — from Gaeltacht heartlands to urban tech hubs.</p>
-        <div class="map-stat" style="margin-top:2.5rem;">
+        <span class="section-label gold">Opportunities Across Ireland</span>
+        <h2 class="section-title" style="color:#fff;">From Donegal to Cork, Irish speakers are in demand</h2>
+        <p class="section-sub" style="color:rgba(255,255,255,.55);">poist.ie maps Irish-speaking opportunities across the entire country — from Gaeltacht heartlands to urban tech hubs.</p>
+        <div style="margin-top:2.5rem;">
           <div class="stat-row">
-            <div class="stat-box">
-              <div class="stat-num">250+</div>
-              <div class="stat-label">Active Job Listings</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-num">32</div>
-              <div class="stat-label">Counties Covered</div>
-            </div>
+            <div class="stat-box"><div class="stat-num">250+</div><div class="stat-label">Active Job Listings</div></div>
+            <div class="stat-box"><div class="stat-num">32</div><div class="stat-label">Counties Covered</div></div>
           </div>
           <div class="stat-row">
-            <div class="stat-box">
-              <div class="stat-num">1,200+</div>
-              <div class="stat-label">Verified Candidates</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-num">180+</div>
-              <div class="stat-label">Employers Hiring</div>
-            </div>
+            <div class="stat-box"><div class="stat-num">1,200+</div><div class="stat-label">Verified Candidates</div></div>
+            <div class="stat-box"><div class="stat-num">180+</div><div class="stat-label">Employers Hiring</div></div>
           </div>
         </div>
       </div>
       <div class="map-mock">
-        <div style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin-bottom:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Live Opportunities Map</div>
+        <div style="font-size:.8rem;color:rgba(255,255,255,.3);margin-bottom:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Live Opportunities Map</div>
         <div class="map-ireland">
           <div class="map-pins">
-            <div class="pin" style="top:20%;left:50%;"></div>
-            <div class="pin" style="top:35%;left:48%;"></div>
-            <div class="pin" style="top:55%;left:52%;"></div>
-            <div class="pin" style="top:45%;left:65%;"></div>
-            <div class="pin" style="top:60%;left:40%;"></div>
-            <div class="pin" style="top:70%;left:55%;"></div>
-            <div class="pin" style="top:30%;left:35%;"></div>
-            <div class="pin" style="top:75%;left:65%;"></div>
-            <div class="pin" style="top:50%;left:30%;"></div>
-            <div class="pin" style="top:25%;left:62%;"></div>
+            <div class="pin" style="top:20%;left:50%;"></div><div class="pin" style="top:35%;left:48%;"></div>
+            <div class="pin" style="top:55%;left:52%;"></div><div class="pin" style="top:45%;left:65%;"></div>
+            <div class="pin" style="top:60%;left:40%;"></div><div class="pin" style="top:70%;left:55%;"></div>
+            <div class="pin" style="top:30%;left:35%;"></div><div class="pin" style="top:75%;left:65%;"></div>
+            <div class="pin" style="top:50%;left:30%;"></div><div class="pin" style="top:25%;left:62%;"></div>
           </div>
-          <div style="color:rgba(255,255,255,0.3);font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:700;">Éire</div>
+          <span style="color:rgba(255,255,255,.2);font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:700;">Éire</span>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- TESTIMONIALS -->
 <section>
   <div class="container">
     <div style="text-align:center;max-width:600px;margin:0 auto 3rem;">
       <span class="section-label">Stories</span>
       <h2 class="section-title">Irish speakers finding their path</h2>
     </div>
-    <div class="testimonials-grid">
-      <div class="testimonial">
-        <p>I had no idea my Irish would open doors in the tech sector. Within two weeks of creating my Language Passport, I had three interviews. Now I'm working in a fully bilingual team in Dublin.</p>
-        <div class="testimonial-author">
-          <div class="t-avatar">👨‍💻</div>
-          <div>
-            <div class="t-name">Ciarán Mac Giolla <span class="cefr-tag">C1</span></div>
-            <div class="t-role">Software Developer · Dublin</div>
-          </div>
-        </div>
-      </div>
-      <div class="testimonial">
-        <p>We needed a B2-level Irish speaker for our communications team. poist.ie sent us exactly the right candidates — no vague CVs saying 'conversational Irish.' We hired in 10 days.</p>
-        <div class="testimonial-author">
-          <div class="t-avatar">👩‍💼</div>
-          <div>
-            <div class="t-name">Fiona Walsh</div>
-            <div class="t-role">HR Director · RTÉ</div>
-          </div>
-        </div>
-      </div>
-      <div class="testimonial">
-        <p>Coming from the Gaeltacht, I always felt my Irish was undervalued on standard job sites. poist.ie changed that — employers here actively want what I have. Fuair mé mo phost foirfe.</p>
-        <div class="testimonial-author">
-          <div class="t-avatar">👩‍🏫</div>
-          <div>
-            <div class="t-name">Aoife Ní Fhaoláin <span class="cefr-tag">C2</span></div>
-            <div class="t-role">Irish Language Officer · Galway CC</div>
-          </div>
-        </div>
-      </div>
+    <div class="test-grid">
+      <div class="test-card"><p>I had no idea my Irish would open doors in the tech sector. Within two weeks of creating my Language Passport, I had three interviews. Now I'm working in a fully bilingual team in Dublin.</p><div class="test-author"><div class="test-avatar">👨‍💻</div><div><div class="test-name">Ciarán Mac Giolla <span class="cefr-tag">C1</span></div><div class="test-role">Software Developer · Dublin</div></div></div></div>
+      <div class="test-card"><p>We needed a B2-level Irish speaker for our communications team. poist.ie sent us exactly the right candidates — no vague CVs saying 'conversational Irish.' We hired in 10 days.</p><div class="test-author"><div class="test-avatar">👩‍💼</div><div><div class="test-name">Fiona Walsh</div><div class="test-role">HR Director · RTÉ</div></div></div></div>
+      <div class="test-card"><p>Coming from the Gaeltacht, I always felt my Irish was undervalued on standard job sites. poist.ie changed that — employers here actively want what I have. Fuair mé mo phost foirfe.</p><div class="test-author"><div class="test-avatar">👩‍🏫</div><div><div class="test-name">Aoife Ní Fhaoláin <span class="cefr-tag">C2</span></div><div class="test-role">Irish Language Officer · Galway CC</div></div></div></div>
     </div>
   </div>
 </section>
 
-<!-- CTA -->
 <section class="cta-section">
   <div class="container">
-    <span class="section-label" style="background:rgba(245,197,24,0.2);color:var(--gold);">Get Started Today</span>
+    <span class="section-label gold">Get Started Today</span>
     <h2 class="section-title">Your Irish is ready.<br>Are you?</h2>
     <p class="section-sub">Join thousands of Irish speakers turning their language skills into career opportunities.</p>
-    <div class="cta-buttons">
-      <a href="candidates.html" class="btn-primary">🎓 I'm a Candidate</a>
-      <a href="employers.html" class="btn-outline">🏢 I'm an Employer</a>
+    <div class="cta-btns">
+      <a href="candidates.html" class="btn-gold">🎓 I'm a Candidate</a>
+      <a href="employers.html" class="btn-outline-white">🏢 I'm an Employer</a>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer id="about">
   <div class="footer-grid">
     <div class="footer-brand">
-      <a href="index.html" class="nav-logo">poist<span style="color:rgba(255,255,255,0.4)">.ie</span></a>
+      <a href="index.html" class="footer-logo">poist<span>.ie</span></a>
       <p>Connecting Irish speakers with opportunity. Ireland's dedicated jobs platform for Gaeilge speakers and the employers who value them.</p>
     </div>
-    <div>
-      <h5>Candidates</h5>
-      <ul>
-        <li><a href="register-candidate.html">Language Passport</a></li>
-        <li><a href="jobs.html">Browse Jobs</a></li>
-        <li><a href="candidates.html#cefr">CEFR Guide</a></li>
-        <li><a href="candidates.html">Career Resources</a></li>
-      </ul>
-    </div>
-    <div>
-      <h5>Employers</h5>
-      <ul>
-        <li><a href="register-employer.html">Post a Job</a></li>
-        <li><a href="employers.html">Talent Pipeline</a></li>
-        <li><a href="register-employer.html">Candidate Search</a></li>
-        <li><a href="employers.html#pricing">Pricing</a></li>
-      </ul>
-    </div>
-    <div>
-      <h5>Company</h5>
-      <ul>
-        <li><a href="#about">About poist.ie</a></li>
-        <li><a href="index.html">Blog</a></li>
-        <li><a href="index.html">Language Reform</a></li>
-        <li><a href="mailto:hello@poist.ie">Contact</a></li>
-      </ul>
-    </div>
+    <div><h5>Candidates</h5><ul><li><a href="register-candidate.html">Language Passport</a></li><li><a href="jobs.html">Browse Jobs</a></li><li><a href="candidates.html#cefr">CEFR Guide</a></li><li><a href="candidates.html">Career Resources</a></li></ul></div>
+    <div><h5>Employers</h5><ul><li><a href="register-employer.html">Post a Job</a></li><li><a href="employers.html">Talent Pipeline</a></li><li><a href="register-employer.html">Candidate Search</a></li><li><a href="employers.html#pricing">Pricing</a></li></ul></div>
+    <div><h5>Company</h5><ul><li><a href="#about">About poist.ie</a></li><li><a href="index.html">Blog</a></li><li><a href="index.html">Language Reform</a></li><li><a href="mailto:hello@poist.ie">Contact</a></li></ul></div>
   </div>
   <div class="footer-bottom">
     <span>© 2026 poist.ie · Ag nascadh cainteoirí Gaeilge le deiseanna</span>
