@@ -126,15 +126,8 @@
   .split-card.employer::before { background: linear-gradient(135deg, rgba(245,197,24,0.2), rgba(212,168,0,0.1)); }
   .split-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.25); }
   .split-card:hover::before { opacity: 1; }
-  .split-card .card-icon {
-    font-size: 2.5rem; margin-bottom: 1rem;
-    display: block;
-  }
-  .split-card h3 {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.25rem; font-weight: 700;
-    margin-bottom: 0.6rem;
-  }
+  .split-card .card-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+  .split-card h3 { font-family: 'Syne', sans-serif; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.6rem; }
   .split-card p { font-size: 0.9rem; color: rgba(255,255,255,0.65); line-height: 1.5; }
   .split-card .card-arrow {
     display: inline-flex; align-items: center; gap: 0.4rem;
@@ -210,10 +203,7 @@
   .passport-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.6; margin-bottom: 0.5rem; }
   .cefr-bar { background: rgba(255,255,255,0.15); border-radius: 8px; padding: 0.8rem 1rem; margin-bottom: 1rem; }
   .cefr-scale { display: flex; gap: 0.4rem; margin-top: 0.5rem; }
-  .cefr-dot {
-    flex: 1; height: 8px; border-radius: 4px;
-    background: rgba(255,255,255,0.2);
-  }
+  .cefr-dot { flex: 1; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.2); }
   .cefr-dot.active { background: var(--gold); }
   .cefr-labels { display: flex; justify-content: space-between; margin-top: 0.4rem; }
   .cefr-labels span { font-size: 0.65rem; opacity: 0.6; }
@@ -275,10 +265,7 @@
 
   /* TESTIMONIALS */
   .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; }
-  .testimonial {
-    border: 1px solid var(--border); border-radius: 16px; padding: 1.8rem;
-    position: relative;
-  }
+  .testimonial { border: 1px solid var(--border); border-radius: 16px; padding: 1.8rem; position: relative; }
   .testimonial::before { content: '"'; font-family: 'Syne', sans-serif; font-size: 5rem; color: var(--teal-light); position: absolute; top: -0.5rem; left: 1.2rem; line-height: 1; }
   .testimonial p { font-size: 0.95rem; line-height: 1.7; color: var(--dark); margin-bottom: 1.2rem; position: relative; z-index: 1; }
   .testimonial-author { display: flex; align-items: center; gap: 0.8rem; }
@@ -345,9 +332,9 @@
   <a href="index.html" class="nav-logo">poist<span>.ie</span></a>
   <div class="nav-links">
     <a href="jobs.html">Browse Jobs</a>
-    <a href="#">For Employers</a>
-    <a href="#">CEFR Guide</a>
-    <a href="#">About</a>
+    <a href="employers.html">For Employers</a>
+    <a href="candidates.html#cefr">CEFR Guide</a>
+    <a href="#about">About</a>
     <a href="candidates.html" class="nav-cta">Get Started</a>
   </div>
 </nav>
@@ -417,7 +404,6 @@
         </div>
       </div>
       <div>
-        <!-- Language Passport Mockup -->
         <div class="passport-card">
           <div class="passport-header">
             <div class="passport-avatar">👩‍💼</div>
@@ -543,7 +529,6 @@
         <div style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin-bottom:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Live Opportunities Map</div>
         <div class="map-ireland">
           <div class="map-pins">
-            <!-- Pin positions approximating Irish cities -->
             <div class="pin" style="top:20%;left:50%;"></div>
             <div class="pin" style="top:35%;left:48%;"></div>
             <div class="pin" style="top:55%;left:52%;"></div>
@@ -618,7 +603,7 @@
 </section>
 
 <!-- FOOTER -->
-<footer>
+<footer id="about">
   <div class="footer-grid">
     <div class="footer-brand">
       <a href="index.html" class="nav-logo">poist<span style="color:rgba(255,255,255,0.4)">.ie</span></a>
@@ -627,33 +612,33 @@
     <div>
       <h5>Candidates</h5>
       <ul>
-        <li><a href="#">Language Passport</a></li>
-        <li><a href="#">Browse Jobs</a></li>
-        <li><a href="#">CEFR Guide</a></li>
-        <li><a href="#">Career Resources</a></li>
+        <li><a href="register-candidate.html">Language Passport</a></li>
+        <li><a href="jobs.html">Browse Jobs</a></li>
+        <li><a href="candidates.html#cefr">CEFR Guide</a></li>
+        <li><a href="candidates.html">Career Resources</a></li>
       </ul>
     </div>
     <div>
       <h5>Employers</h5>
       <ul>
-        <li><a href="#">Post a Job</a></li>
-        <li><a href="#">Talent Pipeline</a></li>
-        <li><a href="#">Candidate Search</a></li>
-        <li><a href="#">Pricing</a></li>
+        <li><a href="register-employer.html">Post a Job</a></li>
+        <li><a href="employers.html">Talent Pipeline</a></li>
+        <li><a href="register-employer.html">Candidate Search</a></li>
+        <li><a href="employers.html#pricing">Pricing</a></li>
       </ul>
     </div>
     <div>
       <h5>Company</h5>
       <ul>
-        <li><a href="#">About poist.ie</a></li>
-        <li><a href="#">Blog</a></li>
-        <li><a href="#">Language Reform</a></li>
-        <li><a href="#">Contact</a></li>
+        <li><a href="#about">About poist.ie</a></li>
+        <li><a href="index.html">Blog</a></li>
+        <li><a href="index.html">Language Reform</a></li>
+        <li><a href="mailto:hello@poist.ie">Contact</a></li>
       </ul>
     </div>
   </div>
   <div class="footer-bottom">
-    <span>© 2025 poist.ie · Ag nascadh cainteoirí Gaeilge le deiseanna</span>
+    <span>© 2026 poist.ie · Ag nascadh cainteoirí Gaeilge le deiseanna</span>
     <span>Privacy · Terms · Cookies</span>
   </div>
 </footer>
