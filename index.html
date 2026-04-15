@@ -6,6 +6,7 @@
 <title>poist.ie — Connecting Irish Speakers with Opportunity</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
 :root {
   --teal:#1A7A6E; --teal-dark:#0f5a51; --teal-mid:#2a9d8f; --teal-light:#E8F5F3;
@@ -107,18 +108,18 @@ section{padding:80px 2rem;}
 .feature-card h4{font-weight:700;margin-bottom:.6rem;}
 .feature-card p{font-size:.9rem;color:var(--gray);line-height:1.6;}
 
-/* MAP */
-.map-section{background:var(--navy);color:#fff;}
+/* MAP SECTION */
+.map-section{background:var(--navy);color:#fff;padding:80px 2rem;}
 .map-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;margin-top:3rem;}
 .stat-row{display:flex;gap:1rem;margin-bottom:1rem;}
 .stat-box{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:1.2rem;text-align:center;}
 .stat-num{font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;color:var(--gold);}
 .stat-label{font-size:.8rem;color:rgba(255,255,255,.4);margin-top:.2rem;}
-.map-mock{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:1.5rem;}
-.map-ireland{width:100%;aspect-ratio:3/4;background:linear-gradient(135deg,#1e3a36,#2a5550);border-radius:12px;position:relative;display:flex;align-items:center;justify-content:center;}
-.map-pins{position:absolute;inset:0;}
-.pin{position:absolute;width:14px;height:14px;background:var(--gold);border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 0 10px rgba(245,197,24,.6);}
-.pin::after{content:'';position:absolute;inset:3px;background:#fff;border-radius:50%;}
+.map-wrap{border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.1);position:relative;}
+.map-label{font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+#home-map{height:420px;width:100%;border-radius:12px;}
+/* Override Leaflet tile brightness for dark section */
+#home-map .leaflet-tile{filter:brightness(0.85) saturate(0.9);}
 
 /* TESTIMONIALS */
 .test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem;}
@@ -161,6 +162,7 @@ footer ul li a:hover{color:#fff;}
   .nav-links{display:none;}
   .trust-bar{gap:1.5rem;}
   .hero-split{max-width:360px;}
+  #home-map{height:300px;}
 }
 </style>
 </head>
@@ -171,9 +173,9 @@ footer ul li a:hover{color:#fff;}
   <div class="nav-links">
     <a href="jobs.html">Browse Jobs</a>
     <a href="employers.html">For Employers</a>
-    <a href="candidates.html#cefr">CEFR Guide</a>
-    <a href="#about">About</a>
-    <a href="candidates.html" class="nav-cta">Get Started</a>
+    <a href="cefr-guide.html">CEFR Guide</a>
+    <a href="about.html">About</a>
+    <a href="register-candidate.html" class="nav-cta">Get Started</a>
   </div>
 </nav>
 
@@ -266,6 +268,7 @@ footer ul li a:hover{color:#fff;}
   </div>
 </section>
 
+<!-- MAP SECTION — real Leaflet map -->
 <section class="map-section">
   <div class="container">
     <div class="map-grid">
@@ -282,19 +285,13 @@ footer ul li a:hover{color:#fff;}
             <div class="stat-box"><div class="stat-num">1,200+</div><div class="stat-label">Verified Candidates</div></div>
             <div class="stat-box"><div class="stat-num">180+</div><div class="stat-label">Employers Hiring</div></div>
           </div>
+          <a href="jobs.html" style="display:inline-flex;align-items:center;gap:.5rem;margin-top:1.5rem;background:var(--gold);color:var(--navy);padding:.8rem 1.6rem;border-radius:10px;font-weight:700;font-size:.95rem;transition:all .2s;" onmouseover="this.style.background='#d4a800'" onmouseout="this.style.background='#F5C518'">Browse all jobs on the map →</a>
         </div>
       </div>
-      <div class="map-mock">
-        <div style="font-size:.8rem;color:rgba(255,255,255,.3);margin-bottom:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Live Opportunities Map</div>
-        <div class="map-ireland">
-          <div class="map-pins">
-            <div class="pin" style="top:20%;left:50%;"></div><div class="pin" style="top:35%;left:48%;"></div>
-            <div class="pin" style="top:55%;left:52%;"></div><div class="pin" style="top:45%;left:65%;"></div>
-            <div class="pin" style="top:60%;left:40%;"></div><div class="pin" style="top:70%;left:55%;"></div>
-            <div class="pin" style="top:30%;left:35%;"></div><div class="pin" style="top:75%;left:65%;"></div>
-            <div class="pin" style="top:50%;left:30%;"></div><div class="pin" style="top:25%;left:62%;"></div>
-          </div>
-          <span style="color:rgba(255,255,255,.2);font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:700;">Éire</span>
+      <div>
+        <div class="map-label">Live Opportunities Map</div>
+        <div class="map-wrap">
+          <div id="home-map"></div>
         </div>
       </div>
     </div>
@@ -321,7 +318,7 @@ footer ul li a:hover{color:#fff;}
     <h2 class="section-title">Your Irish is ready.<br>Are you?</h2>
     <p class="section-sub">Join thousands of Irish speakers turning their language skills into career opportunities.</p>
     <div class="cta-btns">
-      <a href="candidates.html" class="btn-gold">🎓 I'm a Candidate</a>
+      <a href="register-candidate.html" class="btn-gold">🎓 I'm a Candidate</a>
       <a href="employers.html" class="btn-outline-white">🏢 I'm an Employer</a>
     </div>
   </div>
@@ -333,15 +330,62 @@ footer ul li a:hover{color:#fff;}
       <a href="index.html" class="footer-logo">poist<span>.ie</span></a>
       <p>Connecting Irish speakers with opportunity. Ireland's dedicated jobs platform for Gaeilge speakers and the employers who value them.</p>
     </div>
-    <div><h5>Candidates</h5><ul><li><a href="register-candidate.html">Language Passport</a></li><li><a href="jobs.html">Browse Jobs</a></li><li><a href="candidates.html#cefr">CEFR Guide</a></li><li><a href="candidates.html">Career Resources</a></li></ul></div>
-    <div><h5>Employers</h5><ul><li><a href="register-employer.html">Post a Job</a></li><li><a href="employers.html">Talent Pipeline</a></li><li><a href="register-employer.html">Candidate Search</a></li><li><a href="employers.html#pricing">Pricing</a></li></ul></div>
-    <div><h5>Company</h5><ul><li><a href="#about">About poist.ie</a></li><li><a href="index.html">Blog</a></li><li><a href="index.html">Language Reform</a></li><li><a href="mailto:hello@poist.ie">Contact</a></li></ul></div>
+    <div><h5>Candidates</h5><ul><li><a href="register-candidate.html">Language Passport</a></li><li><a href="jobs.html">Browse Jobs</a></li><li><a href="cefr-guide.html">CEFR Guide</a></li><li><a href="candidates.html">Career Resources</a></li></ul></div>
+    <div><h5>Employers</h5><ul><li><a href="register-employer.html">Post a Job</a></li><li><a href="employers.html">Talent Pipeline</a></li><li><a href="employer-search.html">Candidate Search</a></li><li><a href="employers.html#pricing">Pricing</a></li></ul></div>
+    <div><h5>Company</h5><ul><li><a href="about.html">About poist.ie</a></li><li><a href="contact.html">Contact</a></li><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms of Service</a></li></ul></div>
   </div>
   <div class="footer-bottom">
     <span>© 2026 poist.ie · Ag nascadh cainteoirí Gaeilge le deiseanna</span>
-    <span>Privacy · Terms · Cookies</span>
+    <span><a href="privacy.html" style="color:rgba(255,255,255,.45);">Privacy</a> · <a href="terms.html" style="color:rgba(255,255,255,.45);">Terms</a> · <a href="contact.html" style="color:rgba(255,255,255,.45);">Contact</a></span>
   </div>
 </footer>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const jobs = [
+  { title:'Irish Language Officer', org:'Department of Education', lat:53.349, lng:-6.260, cefr:'B2', sector:'Government' },
+  { title:'Bainisteoir Tionscadail', org:'Údarás na Gaeltachta', lat:53.270, lng:-9.056, cefr:'C1', sector:'Semi-state' },
+  { title:'Irish Language Teacher', org:'Coláiste Íde', lat:52.141, lng:-10.267, cefr:'C2', sector:'Education' },
+  { title:'Communications Officer', org:'HSE Cork', lat:51.898, lng:-8.475, cefr:'B2', sector:'Healthcare' },
+  { title:'Tech Lead Gaeilge', org:'GlobalTech Ireland', lat:51.903, lng:-8.468, cefr:'B1', sector:'Technology' },
+  { title:'Content Creator', org:'TG4', lat:53.274, lng:-9.049, cefr:'C1', sector:'Media' },
+  { title:'Irish Language Coordinator', org:'Limerick City Council', lat:52.664, lng:-8.630, cefr:'B1', sector:'Government' },
+  { title:'Community Manager', org:'Conradh na Gaeilge', lat:53.342, lng:-6.268, cefr:'C2', sector:'Non-profit' },
+  { title:'Irish Language Officer', org:'Donegal County Council', lat:54.654, lng:-8.105, cefr:'B2', sector:'Government' },
+  { title:'Múinteoir Gaeilge', org:'Gaelcholáiste Chiarraí', lat:52.270, lng:-9.705, cefr:'C1', sector:'Education' },
+  { title:'Oifigeach Gaeilge', org:'Waterford City Council', lat:52.258, lng:-7.110, cefr:'B2', sector:'Government' },
+  { title:'Irish Language Producer', org:'RTÉ Raidió na Gaeltachta', lat:53.149, lng:-9.892, cefr:'C2', sector:'Media' },
+];
+
+const map = L.map('home-map', { zoomControl: true, scrollWheelZoom: false }).setView([53.4, -8.0], 6);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  maxZoom: 18
+}).addTo(map);
+
+const goldIcon = L.divIcon({
+  html: `<div style="background:#F5C518;width:16px;height:16px;border-radius:50%;border:2.5px solid #d4a800;box-shadow:0 2px 8px rgba(245,197,24,.6);"></div>`,
+  className: '', iconSize: [16, 16], iconAnchor: [8, 8]
+});
+
+jobs.forEach(j => {
+  const marker = L.marker([j.lat, j.lng], { icon: goldIcon }).addTo(map);
+  marker.bindPopup(`
+    <div style="font-family:'DM Sans',sans-serif;min-width:180px;">
+      <div style="font-weight:700;font-size:.9rem;color:#1A1A2E;margin-bottom:.3rem;">${j.title}</div>
+      <div style="font-size:.8rem;color:#6B7280;margin-bottom:.5rem;">${j.org}</div>
+      <div style="display:flex;gap:.4rem;align-items:center;">
+        <span style="background:#F5C518;color:#1A1A2E;font-size:.7rem;font-weight:700;padding:.15rem .45rem;border-radius:4px;">${j.cefr}</span>
+        <span style="font-size:.75rem;color:#6B7280;">${j.sector}</span>
+      </div>
+      <a href="jobs.html" style="display:block;margin-top:.7rem;text-align:center;background:#1A7A6E;color:#fff;padding:.4rem;border-radius:6px;font-size:.8rem;font-weight:600;text-decoration:none;">View all jobs →</a>
+    </div>
+  `, { maxWidth: 220 });
+});
+
+// Invalidate size after section becomes visible to fix tile loading
+setTimeout(() => map.invalidateSize(), 400);
+</script>
 </body>
 </html>
