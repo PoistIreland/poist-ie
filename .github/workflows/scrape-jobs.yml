@@ -1,0 +1,32 @@
+name: Irish Language Job Scraper
+
+on:
+  schedule:
+    # Runs every night at midnight Irish time (UTC+1 in summer, so 23:00 UTC)
+    - cron: "0 23 * * *"
+  workflow_dispatch:
+    # Allows you to trigger manually from GitHub Actions tab — useful for testing
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+
+      - name: Run scraper
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}   # optional — leave blank for now
+          ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }} # optional — leave blank for now
+        run: python scraper/scraper.py
