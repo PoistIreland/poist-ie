@@ -1,19 +1,18 @@
 """
-poist.ie — Irish Language Job Scraper v2
-Uses direct API endpoints and RSS feeds instead of HTML scraping,
-so it works regardless of JavaScript rendering.
+poist.ie — Irish Language Job Scraper v3
+Targets 11 verified Irish language job sources directly.
+Runs nightly via GitHub Actions — free.
 """
 
 import os
 import requests
-import xml.etree.ElementTree as ET
+from bs4 import BeautifulSoup
 from datetime import date
 import time
 
-# ── Supabase config ───────────────────────────────────────────────────────────
 SUPABASE_URL = os.environ["SUPABASE_URL"]
 SUPABASE_KEY = os.environ["SUPABASE_KEY"]
-HEADERS_SB   = {
+HEADERS_SB = {
     "apikey": SUPABASE_KEY,
     "Authorization": f"Bearer {SUPABASE_KEY}",
     "Content-Type": "application/json",
@@ -21,9 +20,10 @@ HEADERS_SB   = {
 }
 
 IRISH_KEYWORDS = [
-    "gaeilge", "irish language", "líofa", "as gaeilge",
-    "gaeltacht", "irish speaker", "fluent irish", "native irish",
-    "inniúlacht sa ghaeilge", "labhairt na gaeilge",
+    "gaeilge", "irish language", "líofa", "as gaeilge", "gaeltacht",
+    "irish speaker", "fluent irish", "native irish", "inniúlacht",
+    "oifigeach gaeilge", "irish officer", "bilingual", "dátheangach",
+    "rannóg an aistriúcháin", "aistritheoir", "ateangaire",
 ]
 
 SCRAPE_HEADERS = {
@@ -31,7 +31,7 @@ SCRAPE_HEADERS = {
 }
 
 
-def is_irish_language_job(title: str, description: str = "") -> bool:
+def is_irish_keyword_match(title: str, description: str = "") -> bool:
     text = (title + " " + description).lower()
     return any(kw in text for kw in IRISH_KEYWORDS)
 
@@ -55,9 +55,6 @@ def insert_job(job: dict) -> bool:
         "description":   job.get("description", ""),
         "county":        job.get("county", ""),
         "sector":        job.get("sector", ""),
-        "cefr_required": job.get("cefr_required", ""),
-        "job_type":      job.get("job_type", ""),
-        "closing_date":  job.get("closing_date"),
         "status":        "active",
         "is_aggregated": True,
         "source_url":    job["source_url"],
@@ -78,67 +75,206 @@ def insert_job(job: dict) -> bool:
         return False
 
 
-def scrape_publicjobs_rss() -> list:
+def scrape_page(url: str, source_name: str, sector: str,
+                base_url: str, href_keywords: list,
+                title_filter: bool = False) -> list:
+    """Reusable scraper for simple HTML job listing pages."""
     jobs = []
-    for term in ["gaeilge", "irish+language"]:
-        try:
-            url  = f"https://www.publicjobs.ie/en/rss?q={term}"
-            resp = requests.get(url, headers=SCRAPE_HEADERS, timeout=15)
-            print(f"  publicjobs RSS ({term}): status {resp.status_code}")
-            if resp.status_code != 200:
+    try:
+        resp = requests.get(url, headers=SCRAPE_HEADERS, timeout=15)
+        print(f"  {source_name}: status {resp.status_code}")
+        if resp.status_code != 200:
+            return []
+        soup = BeautifulSoup(resp.text, "html.parser")
+        seen = set()
+        for link in soup.find_all("a", href=True):
+            title = link.get_text(strip=True)
+            href  = link.get("href", "")
+            if not title or len(title) < 8 or len(title) > 200:
                 continue
-            root = ET.fromstring(resp.content)
-            for item in root.findall(".//item"):
-                title = item.findtext("title", "")
-                link  = item.findtext("link", "")
-                desc  = item.findtext("description", "")
-                if not title or not link:
-                    continue
-                if not is_irish_language_job(title, desc):
-                    continue
-                jobs.append({
-                    "title": title,
-                    "description": "Irish language role on publicjobs.ie.",
-                    "county": "",
-                    "sector": "Public Sector",
-                    "source_url": link,
-                    "source_name": "publicjobs.ie",
-                })
-            print(f"  publicjobs RSS ({term}): {len(jobs)} matching jobs so far")
-            time.sleep(2)
-        except Exception as e:
-            print(f"  publicjobs RSS error ({term}): {e}")
+            if href_keywords and not any(w in href.lower() for w in href_keywords):
+                continue
+            full_url = href if href.startswith("http") else f"{base_url.rstrip('/')}{href if href.startswith('/') else '/' + href}"
+            if full_url in seen:
+                continue
+            seen.add(full_url)
+            if title_filter and not is_irish_keyword_match(title):
+                continue
+            jobs.append({
+                "title":       title,
+                "description": f"Role advertised on {source_name}.",
+                "county":      "",
+                "sector":      sector,
+                "source_url":  full_url,
+                "source_name": source_name,
+            })
+        print(f"  {source_name}: found {len(jobs)} jobs")
+        time.sleep(2)
+    except Exception as e:
+        print(f"  {source_name} error: {e}")
     return jobs
 
 
+# ── 1. PEIG.ie ────────────────────────────────────────────────────────────────
+def scrape_peig() -> list:
+    return scrape_page(
+        url="https://peig.ie/foluntais/",
+        source_name="peig.ie",
+        sector="Irish Language Community",
+        base_url="https://peig.ie",
+        href_keywords=["foluntais", "job", "post", "vacanc", "career", "peig.ie"],
+    )
+
+
+# ── 2. Foras na Gaeilge ───────────────────────────────────────────────────────
+def scrape_foras() -> list:
+    return scrape_page(
+        url="https://www.forasnagaeilge.ie/foluntais/",
+        source_name="forasnagaeilge.ie",
+        sector="Irish Language",
+        base_url="https://www.forasnagaeilge.ie",
+        href_keywords=["foluntais", "job", "post", "vacanc"],
+    )
+
+
+# ── 3. Údarás na Gaeltachta ───────────────────────────────────────────────────
+def scrape_udaras() -> list:
+    return scrape_page(
+        url="https://udaras.ie/foluntais/",
+        source_name="udaras.ie",
+        sector="Gaeltacht Development",
+        base_url="https://udaras.ie",
+        href_keywords=["foluntais", "job", "career", "vacanc", "post"],
+    )
+
+
+# ── 4. Conradh na Gaeilge ─────────────────────────────────────────────────────
+def scrape_cnag() -> list:
+    return scrape_page(
+        url="https://cnag.ie/ga/eolas-faoin-gconradh/foluntais/",
+        source_name="cnag.ie",
+        sector="Irish Language Promotion",
+        base_url="https://cnag.ie",
+        href_keywords=["foluntais", "post", "job", "vacanc"],
+    )
+
+
+# ── 5. Gaeloideachas ──────────────────────────────────────────────────────────
+def scrape_gaeloideachas() -> list:
+    return scrape_page(
+        url="https://gaeloideachas.ie/foluntais/",
+        source_name="gaeloideachas.ie",
+        sector="Education",
+        base_url="https://gaeloideachas.ie",
+        href_keywords=["foluntais", "post", "job", "vacanc", "teagasc"],
+    )
+
+
+# ── 6. Oifig an Choimisinéara Teanga ─────────────────────────────────────────
+def scrape_coimisineir() -> list:
+    jobs = scrape_page(
+        url="https://www.coimisineir.ie/index.cfm?page=vacancies",
+        source_name="coimisineir.ie",
+        sector="Irish Language",
+        base_url="https://www.coimisineir.ie",
+        href_keywords=["vacanc", "foluntais", "post", "job", "career"],
+    )
+    if not jobs:
+        jobs = scrape_page(
+            url="https://www.coimisineir.ie/foluntais/",
+            source_name="coimisineir.ie",
+            sector="Irish Language",
+            base_url="https://www.coimisineir.ie",
+            href_keywords=["vacanc", "foluntais", "post", "job"],
+        )
+    return jobs
+
+
+# ── 7. Houses of the Oireachtas ───────────────────────────────────────────────
+def scrape_oireachtas() -> list:
+    return scrape_page(
+        url="https://www.oireachtas.ie/en/about/careers/",
+        source_name="oireachtas.ie",
+        sector="Government",
+        base_url="https://www.oireachtas.ie",
+        href_keywords=["career", "job", "vacanc", "role", "recruit"],
+    )
+
+
+# ── 8. LocalGovernmentJobs.ie ─────────────────────────────────────────────────
+def scrape_localgovt() -> list:
+    jobs = []
+    for term in ["gaeilge", "irish", "oifigeach"]:
+        found = scrape_page(
+            url=f"https://www.localgovernmentjobs.ie/jobs?keywords={term}",
+            source_name="localgovernmentjobs.ie",
+            sector="Local Government",
+            base_url="https://www.localgovernmentjobs.ie",
+            href_keywords=["/job/", "/vacancy/", "/post/", "/role/", "jobid"],
+            title_filter=True,
+        )
+        jobs += found
+        time.sleep(1)
+    return jobs
+
+
+# ── 9. HSE Career Hub ─────────────────────────────────────────────────────────
+def scrape_hse() -> list:
+    jobs = []
+    for term in ["gaeilge", "irish", "bilingual"]:
+        found = scrape_page(
+            url=f"https://careerhub.hse.ie/candidates/jobs/search?keywords={term}",
+            source_name="careerhub.hse.ie",
+            sector="Health",
+            base_url="https://careerhub.hse.ie",
+            href_keywords=["/job/", "jobid", "job-detail", "vacancy", "post"],
+            title_filter=True,
+        )
+        jobs += found
+        time.sleep(1)
+    return jobs
+
+
+# ── 10. JobsIreland.ie ────────────────────────────────────────────────────────
+def scrape_jobsireland() -> list:
+    return scrape_page(
+        url="https://jobsireland.ie/en-US/Search?term=gaeilge",
+        source_name="jobsireland.ie",
+        sector="General",
+        base_url="https://jobsireland.ie",
+        href_keywords=["/job/", "/Job/", "jobId", "job-detail"],
+        title_filter=True,
+    )
+
+
+# ── 11. Adzuna API ────────────────────────────────────────────────────────────
 def scrape_adzuna() -> list:
     app_id  = os.environ.get("ADZUNA_APP_ID", "").strip()
     app_key = os.environ.get("ADZUNA_APP_KEY", "").strip()
     if not app_id or not app_key:
-        print("  Adzuna: no keys set -- skipping")
+        print("  Adzuna: no keys -- skipping")
         return []
     jobs = []
-    for term in ["gaeilge", "irish language"]:
+    for term in ["gaeilge", "irish language officer", "irish speaker ireland"]:
         try:
-            url = "https://api.adzuna.com/v1/api/jobs/ie/search/1"
-            params = {
-                "app_id": app_id, "app_key": app_key,
-                "what": term, "results_per_page": 20,
-            }
-            resp = requests.get(url, params=params, timeout=15)
-            for item in resp.json().get("results", []):
-                title = item.get("title", "")
-                if not is_irish_language_job(title, item.get("description", "")):
-                    continue
+            resp = requests.get(
+                "https://api.adzuna.com/v1/api/jobs/ie/search/1",
+                params={"app_id": app_id, "app_key": app_key,
+                        "what": term, "results_per_page": 20},
+                timeout=15,
+            )
+            results = resp.json().get("results", [])
+            print(f"  Adzuna ({term}): {len(results)} results")
+            for item in results:
                 redirect_url = item.get("redirect_url", "")
                 if not redirect_url:
                     continue
                 jobs.append({
-                    "title": title,
+                    "title":       item.get("title", ""),
                     "description": "Irish language role via Adzuna.",
-                    "county": item.get("location", {}).get("display_name", ""),
-                    "sector": item.get("category", {}).get("label", ""),
-                    "source_url": redirect_url,
+                    "county":      item.get("location", {}).get("display_name", ""),
+                    "sector":      item.get("category", {}).get("label", ""),
+                    "source_url":  redirect_url,
                     "source_name": "adzuna.ie",
                 })
             time.sleep(1)
@@ -147,39 +283,7 @@ def scrape_adzuna() -> list:
     return jobs
 
 
-def scrape_rss_feed(url: str, source_name: str, sector: str) -> list:
-    jobs = []
-    try:
-        resp = requests.get(url, headers=SCRAPE_HEADERS, timeout=15)
-        print(f"  {source_name}: status {resp.status_code}")
-        if resp.status_code != 200:
-            return []
-        root = ET.fromstring(resp.content)
-        count = 0
-        for item in root.findall(".//item"):
-            title = item.findtext("title", "")
-            link  = item.findtext("link", "")
-            desc  = item.findtext("description", "")
-            if not title or not link:
-                continue
-            count += 1
-            if not is_irish_language_job(title, desc):
-                continue
-            jobs.append({
-                "title": title,
-                "description": f"Irish language role via {source_name}.",
-                "county": "",
-                "sector": sector,
-                "source_url": link,
-                "source_name": source_name,
-            })
-        print(f"  {source_name}: {count} total items, {len(jobs)} matching")
-        time.sleep(2)
-    except Exception as e:
-        print(f"  {source_name} error: {e}")
-    return jobs
-
-
+# ── CLEANUP ───────────────────────────────────────────────────────────────────
 def cleanup_expired_jobs():
     today = date.today().isoformat()
     try:
@@ -194,27 +298,28 @@ def cleanup_expired_jobs():
         print(f"Cleanup error: {e}")
 
 
+# ── MAIN ──────────────────────────────────────────────────────────────────────
 def main():
-    print("poist.ie job scraper v2 starting...\n")
+    print("poist.ie job scraper v3 — 11 sources\n")
+
+    scrapers = [
+        ("PEIG.ie",                    scrape_peig),
+        ("Foras na Gaeilge",           scrape_foras),
+        ("Udaras na Gaeltachta",       scrape_udaras),
+        ("Conradh na Gaeilge",         scrape_cnag),
+        ("Gaeloideachas",              scrape_gaeloideachas),
+        ("Coimisineir Teanga",         scrape_coimisineir),
+        ("Houses of Oireachtas",       scrape_oireachtas),
+        ("Local Government Jobs",      scrape_localgovt),
+        ("HSE Career Hub",             scrape_hse),
+        ("JobsIreland.ie",             scrape_jobsireland),
+        ("Adzuna",                     scrape_adzuna),
+    ]
 
     all_jobs = []
-
-    print("Checking publicjobs.ie RSS...")
-    all_jobs += scrape_publicjobs_rss()
-
-    print("Checking Adzuna...")
-    all_jobs += scrape_adzuna()
-
-    print("Checking HSE Careers RSS...")
-    all_jobs += scrape_rss_feed(
-        "https://careers.hse.ie/rss/jobs.rss", "HSE Careers", "Health"
-    )
-
-    print("Checking eTenders...")
-    all_jobs += scrape_rss_feed(
-        "https://www.etenders.gov.ie/epps/cft/downloadRssFeed.do?feedType=CURRENT_TENDERS_FEED",
-        "etenders.gov.ie", "Public Sector"
-    )
+    for name, fn in scrapers:
+        print(f"Checking {name}...")
+        all_jobs += fn()
 
     print(f"\nFound {len(all_jobs)} potential Irish language jobs\n")
 
@@ -222,7 +327,7 @@ def main():
     skipped  = 0
 
     for job in all_jobs:
-        if not job.get("source_url"):
+        if not job.get("source_url") or not job.get("title"):
             skipped += 1
             continue
         if url_already_exists(job["source_url"]):
@@ -231,7 +336,7 @@ def main():
             continue
         if insert_job(job):
             inserted += 1
-        time.sleep(0.5)
+        time.sleep(0.3)
 
     print(f"\nDone -- {inserted} inserted, {skipped} skipped")
     cleanup_expired_jobs()
