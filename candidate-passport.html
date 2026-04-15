@@ -42,6 +42,12 @@ select.form-input{cursor:pointer;}
 .skill-chip button{background:none;border:none;cursor:pointer;color:var(--teal);font-size:.95rem;padding:0;line-height:1;}
 .progress-bar{height:7px;background:var(--border);border-radius:4px;overflow:hidden;}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal-mid));border-radius:4px;transition:width .4s ease;}
+
+/* Qualification upload */
+.qual-drop{border:2px dashed var(--border);border-radius:12px;padding:1.5rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--white);}
+.qual-drop:hover,.qual-drop.dragover{border-color:var(--teal);background:var(--teal-light);}
+.qual-badge{display:inline-flex;align-items:center;gap:.4rem;background:#dcfce7;border:1px solid #86efac;color:#16a34a;padding:.3rem .7rem;border-radius:6px;font-size:.78rem;font-weight:600;}
+.qual-badge.pending{background:rgba(245,197,24,.15);border-color:rgba(245,197,24,.5);color:#92400E;}
 .cefr-scale{display:flex;gap:3px;}
 .cefr-pip{flex:1;height:6px;border-radius:3px;background:#E5E7EB;}
 .cefr-pip.on{background:var(--gold);}
@@ -280,6 +286,51 @@ function renderPage() {
                   <audio id="recAudio" controls style="width:100%;height:32px;"></audio>
                   <button class="btn btn-ghost" id="discardRecBtn" style="margin-top:.5rem;font-size:.8rem;">✕ Discard & re-record</button>
                 </div>
+              </div>
+
+              <!-- Qualification Upload -->
+              <div class="card">
+                <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.4rem;">Have a qualification in Irish?</h3>
+                <p style="font-size:.82rem;color:var(--gray);margin-bottom:.9rem;">Upload your Leaving Cert, TEG, SCG or other Irish language qualification and we'll assign your CEFR level automatically — no assessment needed.</p>
+
+                <div class="form-group" style="margin-bottom:.8rem;">
+                  <label class="form-label">Qualification type</label>
+                  <select id="qualType" class="form-input">
+                    <option value="">Select your qualification…</option>
+                    <optgroup label="Leaving Certificate">
+                      <option value="lc_higher_h1h2">Leaving Cert Higher Irish — H1/H2 → B2</option>
+                      <option value="lc_higher_h3h4">Leaving Cert Higher Irish — H3/H4 → B1</option>
+                      <option value="lc_ordinary">Leaving Cert Ordinary Irish — O1/O2 → A2</option>
+                    </optgroup>
+                    <optgroup label="Teastas Eorpach na Gaeilge (TEG)">
+                      <option value="teg_a2">TEG A2 → A2</option>
+                      <option value="teg_b1">TEG B1 → B1</option>
+                      <option value="teg_b2">TEG B2 → B2</option>
+                      <option value="teg_c1">TEG C1 → C1</option>
+                    </optgroup>
+                    <optgroup label="Other qualifications">
+                      <option value="scg">Scrúdú Cáilíochta sa Ghaeilge (SCG) → C1/C2</option>
+                      <option value="degree">Diploma / Degree with Irish → B2/C1</option>
+                      <option value="cefr_cert">Existing CEFR certificate → Direct match</option>
+                    </optgroup>
+                  </select>
+                </div>
+
+                <div class="qual-drop" id="qualDrop" onclick="document.getElementById('qualFile').click()">
+                  <div id="qualDropInner">
+                    <div style="font-size:1.5rem;margin-bottom:.4rem;">📄</div>
+                    <div style="font-size:.88rem;font-weight:600;color:var(--navy);">Click to upload or drag & drop</div>
+                    <div style="font-size:.75rem;color:var(--gray);margin-top:.2rem;">PDF, JPG or PNG · Max 5MB</div>
+                  </div>
+                  <input type="file" id="qualFile" accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="handleQualFile(this)">
+                </div>
+
+                <div id="qualStatus" style="display:none;margin-top:.8rem;"></div>
+
+                <button class="btn btn-teal" id="qualSubmitBtn" onclick="submitQualification()" style="width:100%;justify-content:center;margin-top:.8rem;display:none;">
+                  Upload Qualification →
+                </button>
+                <p style="font-size:.75rem;color:var(--gray);margin-top:.5rem;">Your profile will show a "Qualification Submitted" badge. We don't need to verify the document to assign your level.</p>
               </div>
 
               <!-- Actions -->
@@ -526,6 +577,104 @@ async function savePassport() {
     btn.textContent = '💾 Save Passport';
   }
 }
+
+// ── CEFR mapping ──────────────────────────────────────
+const QUAL_CEFR = {
+  lc_higher_h1h2: 'B2', lc_higher_h3h4: 'B1', lc_ordinary: 'A2',
+  teg_a2: 'A2', teg_b1: 'B1', teg_b2: 'B2', teg_c1: 'C1',
+  scg: 'C1', degree: 'B2', cefr_cert: null // null = direct match, ask user
+};
+
+let pendingQualFile = null;
+
+window.handleQualFile = (input) => {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { toast('File too large — max 5MB', 'error'); return; }
+  pendingQualFile = file;
+  document.getElementById('qualDropInner').innerHTML = `
+    <div style="font-size:1.5rem;margin-bottom:.4rem;">✅</div>
+    <div style="font-size:.88rem;font-weight:600;color:var(--teal);">${file.name}</div>
+    <div style="font-size:.75rem;color:var(--gray);margin-top:.2rem;">${(file.size/1024).toFixed(0)}KB · Click to change</div>`;
+  document.getElementById('qualDrop').style.borderColor = 'var(--teal)';
+  document.getElementById('qualDrop').style.background = 'var(--teal-light)';
+  const qualType = document.getElementById('qualType').value;
+  if (qualType) document.getElementById('qualSubmitBtn').style.display = 'flex';
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  const sel = document.getElementById('qualType');
+  if (sel) sel.addEventListener('change', () => {
+    if (sel.value && pendingQualFile) document.getElementById('qualSubmitBtn').style.display = 'flex';
+    else if (!sel.value) document.getElementById('qualSubmitBtn').style.display = 'none';
+  });
+  // Drag and drop
+  const drop = document.getElementById('qualDrop');
+  if (drop) {
+    drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('dragover'); });
+    drop.addEventListener('dragleave', () => drop.classList.remove('dragover'));
+    drop.addEventListener('drop', e => {
+      e.preventDefault(); drop.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) { const inp = document.getElementById('qualFile'); const dt = new DataTransfer(); dt.items.add(file); inp.files = dt.files; window.handleQualFile(inp); }
+    });
+  }
+});
+
+window.submitQualification = async () => {
+  const qualType = document.getElementById('qualType').value;
+  if (!qualType) { toast('Please select your qualification type', 'error'); return; }
+  if (!pendingQualFile) { toast('Please upload your qualification document', 'error'); return; }
+
+  const btn = document.getElementById('qualSubmitBtn');
+  btn.textContent = 'Uploading…'; btn.disabled = true;
+
+  try {
+    // Upload document to Supabase storage
+    const ext = pendingQualFile.name.split('.').pop();
+    const path = `${userId}/qual-${Date.now()}.${ext}`;
+    const { error: uploadErr } = await sb.storage
+      .from('speaking-clips') // reuse same bucket for now
+      .upload(path, pendingQualFile, { contentType: pendingQualFile.type, upsert: true });
+    if (uploadErr) throw new Error('Upload failed: ' + uploadErr.message);
+
+    // Assign CEFR level from mapping
+    const assignedCefr = QUAL_CEFR[qualType];
+    const updates = {
+      qualification_type: qualType,
+      qualification_submitted: true,
+    };
+    // Auto-assign CEFR if mapping is definitive
+    if (assignedCefr) {
+      updates.cefr_level = assignedCefr;
+      profile.cefr_level = assignedCefr;
+      // Update the CEFR selector UI
+      document.querySelectorAll('#irishGrid .cefr-option').forEach(b => {
+        b.classList.toggle('sel', b.dataset.level === assignedCefr);
+      });
+      updatePreviews();
+    }
+
+    const { error: updateErr } = await sb.from('candidates').update(updates).eq('id', userId);
+    if (updateErr) throw new Error('Save failed: ' + updateErr.message);
+
+    // Show success state
+    const qualLabel = document.getElementById('qualType').options[document.getElementById('qualType').selectedIndex].text.split(' →')[0];
+    document.getElementById('qualStatus').style.display = 'block';
+    document.getElementById('qualStatus').innerHTML = `
+      <div class="qual-badge pending">📄 Qualification Submitted</div>
+      <div style="font-size:.82rem;color:var(--gray);margin-top:.5rem;">
+        <strong>${qualLabel}</strong>${assignedCefr ? ` → CEFR level set to <strong>${assignedCefr}</strong>` : ''}<br>
+        Your profile now shows a "Qualification Submitted" badge.
+      </div>`;
+    btn.style.display = 'none';
+    toast('Qualification uploaded — CEFR level updated!');
+  } catch (err) {
+    console.error(err);
+    toast(err.message || 'Upload failed', 'error');
+    btn.textContent = 'Upload Qualification →'; btn.disabled = false;
+  }
+};
 
 // ── Init ───────────────────────────────────────────────
 async function init() {
