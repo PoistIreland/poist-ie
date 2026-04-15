@@ -55,7 +55,7 @@ def insert_job(job: dict) -> bool:
         "description":   job.get("description", ""),
         "county":        job.get("county", ""),
         "sector":        job.get("sector", ""),
-        "status":        "active",
+        "status":        "approved",
         "is_aggregated": True,
         "source_url":    job["source_url"],
         "source_name":   job["source_name"],
