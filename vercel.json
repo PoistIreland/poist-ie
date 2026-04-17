@@ -2,11 +2,25 @@
   "redirects": [
     {
       "source": "/",
+      "has": [{"type": "host", "value": "poist.ie"}],
+      "destination": "/coming-soon.html",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "has": [{"type": "host", "value": "www.poist.ie"}],
       "destination": "/coming-soon.html",
       "permanent": false
     },
     {
       "source": "/((?!coming-soon|login|register|forgot-password|auth|_next|favicon|assets|fonts|css|js).*)",
+      "has": [{"type": "host", "value": "poist.ie"}],
+      "destination": "/coming-soon.html",
+      "permanent": false
+    },
+    {
+      "source": "/((?!coming-soon|login|register|forgot-password|auth|_next|favicon|assets|fonts|css|js).*)",
+      "has": [{"type": "host", "value": "www.poist.ie"}],
       "destination": "/coming-soon.html",
       "permanent": false
     }
