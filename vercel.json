@@ -1,0 +1,14 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/coming-soon.html",
+      "permanent": false
+    },
+    {
+      "source": "/((?!coming-soon|login|register|forgot-password|auth|_next|favicon|assets|fonts|css|js).*)",
+      "destination": "/coming-soon.html",
+      "permanent": false
+    }
+  ]
+}
