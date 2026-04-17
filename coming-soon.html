@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ga">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>poist.ie — Ag teacht go luath · Coming Soon</title>
+  <meta name="description" content="Ireland's first bilingual jobs platform for Irish language speakers. Coming soon." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --forest: #0D3B2E;
+      --green:  #1A6B3C;
+      --green2: #2D8653;
+      --gold:   #F5C518;
+      --gold2:  #C9921A;
+      --white:  #FFFFFF;
+      --off:    #F0F7F4;
+      --muted:  #A8C5B0;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--forest);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ── Background subtle texture ─────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(45,134,83,.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(245,197,24,.07) 0%, transparent 55%);
+      pointer-events: none;
+    }
+
+    /* ── Gold left accent bar ──────────────────────────────────── */
+    body::after {
+      content: '';
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      width: 5px;
+      background: var(--gold);
+    }
+
+    .wrap {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Logo ──────────────────────────────────────────────────── */
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.8rem, 8vw, 5rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1;
+      margin-bottom: .5rem;
+    }
+    .logo span { color: var(--gold); }
+
+    .tagline {
+      font-size: clamp(.95rem, 2.2vw, 1.15rem);
+      color: var(--muted);
+      font-style: italic;
+      margin-bottom: 2.5rem;
+      letter-spacing: .01em;
+    }
+
+    /* ── Gold rule ─────────────────────────────────────────────── */
+    .rule {
+      width: clamp(120px, 30vw, 220px);
+      height: 3px;
+      background: var(--gold);
+      border-radius: 2px;
+      margin-bottom: 2.5rem;
+    }
+
+    /* ── Hero text ─────────────────────────────────────────────── */
+    .headline {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.6rem, 4.5vw, 2.6rem);
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.2;
+      max-width: 640px;
+      margin-bottom: 1rem;
+    }
+    .headline em {
+      color: var(--gold);
+      font-style: normal;
+    }
+
+    .sub {
+      font-size: clamp(.9rem, 2vw, 1.05rem);
+      color: var(--muted);
+      text-align: center;
+      max-width: 520px;
+      line-height: 1.7;
+      margin-bottom: 2.8rem;
+    }
+
+    /* ── Stat pills ────────────────────────────────────────────── */
+    .stats {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 3rem;
+    }
+    .stat {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(245,197,24,.25);
+      border-radius: 12px;
+      padding: .75rem 1.3rem;
+      text-align: center;
+      min-width: 130px;
+    }
+    .stat-n {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--gold);
+      line-height: 1;
+      display: block;
+      margin-bottom: .25rem;
+    }
+    .stat-l {
+      font-size: .78rem;
+      color: var(--muted);
+      line-height: 1.3;
+    }
+
+    /* ── Email capture ─────────────────────────────────────────── */
+    .form-label {
+      font-size: .85rem;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: .75rem;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+
+    .form-row {
+      display: flex;
+      gap: .6rem;
+      width: 100%;
+      max-width: 460px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .form-row input[type="email"] {
+      flex: 1;
+      min-width: 220px;
+      background: rgba(255,255,255,.08);
+      border: 1.5px solid rgba(255,255,255,.18);
+      border-radius: 10px;
+      padding: .8rem 1.1rem;
+      font-size: .95rem;
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .form-row input[type="email"]::placeholder { color: rgba(255,255,255,.35); }
+    .form-row input[type="email"]:focus { border-color: var(--gold); }
+
+    .btn {
+      background: var(--gold);
+      color: var(--forest);
+      border: none;
+      border-radius: 10px;
+      padding: .8rem 1.6rem;
+      font-size: .95rem;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .2s, transform .1s;
+    }
+    .btn:hover  { background: #f7ce3a; }
+    .btn:active { transform: scale(.98); }
+
+    .form-note {
+      font-size: .78rem;
+      color: rgba(168,197,176,.6);
+      text-align: center;
+    }
+
+    /* ── Success state ─────────────────────────────────────────── */
+    .success {
+      display: none;
+      background: rgba(45,134,83,.2);
+      border: 1.5px solid var(--green2);
+      border-radius: 12px;
+      padding: 1rem 1.8rem;
+      font-size: .95rem;
+      color: #7ecf9c;
+      text-align: center;
+      max-width: 420px;
+    }
+
+    /* ── CEFR badge strip ──────────────────────────────────────── */
+    .cefr-strip {
+      display: flex;
+      gap: .45rem;
+      justify-content: center;
+      margin-top: 3rem;
+      flex-wrap: wrap;
+    }
+    .cefr-badge {
+      font-family: 'Syne', sans-serif;
+      font-size: .75rem;
+      font-weight: 700;
+      padding: .3rem .7rem;
+      border-radius: 6px;
+      letter-spacing: .04em;
+    }
+    .cefr-badge.a { background: rgba(148,163,184,.15); color: #94a3b8; border: 1px solid rgba(148,163,184,.2); }
+    .cefr-badge.b1 { background: rgba(45,134,83,.2); color: #7ecf9c; border: 1px solid rgba(45,134,83,.3); }
+    .cefr-badge.b2 { background: rgba(245,197,24,.15); color: var(--gold); border: 1px solid rgba(245,197,24,.3); }
+    .cefr-badge.c  { background: rgba(168,85,247,.15); color: #c084fc; border: 1px solid rgba(168,85,247,.25); }
+
+    .cefr-label {
+      font-size: .72rem;
+      color: rgba(168,197,176,.45);
+      text-align: center;
+      margin-top: .5rem;
+    }
+
+    /* ── Footer ────────────────────────────────────────────────── */
+    .footer {
+      position: fixed;
+      bottom: 1rem;
+      left: 0; right: 0;
+      text-align: center;
+      font-size: .72rem;
+      color: rgba(168,197,176,.35);
+    }
+
+    @media (max-width: 480px) {
+      .stats { gap: .6rem; }
+      .stat  { min-width: 100px; padding: .6rem 1rem; }
+      .stat-n { font-size: 1.35rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="logo">poist<span>.ie</span></div>
+    <p class="tagline">Ireland's bilingual talent marketplace · Ag teacht go luath</p>
+    <div class="rule"></div>
+
+    <h1 class="headline">
+      Your <em>Gaeilge</em> is your<br>greatest career asset
+    </h1>
+    <p class="sub">
+      The first Irish language jobs platform built around CEFR-verified proficiency.
+      Connecting Irish-speaking candidates with public sector employers —
+      ahead of the 2030 statutory deadline.
+    </p>
+
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-n">20%</span>
+        <span class="stat-l">public sector recruits must be Irish-competent by 2030</span>
+      </div>
+      <div class="stat">
+        <span class="stat-n">425k+</span>
+        <span class="stat-l">public sector employees in scope</span>
+      </div>
+      <div class="stat">
+        <span class="stat-n">€0</span>
+        <span class="stat-l">dedicated platform exists today</span>
+      </div>
+    </div>
+
+    <p class="form-label">Get early access · Faigh rochtain luath</p>
+    <form class="form-row" id="waitlistForm" onsubmit="handleSubmit(event)">
+      <input type="email" id="emailInput" placeholder="your@email.com" required autocomplete="email" />
+      <button type="submit" class="btn">Notify me →</button>
+    </form>
+    <p class="form-note">No spam. We'll notify you when poist.ie launches.</p>
+    <div class="success" id="successMsg">
+      ✓ &nbsp;You're on the list! We'll be in touch before launch.
+    </div>
+
+    <div class="cefr-strip">
+      <span class="cefr-badge a">A1</span>
+      <span class="cefr-badge a">A2</span>
+      <span class="cefr-badge b1">B1</span>
+      <span class="cefr-badge b2">B2 ★</span>
+      <span class="cefr-badge c">C1</span>
+      <span class="cefr-badge c">C2</span>
+    </div>
+    <p class="cefr-label">Every role verified to a CEFR level · Gach ról deimhnithe le leibhéal CEFR</p>
+
+  </div>
+
+  <p class="footer">© 2026 poist.ie · Séamus Ó Fátharta · seamus@poist.ie</p>
+
+  <script>
+    function handleSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('emailInput').value;
+      // Store in localStorage as fallback — wire to Supabase waitlist table later
+      const list = JSON.parse(localStorage.getItem('poist_waitlist') || '[]');
+      if (!list.includes(email)) list.push(email);
+      localStorage.setItem('poist_waitlist', JSON.stringify(list));
+      // Show success
+      document.getElementById('waitlistForm').style.display = 'none';
+      document.querySelector('.form-label').style.display = 'none';
+      document.querySelector('.form-note').style.display = 'none';
+      document.getElementById('successMsg').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
