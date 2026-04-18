@@ -33,9 +33,8 @@ a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block}
 
 /* ── NAV ───────────────────────────────────────────────────────── */
-.nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:.9rem 2rem}
-.nav-logo{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--forest)}
-.nav-logo span{color:var(--gold2)}
+.nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:.5rem 2rem}
+.nav-logo{display:block}
 .nav-links{display:flex;align-items:center;gap:1.8rem;font-size:.9rem;font-weight:500}
 .nav-links a{color:var(--body);transition:color .15s}
 .nav-links a:hover{color:var(--green)}
@@ -205,8 +204,7 @@ img{max-width:100%;display:block}
 /* ── FOOTER ────────────────────────────────────────────────────── */
 footer{background:var(--ink);color:rgba(255,255,255,.6);padding:4rem 2rem 2rem}
 .foot-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
-.foot-logo{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--white);margin-bottom:.9rem}
-.foot-logo span{color:var(--gold)}
+.foot-logo{margin-bottom:.9rem}
 .foot-brand p{font-size:.85rem;line-height:1.7;max-width:260px;margin-bottom:.6rem}
 .foot-brand .ga{font-size:.78rem;color:rgba(255,255,255,.3)}
 footer h5{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);font-family:var(--mono);margin-bottom:1.1rem}
@@ -240,9 +238,10 @@ footer ul a:hover{color:var(--white)}
 </head>
 <body>
 
-<!-- NAV -->
 <nav class="nav">
-  class="nav-logo"><img src="assets/poist-logo-trans.png" alt="poist.ie" style="height:48px;width:auto;"></a> alt="poist.ie" style="height:48px;width:auto;display:block;"></a>
+  <a href="index.html" class="nav-logo">
+    <img src="assets/poist-logo-trans.png" alt="poist.ie" style="height:70px; width:auto; display:block;">
+  </a>
   <div class="nav-links">
     <a href="jobs.html">Browse Jobs <span class="ga-sm">/ Poist</span></a>
     <a href="employers.html">For Employers</a>
@@ -253,7 +252,6 @@ footer ul a:hover{color:var(--white)}
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-inner">
     <div>
@@ -307,7 +305,6 @@ footer ul a:hover{color:var(--white)}
   </div>
 </section>
 
-<!-- TRUST STRIP -->
 <div class="trust">
   <div class="trust-inner">
     <span class="trust-label">Trusted by / Á úsáid ag</span>
@@ -320,7 +317,6 @@ footer ul a:hover{color:var(--white)}
   </div>
 </div>
 
-<!-- HOW EVIDENCE STACKS -->
 <section class="sec sec-stacks">
   <div class="sec-inner">
     <div class="sec-hdr">
@@ -364,7 +360,6 @@ footer ul a:hover{color:var(--white)}
   </div>
 </section>
 
-<!-- EMPLOYER · COMPLIANCE -->
 <section class="sec sec-emp">
   <div class="sec-inner">
     <div class="sec-hdr">
@@ -417,7 +412,6 @@ footer ul a:hover{color:var(--white)}
   </div>
 </section>
 
-<!-- FEATURES -->
 <section class="sec sec-feat">
   <div class="sec-inner">
     <div class="sec-hdr">
@@ -471,7 +465,6 @@ footer ul a:hover{color:var(--white)}
   </div>
 </section>
 
-<!-- MAP -->
 <section class="sec sec-map">
   <div class="sec-inner">
     <div class="map-grid">
@@ -497,7 +490,6 @@ footer ul a:hover{color:var(--white)}
   </div>
 </section>
 
-<!-- CTA -->
 <section class="sec-cta">
   <h2>Your Gaeilge is <em>evidence</em>.</h2>
   <span class="ga">Is é do chuid Gaeilge an fhianaise.</span>
@@ -511,7 +503,11 @@ footer ul a:hover{color:var(--white)}
 <footer>
   <div class="foot-grid">
     <div class="foot-brand">
-      <div class="foot-logo"><img src="assets/poist-logo-trans.png" alt="poist.ie" style="height:48px;width:auto;filter:brightness(0) invert(1);"></div>
+      <div class="foot-logo">
+        <a href="index.html">
+          <img src="assets/poist-logo-trans.png" alt="poist.ie" style="height:56px; width:auto; filter:brightness(0) invert(1);">
+        </a>
+      </div>
       <p>Ireland's CEFR-verified jobs platform. Every candidate, every hire, every level — backed by evidence.</p>
       <div class="ga">Ag nascadh cainteoirí Gaeilge le deiseanna.</div>
     </div>
