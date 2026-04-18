@@ -6,7 +6,7 @@ from pathlib import Path
 LOGO_LIGHT = "assets/poist-logo-light.png"
 LOGO_DARK  = "assets/poist-logo-dark.png"
 
-NAV_NEW  = f'<a href="index.html" class="nav-logo"><img src="{LOGO_LIGHT}" alt="poist.ie" style="height:48px;width:auto;display:block;mix-blend-mode:multiply;"></a>'
+NAV_NEW  = f'<a href="index.html" class="nav-logo"><img src="{LOGO_LIGHT}" alt="poist.ie" style="height:48px;width:auto;display:block;mix-blend-mode:screen;"></a>'
 FOOT_NEW = f'<div class="foot-logo"><img src="{LOGO_DARK}" alt="poist.ie" style="height:38px;width:auto;filter:brightness(0) invert(1);"></div>'
 
 SKIP = {"coming-soon.html", "404.html"}
