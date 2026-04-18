@@ -3,7 +3,7 @@
 import re, os
 from pathlib import Path
 
-LOGO_LIGHT = "assets/poist-logo-light.png"
+LOGO_LIGHT = "assets/poist-logo-trans.png"
 LOGO_DARK  = "assets/poist-logo-dark.png"
 
 NAV_NEW  = f'<a href="index.html" class="nav-logo"><img src="{LOGO_LIGHT}" alt="poist.ie" style="height:48px;width:auto;display:block;mix-blend-mode:screen;"></a>'
