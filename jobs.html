@@ -8,35 +8,45 @@
 <style>
 :root{
   --teal:#1A6B3C;--teal-dark:#0D3B2E;--teal-mid:#2D8653;--teal-light:#F5F7F5;
-  --gold:#F5C518;--gold-dark:#C9921A;
-  --navy:#0F1A13;--gray:#6B7F72;--cream:#FFFFFF;--border:#E5E7EB;--white:#ffffff;
-  --forest:#0D3B2E;--green:#1A6B3C;--green2:#2D8653;--gold2:#C9921A;
-  --ink:#0F1A13;--body:#2E3C34;--muted:#6B7F72;--gray-faint:#C4D4CB;
-  --off:#F5F7F5;--radius:14px;--mono:'JetBrains Mono',monospace;}
+  --gold:#F5C518;--gold-dark:#C9921A;--navy:#0F1A13;--gray:#6B7F72;
+  --cream:#FFFFFF;--border:#E5E7EB;--white:#ffffff;--forest:#0D3B2E;
+  --green:#1A6B3C;--green2:#2D8653;--gold2:#C9921A;--ink:#0F1A13;
+  --body:#2E3C34;--muted:#6B7F72;--off:#F5F7F5;--radius:14px;
+  --mono:'JetBrains Mono',monospace;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--navy);overflow-x:hidden;}
 input,select{font-family:'DM Sans',sans-serif;}
 a{text-decoration:none;}
-.layout{display:grid;grid-template-columns:380px 1fr;height:calc(100vh - 86px);}
+.layout{display:grid;grid-template-columns:400px 1fr;height:calc(100vh - 86px);}
 .sidebar{display:flex;flex-direction:column;border-right:1px solid var(--border);overflow:hidden;background:var(--white);}
 .filters{padding:1rem;background:var(--white);border-bottom:1px solid var(--border);}
-.search-input{width:100%;padding:.7rem 1rem;border:1.5px solid var(--border);border-radius:10px;font-size:.9rem;color:var(--ink);background:var(--white);outline:none;margin-bottom:.6rem;transition:border-color .18s;font-family:'DM Sans',sans-serif;}
-.search-input:focus{border-color:var(--green);}
-.filter-row{display:flex;gap:.5rem;}
-.filter-select{flex:1;padding:.6rem .8rem;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;color:var(--ink);background:var(--white);outline:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color .18s;}
+.search-wrap{position:relative;margin-bottom:.6rem;}
+.search-input{width:100%;padding:.7rem 1rem .7rem 2.4rem;border:1.5px solid var(--border);border-radius:10px;font-size:.9rem;color:var(--ink);background:var(--white);outline:none;transition:border-color .18s;font-family:'DM Sans',sans-serif;}
+.search-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(26,107,60,.08);}
+.search-icon{position:absolute;left:.8rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.9rem;pointer-events:none;}
+.search-clear{position:absolute;right:.8rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:1rem;display:none;padding:.2rem;}
+.filter-row{display:flex;gap:.4rem;flex-wrap:wrap;}
+.filter-select{flex:1;min-width:100px;padding:.55rem .7rem;border:1.5px solid var(--border);border-radius:8px;font-size:.78rem;color:var(--ink);background:var(--white);outline:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color .18s;}
 .filter-select:focus{border-color:var(--green);}
-.job-list{overflow-y:auto;flex:1;padding:.8rem;display:flex;flex-direction:column;gap:.5rem;}
-.job-count{font-size:.78rem;font-weight:600;color:var(--muted);padding:.2rem 0 .4rem;}
-.job-card{border:1px solid var(--border);border-radius:14px;padding:1rem;cursor:pointer;transition:all .18s;background:var(--white);}
+.filter-select.active{border-color:var(--green);background:rgba(26,107,60,.04);color:var(--green);font-weight:600;}
+.active-filters{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.5rem;}
+.filter-tag{display:inline-flex;align-items:center;gap:.3rem;background:rgba(26,107,60,.1);color:var(--green);font-size:.72rem;font-weight:600;padding:.2rem .5rem .2rem .6rem;border-radius:100px;cursor:pointer;}
+.filter-tag:hover{background:rgba(26,107,60,.18);}
+.job-list{overflow-y:auto;flex:1;padding:.8rem;display:flex;flex-direction:column;gap:.4rem;}
+.job-count{font-size:.78rem;font-weight:600;color:var(--muted);padding:.2rem 0 .4rem;display:flex;justify-content:space-between;align-items:center;}
+.clear-all{font-size:.72rem;color:var(--green);cursor:pointer;font-weight:600;}
+.clear-all:hover{text-decoration:underline;}
+.job-card{border:1px solid var(--border);border-radius:12px;padding:.9rem 1rem;cursor:pointer;transition:all .18s;background:var(--white);}
 .job-card:hover,.job-card.sel{border-color:var(--green);box-shadow:0 4px 16px rgba(26,107,60,.1);}
 .job-card.sel{background:var(--off);}
-.job-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.3rem;}
-.job-title{font-weight:700;font-size:.9rem;color:var(--green);flex:1;line-height:1.3;}
-.cefr-badge{background:var(--gold);color:var(--forest);font-size:.68rem;font-weight:700;padding:.18rem .5rem;border-radius:5px;flex-shrink:0;margin-left:.5rem;}
-.job-org{font-size:.82rem;font-weight:500;margin-bottom:.2rem;}
-.job-meta{font-size:.78rem;color:var(--muted);display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;}
-.badge-gray{background:#F3F4F6;color:var(--muted);font-size:.7rem;font-weight:600;padding:.15rem .45rem;border-radius:5px;}
-.badge-agg{background:#EEF2FF;color:#4338CA;font-size:.68rem;font-weight:600;padding:.15rem .45rem;border-radius:5px;}
+.job-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.2rem;}
+.job-title{font-weight:700;font-size:.88rem;color:var(--green);flex:1;line-height:1.3;}
+.cefr-badge{background:var(--gold);color:var(--forest);font-size:.65rem;font-weight:700;padding:.15rem .45rem;border-radius:5px;flex-shrink:0;margin-left:.4rem;}
+.job-org{font-size:.8rem;font-weight:600;color:var(--ink);margin-bottom:.25rem;}
+.job-meta{font-size:.75rem;color:var(--muted);display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;}
+.badge-gray{background:#F3F4F6;color:var(--muted);font-size:.68rem;font-weight:600;padding:.12rem .4rem;border-radius:4px;}
+.badge-sector{background:rgba(26,107,60,.08);color:var(--green);font-size:.68rem;font-weight:600;padding:.12rem .4rem;border-radius:4px;}
+.badge-agg{background:#EEF2FF;color:#4338CA;font-size:.65rem;font-weight:600;padding:.12rem .4rem;border-radius:4px;}
 #map{height:100%;}
 .detail-panel{display:none;position:absolute;top:1rem;right:1rem;width:320px;background:var(--white);border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.18);padding:1.3rem;z-index:1000;max-height:calc(100vh - 106px);overflow-y:auto;}
 .detail-close{position:absolute;top:.8rem;right:.8rem;background:none;border:none;cursor:pointer;font-size:1.2rem;color:var(--muted);transition:color .15s;}
@@ -47,13 +57,16 @@ a{text-decoration:none;}
 .detail-tags{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem;}
 .badge-teal{background:rgba(26,107,60,.1);color:var(--green);font-size:.72rem;font-weight:600;padding:.18rem .5rem;border-radius:5px;}
 .detail-desc{font-size:.83rem;color:var(--muted);line-height:1.6;margin-bottom:.6rem;}
-.detail-salary{font-size:.8rem;color:var(--muted);margin-bottom:1rem;display:flex;gap:1rem;flex-wrap:wrap;}
-.detail-salary span{display:flex;align-items:center;gap:.3rem;}
+.detail-info{font-size:.8rem;color:var(--muted);margin-bottom:1rem;display:flex;flex-direction:column;gap:.4rem;}
+.detail-info-row{display:flex;align-items:center;gap:.5rem;}
 .agg-note{background:rgba(26,107,60,.06);border:1px solid rgba(26,107,60,.15);border-radius:8px;padding:.6rem .8rem;font-size:.78rem;color:var(--muted);margin-bottom:.8rem;}
-.btn-primary{display:flex;align-items:center;justify-content:center;width:100%;padding:.8rem;border-radius:10px;font-weight:700;font-size:.9rem;background:var(--gold);color:var(--forest);margin-bottom:.5rem;transition:all .2s;text-decoration:none;}
+.btn-primary{display:flex;align-items:center;justify-content:center;width:100%;padding:.8rem;border-radius:10px;font-weight:700;font-size:.88rem;background:var(--gold);color:var(--forest);margin-bottom:.5rem;transition:all .2s;text-decoration:none;}
 .btn-primary:hover{background:#f7ce3a;transform:translateY(-1px);}
-.btn-teal{display:flex;align-items:center;justify-content:center;width:100%;padding:.8rem;border-radius:10px;font-weight:700;font-size:.9rem;background:var(--green);color:#fff;transition:all .2s;text-decoration:none;}
+.btn-teal{display:flex;align-items:center;justify-content:center;width:100%;padding:.8rem;border-radius:10px;font-weight:700;font-size:.88rem;background:var(--green);color:#fff;transition:all .2s;text-decoration:none;}
 .btn-teal:hover{background:var(--forest);transform:translateY(-1px);}
+.no-results{padding:2rem 1rem;text-align:center;}
+.no-results p{font-size:.88rem;color:var(--muted);margin-bottom:.8rem;}
+.no-results button{background:var(--green);color:#fff;border:none;padding:.5rem 1rem;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;}
 @media(max-width:768px){.layout{grid-template-columns:1fr;}.layout>div:last-child{display:none;}}
 nav{height:auto}
 .nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:.5rem 2rem}
@@ -66,22 +79,9 @@ nav{height:auto}
 .nav-links a.ghost:hover{border-color:var(--green);color:var(--green)}
 .nav-links a.cta{background:var(--gold);color:var(--forest);border-radius:8px;padding:.45rem 1.1rem;font-weight:700;transition:background .15s}
 .nav-links a.cta:hover{background:#f7ce3a}
-footer{background:var(--ink);color:rgba(255,255,255,.6);padding:4rem 2rem 2rem}
-.foot-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
-.foot-logo{margin-bottom:.9rem}
-.foot-brand p{font-size:.85rem;line-height:1.7;max-width:260px;margin-bottom:.6rem}
-footer h5{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);font-family:var(--mono);margin-bottom:1.1rem}
-footer ul{list-style:none;display:flex;flex-direction:column;gap:.6rem}
-footer ul a{font-size:.88rem;color:rgba(255,255,255,.55);transition:color .15s}
-footer ul a:hover{color:var(--white)}
-.foot-bottom{max-width:1200px;margin:0 auto;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem}
-.foot-bottom span{font-size:.8rem;color:rgba(255,255,255,.25)}
-@media(max-width:1024px){.foot-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:640px){.nav{padding:.75rem 1rem}.nav-links{gap:1rem;font-size:.82rem}.foot-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
 <nav class="nav">
   <a href="index.html" class="nav-logo">
     <img src="assets/poist-logo-trans.png" alt="poist.ie" style="height:70px;width:auto;display:block;">
@@ -99,22 +99,42 @@ footer ul a:hover{color:var(--white)}
 <div class="layout">
   <div class="sidebar">
     <div class="filters">
-      <input type="text" id="sQ" class="search-input" placeholder="Search jobs, organisations…" oninput="filtJobs()">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="sQ" class="search-input" placeholder="Search jobs, organisations, location…" oninput="onSearch()">
+        <button class="search-clear" id="sClear" onclick="clearSearch()">×</button>
+      </div>
       <div class="filter-row">
-        <select id="sCefr" class="filter-select" onchange="filtJobs()">
-          <option value="">All levels</option>
-          <option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option>
+        <select id="sSector" class="filter-select" onchange="filtJobs()">
+          <option value="">All sectors</option>
+          <option value="Education">Education</option>
+          <option value="Gaeltacht Development">Gaeltacht</option>
+          <option value="Government">Government</option>
+          <option value="Health">Health</option>
+          <option value="Irish Language">Irish Language</option>
+          <option value="Irish Language Community">Irish Language Community</option>
+          <option value="Irish Language Education">Irish Language Education</option>
+          <option value="Irish Language Promotion">Irish Language Promotion</option>
+          <option value="Local Government">Local Government</option>
+          <option value="Media">Media</option>
+          <option value="Public Sector">Public Sector</option>
         </select>
         <select id="sType" class="filter-select" onchange="filtJobs()">
           <option value="">All types</option>
           <option value="full_time">Full-time</option>
           <option value="part_time">Part-time</option>
           <option value="contract">Contract</option>
+          <option value="temporary">Temporary</option>
+        </select>
+        <select id="sCefr" class="filter-select" onchange="filtJobs()">
+          <option value="">All levels</option>
+          <option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option>
         </select>
       </div>
+      <div class="active-filters" id="activeFilters"></div>
     </div>
     <div class="job-list">
-      <div id="jCnt" class="job-count">Loading…</div>
+      <div id="jCnt" class="job-count"><span>Loading…</span></div>
       <div id="jList"></div>
     </div>
   </div>
@@ -145,30 +165,31 @@ var COUNTY_COORDS = {
   Waterford:[52.26,-7.12],Westmeath:[53.53,-7.46],Wexford:[52.34,-6.46],Wicklow:[52.98,-6.44]
 };
 
-// Irish place name to county mapping
-var IRISH_PLACE_TO_COUNTY = {
-  'corcaigh':'Cork','luimneach':'Limerick','gaillimh':'Galway','baile atha cliath':'Dublin',
-  'baile átha cliath':'Dublin','port láirge':'Waterford','cill áirne':'Kerry',
-  'loch an iúir':'Donegal','an daingean':'Kerry','dingle':'Kerry',
-  'conamara':'Galway','connemara':'Galway','gaeltacht':'Galway',
-  'an cheathrú rua':'Galway','spiddal':'Galway','an spidéal':'Galway',
-  'ros muc':'Galway','carna':'Galway','clifden':'Galway','an clochán':'Galway',
-  'letterkenny':'Donegal','leitir ceanainn':'Donegal','gweedore':'Donegal',
-  'gaoth dobhair':'Donegal','falcarragh':'Donegal','belmullet':'Mayo',
-  'westport':'Mayo','castlebar':'Mayo','sligo':'Sligo',
-  'tralee':'Kerry','killarney':'Kerry','cork':'Cork',
-  'dublin':'Dublin','galway':'Galway','limerick':'Limerick',
-  'waterford':'Waterford','drogheda':'Louth','dundalk':'Louth'
+var IRISH_PLACES = {
+  'corcaigh':'Cork','luimneach':'Limerick','gaillimh':'Galway',
+  'baile atha cliath':'Dublin','baile átha cliath':'Dublin',
+  'port láirge':'Waterford','cill áirne':'Kerry','loch an iúir':'Donegal',
+  'an daingean':'Kerry','dingle':'Kerry','conamara':'Galway',
+  'connemara':'Galway','an cheathrú rua':'Galway','spiddal':'Galway',
+  'an spidéal':'Galway','ros muc':'Galway','carna':'Galway',
+  'clifden':'Galway','an clochán':'Galway','letterkenny':'Donegal',
+  'leitir ceanainn':'Donegal','gweedore':'Donegal','gaoth dobhair':'Donegal',
+  'falcarragh':'Donegal','belmullet':'Mayo','westport':'Mayo',
+  'castlebar':'Mayo','tralee':'Kerry','killarney':'Kerry',
+  'an mhi':'Meath','cill dara':'Kildare','cill chainnigh':'Kilkenny',
+  'tiobraid árann':'Tipperary','ros comáin':'Roscommon',
+  'muineachán':'Monaghan','an longfort':'Longford','an iarmhí':'Westmeath',
+  'loch garman':'Wexford','ceatharlach':'Carlow','an cabhán':'Cavan',
+  'maigh eo':'Mayo','sligeach':'Sligo','liatroim':'Leitrim',
+  'uíbh fhailí':'Offaly','laois':'Laois','an clár':'Clare'
 };
 
-function getCountyFromTitle(title) {
-  var t = title.toLowerCase();
-  for (var place in IRISH_PLACE_TO_COUNTY) {
-    if (t.indexOf(place) !== -1) return IRISH_PLACE_TO_COUNTY[place];
-  }
-  for (var county in COUNTY_COORDS) {
-    if (t.indexOf(county.toLowerCase()) !== -1) return county;
-  }
+var TYPE_LABELS = {full_time:'Full-time', part_time:'Part-time', contract:'Contract', temporary:'Temporary'};
+
+function getCounty(title) {
+  var t = (title || '').toLowerCase();
+  for (var p in IRISH_PLACES) { if (t.indexOf(p) !== -1) return IRISH_PLACES[p]; }
+  for (var c in COUNTY_COORDS) { if (t.indexOf(c.toLowerCase()) !== -1) return c; }
   return '';
 }
 
@@ -179,133 +200,176 @@ var sbClient = supabase.createClient(
 
 var theMap = L.map('map').setView([53.4,-8.0],7);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(theMap);
+var iconDef = L.divIcon({html:'<div style="background:#F5C518;width:13px;height:13px;border-radius:50%;border:2px solid #C9921A;box-shadow:0 2px 6px rgba(0,0,0,.3);"></div>',className:'',iconSize:[13,13]});
+var iconAct = L.divIcon({html:'<div style="background:#1A6B3C;width:17px;height:17px;border-radius:50%;border:2px solid #0D3B2E;box-shadow:0 2px 8px rgba(26,107,60,.5);"></div>',className:'',iconSize:[17,17]});
 
-var iconDefault = L.divIcon({html:'<div style="background:#F5C518;width:14px;height:14px;border-radius:50%;border:2px solid #C9921A;box-shadow:0 2px 6px rgba(0,0,0,.3);"></div>',className:'',iconSize:[14,14]});
-var iconActive  = L.divIcon({html:'<div style="background:#1A6B3C;width:18px;height:18px;border-radius:50%;border:2px solid #0D3B2E;box-shadow:0 2px 8px rgba(26,107,60,.5);"></div>',className:'',iconSize:[18,18]});
-
-function daysAgo(dateStr) {
-  if (!dateStr) return 'Recently';
-  var d = Math.floor((Date.now() - new Date(dateStr)) / 86400000);
-  if (d === 0) return 'Today';
-  if (d === 1) return '1 day ago';
-  if (d < 7) return d + ' days ago';
-  if (d < 14) return '1 week ago';
-  return Math.floor(d/7) + ' weeks ago';
+function daysAgo(d) {
+  if (!d) return 'Recently';
+  var n = Math.floor((Date.now()-new Date(d))/86400000);
+  if (n===0) return 'Today'; if (n===1) return '1 day ago';
+  if (n<7) return n+' days ago'; if (n<14) return '1 week ago';
+  return Math.floor(n/7)+' weeks ago';
 }
 
-function toUIJob(row) {
-  var county = row.county || getCountyFromTitle(row.title || '');
-  var coords = COUNTY_COORDS[county];
+function toUIJob(r) {
+  var county = r.county || getCounty(r.title||'');
+  var coords = r.lat && r.lng ? [parseFloat(r.lat), parseFloat(r.lng)] : (COUNTY_COORDS[county] || null);
   return {
-    id: row.id,
-    title: row.title || 'Untitled Role',
-    org: row.org_name || row.source_name || '—',
-    location: county || 'Ireland',
-    county: county,
-    type: row.job_type || '',
-    cefr: row.cefr_level || '',
-    sector: row.sector || '',
-    posted: daysAgo(row.created_at),
-    lat: coords ? coords[0] : null,
-    lng: coords ? coords[1] : null,
-    desc: row.description || '',
-    salary: row.salary || 'POA',
-    closing: row.closing_date || '',
-    source_url: row.source_url || null,
-    source_name: row.source_name || '',
-    is_aggregated: !!row.is_aggregated
+    id:r.id, title:r.title||'Untitled Role',
+    org:r.org_name||r.source_name||'—',
+    location:r.location||county||'Ireland',
+    county:county, type:r.job_type||'',
+    cefr:r.cefr_level||'', sector:r.sector||'',
+    posted:daysAgo(r.created_at),
+    lat:coords?coords[0]:null, lng:coords?coords[1]:null,
+    desc:r.description||'', salary:r.salary||'POA',
+    closing:r.closing_date||'',
+    source_url:r.source_url||null,
+    source_name:r.source_name||'',
+    is_aggregated:!!r.is_aggregated
   };
 }
 
 function loadJobs() {
-  document.getElementById('jCnt').textContent = 'Loading…';
+  document.getElementById('jCnt').innerHTML = '<span>Loading…</span>';
   sbClient.from('jobs').select('*').eq('status','approved').order('created_at',{ascending:false})
-    .then(function(result) {
-      if (result.error) {
-        console.error('Supabase error:', result.error);
-        document.getElementById('jCnt').textContent = 'Could not load jobs';
-        return;
-      }
-      JOBS = (result.data || []).map(toUIJob);
+    .then(function(res) {
+      if (res.error) { document.getElementById('jCnt').innerHTML='<span>Could not load jobs</span>'; return; }
+      JOBS = (res.data||[]).map(toUIJob);
       JOBS.forEach(function(j) {
         if (j.lat && j.lng) {
-          var m = L.marker([j.lat, j.lng], {icon: iconDefault}).addTo(theMap);
-          m.on('click', function() { showJob(j.id); });
-          markers[j.id] = m;
+          var m = L.marker([j.lat,j.lng],{icon:iconDef}).addTo(theMap);
+          m.on('click',function(){showJob(j.id);});
+          markers[j.id]=m;
         }
       });
       filtJobs();
       var hId = new URLSearchParams(window.location.search).get('highlight');
-      if (hId) {
-        var found = JOBS.find(function(x) { return String(x.id) === hId; });
-        if (found) setTimeout(function() { showJob(found.id); }, 400);
-      }
+      if (hId) { var f=JOBS.find(function(x){return String(x.id)===hId;}); if(f) setTimeout(function(){showJob(f.id);},400); }
     });
 }
 
-function cefrBadge(l) {
-  return l ? '<span class="cefr-badge">' + l + '</span>' : '';
+function cefrBadge(l){return l?'<span class="cefr-badge">'+l+'</span>':'';}
+
+function onSearch() {
+  var q = document.getElementById('sQ').value;
+  document.getElementById('sClear').style.display = q ? 'block' : 'none';
+  filtJobs();
+}
+
+function clearSearch() {
+  document.getElementById('sQ').value = '';
+  document.getElementById('sClear').style.display = 'none';
+  filtJobs();
+}
+
+function resetFilters() {
+  document.getElementById('sQ').value='';
+  document.getElementById('sClear').style.display='none';
+  document.getElementById('sSector').value='';
+  document.getElementById('sType').value='';
+  document.getElementById('sCefr').value='';
+  filtJobs();
 }
 
 function filtJobs() {
-  var q = document.getElementById('sQ').value.toLowerCase();
-  var c = document.getElementById('sCefr').value;
-  var t = document.getElementById('sType').value;
+  var q = document.getElementById('sQ').value.toLowerCase().trim();
+  var sec = document.getElementById('sSector').value;
+  var typ = document.getElementById('sType').value;
+  var cef = document.getElementById('sCefr').value;
+
+  // Update filter select styling
+  document.getElementById('sSector').className = 'filter-select' + (sec?' active':'');
+  document.getElementById('sType').className   = 'filter-select' + (typ?' active':'');
+  document.getElementById('sCefr').className   = 'filter-select' + (cef?' active':'');
+
+  // Active filter tags
+  var tags = '';
+  if (sec) tags += '<span class="filter-tag" onclick="document.getElementById(\'sSector\').value=\'\';filtJobs();">'+sec+' ×</span>';
+  if (typ) tags += '<span class="filter-tag" onclick="document.getElementById(\'sType\').value=\'\';filtJobs();">'+(TYPE_LABELS[typ]||typ)+' ×</span>';
+  if (cef) tags += '<span class="filter-tag" onclick="document.getElementById(\'sCefr\').value=\'\';filtJobs();">'+cef+' ×</span>';
+  document.getElementById('activeFilters').innerHTML = tags;
+
   var r = JOBS.filter(function(j) {
-    return (!q || j.title.toLowerCase().indexOf(q) !== -1 || j.org.toLowerCase().indexOf(q) !== -1 || j.location.toLowerCase().indexOf(q) !== -1) &&
-           (!c || j.cefr === c) && (!t || j.type === t);
+    if (q) {
+      var search = j.title.toLowerCase()+' '+j.org.toLowerCase()+' '+j.location.toLowerCase()+' '+j.sector.toLowerCase()+' '+j.source_name.toLowerCase();
+      if (search.indexOf(q) === -1) return false;
+    }
+    if (sec && j.sector !== sec) return false;
+    if (typ && j.type !== typ) return false;
+    if (cef && j.cefr !== cef) return false;
+    return true;
   });
-  document.getElementById('jCnt').textContent = r.length + ' Irish language job' + (r.length !== 1 ? 's' : '');
+
+  var hasFilters = q||sec||typ||cef;
+  document.getElementById('jCnt').innerHTML =
+    '<span>'+r.length+' Irish language job'+(r.length!==1?'s':'')+'</span>'+
+    (hasFilters?'<span class="clear-all" onclick="resetFilters()">Clear filters</span>':'');
+
+  if (!r.length) {
+    document.getElementById('jList').innerHTML =
+      '<div class="no-results"><p>No jobs match your filters.</p><button onclick="resetFilters()">Clear all filters</button></div>';
+    return;
+  }
+
   var html = '';
   r.forEach(function(j) {
-    html += '<div class="job-card' + (activeJ === j.id ? ' sel' : '') + '" onclick="showJob(\'' + j.id + '\')">';
-    html += '<div class="job-card-top"><div class="job-title">' + j.title + '</div>' + cefrBadge(j.cefr) + '</div>';
-    html += '<div class="job-org">' + j.org + '</div>';
-    html += '<div class="job-meta">📍 ' + j.location;
-    if (j.type) html += ' <span class="badge-gray">' + j.type + '</span>';
-    if (j.is_aggregated) html += ' <span class="badge-agg">Via ' + j.source_name + '</span>';
-    html += ' <span style="margin-left:auto;">' + j.posted + '</span></div></div>';
+    html += '<div class="job-card'+(activeJ===j.id?' sel':'')+'" onclick="showJob(\''+j.id+'\')">';
+    html += '<div class="job-card-top"><div class="job-title">'+j.title+'</div>'+cefrBadge(j.cefr)+'</div>';
+    html += '<div class="job-org">'+j.org+'</div>';
+    html += '<div class="job-meta">📍 '+j.location;
+    if (j.type) html += ' <span class="badge-gray">'+(TYPE_LABELS[j.type]||j.type)+'</span>';
+    if (j.sector) html += ' <span class="badge-sector">'+j.sector+'</span>';
+    if (j.is_aggregated) html += ' <span class="badge-agg">Via '+j.source_name+'</span>';
+    html += '<span style="margin-left:auto;">'+j.posted+'</span></div></div>';
   });
-  document.getElementById('jList').innerHTML = html || '<p style="padding:.5rem;font-size:.85rem;color:var(--muted);">No jobs match your filters.</p>';
+  document.getElementById('jList').innerHTML = html;
 }
 
 function showJob(id) {
-  var j = JOBS.find(function(x) { return String(x.id) === String(id); });
+  var j = JOBS.find(function(x){return String(x.id)===String(id);});
   if (!j) return;
   activeJ = j.id;
-  if (j.lat && j.lng) theMap.setView([j.lat, j.lng], 10);
-  Object.values(markers).forEach(function(m) { m.setIcon(iconDefault); });
-  if (markers[j.id]) markers[j.id].setIcon(iconActive);
-  document.getElementById('jDetail').style.display = 'block';
+  if (j.lat && j.lng) theMap.setView([j.lat,j.lng],10);
+  Object.values(markers).forEach(function(m){m.setIcon(iconDef);});
+  if (markers[j.id]) markers[j.id].setIcon(iconAct);
+  document.getElementById('jDetail').style.display='block';
 
-  var aggNote = j.is_aggregated ? '<div class="agg-note">📡 Found on <strong>' + j.source_name + '</strong> — Irish language required (CEFR level not specified). View original listing for full details.</div>' : '';
+  var aggNote = j.is_aggregated
+    ? '<div class="agg-note">📡 Found on <strong>'+j.source_name+'</strong> — Irish language required. CEFR level not specified — view original listing for full details.</div>'
+    : '';
+
+  var infoRows = '';
+  infoRows += '<div class="detail-info-row">💰 <strong>'+(j.salary||'POA')+'</strong></div>';
+  if (j.location) infoRows += '<div class="detail-info-row">📍 '+j.location+'</div>';
+  if (j.type) infoRows += '<div class="detail-info-row">⏰ '+(TYPE_LABELS[j.type]||j.type)+'</div>';
+  if (j.sector) infoRows += '<div class="detail-info-row">🏷️ '+j.sector+'</div>';
+  if (j.closing) infoRows += '<div class="detail-info-row">📅 Closes '+j.closing+'</div>';
+
   var viewBtn = j.source_url
-    ? '<a href="' + j.source_url + '" target="_blank" rel="noopener" class="btn-primary">View Original Listing →</a>'
-    : '<a href="job.html?id=' + j.id + '" class="btn-primary">View Full Role →</a>';
+    ? '<a href="'+j.source_url+'" target="_blank" rel="noopener" class="btn-primary">View Original Listing →</a>'
+    : '<a href="job.html?id='+j.id+'" class="btn-primary">View Full Role →</a>';
   var applyBtn = j.source_url
-    ? '<a href="' + j.source_url + '" target="_blank" rel="noopener" class="btn-teal">Apply on ' + j.source_name + ' →</a>'
-    : '<a href="job.html?id=' + j.id + '" class="btn-teal">Apply Now →</a>';
+    ? '<a href="'+j.source_url+'" target="_blank" rel="noopener" class="btn-teal">Apply on '+j.source_name+' →</a>'
+    : '<a href="job.html?id='+j.id+'" class="btn-teal">Apply Now →</a>';
 
   document.getElementById('jDContent').innerHTML =
-    '<div class="detail-title">' + j.title + '</div>' +
-    '<div class="detail-org">' + j.org + '</div>' +
-    '<div class="detail-meta">📍 ' + j.location + ' · ' + (j.type || 'See listing') + ' · ' + j.posted + '</div>' +
-    '<div class="detail-tags">' + cefrBadge(j.cefr) + (j.sector ? '<span class="badge-teal">' + j.sector + '</span>' : '') + '</div>' +
-    aggNote +
-    (j.desc ? '<p class="detail-desc">' + j.desc.substring(0,220) + (j.desc.length > 220 ? '…' : '') + '</p>' : '') +
-    '<div class="detail-salary">' +
-    (j.salary ? '<span>💰 ' + j.salary + '</span>' : '<span>💰 POA</span>') +
-    (j.closing ? '<span>📅 Closes ' + j.closing + '</span>' : '') +
-    '</div>' +
-    viewBtn + applyBtn;
+    '<div class="detail-title">'+j.title+'</div>'+
+    '<div class="detail-org">'+j.org+'</div>'+
+    '<div class="detail-meta">'+j.posted+'</div>'+
+    '<div class="detail-tags">'+cefrBadge(j.cefr)+(j.sector?'<span class="badge-teal">'+j.sector+'</span>':'')+'</div>'+
+    aggNote+
+    (j.desc?'<p class="detail-desc">'+j.desc.substring(0,240)+(j.desc.length>240?'…':'')+'</p>':'')+
+    '<div class="detail-info">'+infoRows+'</div>'+
+    viewBtn+applyBtn;
 
   filtJobs();
 }
 
 function closeDetail() {
-  document.getElementById('jDetail').style.display = 'none';
-  activeJ = null;
-  Object.values(markers).forEach(function(m) { m.setIcon(iconDefault); });
+  document.getElementById('jDetail').style.display='none';
+  activeJ=null;
+  Object.values(markers).forEach(function(m){m.setIcon(iconDef);});
   filtJobs();
 }
 
