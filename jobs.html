@@ -222,7 +222,11 @@ async function loadJobs() {
 
   if (error) {
     console.error('Supabase error:', error);
-    document.getElementById('jCnt').textContent = 'Could not load jobs';
+    document.getElementById('jCnt').textContent = `Error: ${error.message || error.code || JSON.stringify(error)}`;
+    return;
+  }
+  if (!data || data.length === 0) {
+    document.getElementById('jCnt').textContent = 'No approved jobs found (0 rows returned)';
     return;
   }
 
