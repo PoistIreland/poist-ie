@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>poist.ie — Post a Job</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#0D3B2E;--green:#1A6B3C;--green2:#2D8653;
+  --gold:#F5C518;--gold2:#C9921A;
+  --ink:#0F1A13;--body:#2E3C34;--muted:#6B7F72;
+  --gray-faint:#C4D4CB;--off:#F5F7F5;--border:#DDE8E2;
+  --white:#ffffff;--radius:14px;--mono:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--ink);overflow-x:hidden;}
+a{text-decoration:none;}
+h1,h2,h3,h4{font-family:'Syne',sans-serif;}
+input,select,textarea{font-family:'DM Sans',sans-serif;}
+
+/* NAV */
+nav{height:auto}
+.nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:.5rem 2rem}
+.nav-logo{display:block}
+.nav-links{display:flex;align-items:center;gap:1.8rem;font-size:.9rem;font-weight:500}
+.nav-links a{color:var(--body);transition:color .15s}
+.nav-links a:hover{color:var(--green)}
+.ga-sm{font-size:.75rem;color:var(--muted);margin-left:.25rem}
+.nav-links a.ghost{border:1.5px solid var(--border);border-radius:8px;padding:.4rem .9rem;color:var(--body)}
+.nav-links a.ghost:hover{border-color:var(--green);color:var(--green)}
+.nav-links a.cta{background:var(--gold);color:var(--forest);border-radius:8px;padding:.45rem 1.1rem;font-weight:700;transition:background .15s}
+.nav-links a.cta:hover{background:#f7ce3a}
+
+/* HERO */
+.hero{background:var(--forest);color:#fff;padding:5rem 2rem 3.5rem;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(45,134,83,.3) 0%,transparent 65%);pointer-events:none;}
+.hero-inner{position:relative;z-index:1;}
+.hero-kicker{background:rgba(245,197,24,.15);border:1px solid rgba(245,197,24,.35);color:var(--gold);padding:.35rem .9rem;border-radius:100px;font-size:.78rem;font-weight:600;letter-spacing:.04em;display:inline-block;margin-bottom:1.3rem;font-family:var(--mono);}
+.hero h1{font-size:clamp(2rem,4.5vw,3rem);font-weight:800;margin-bottom:.8rem;line-height:1.1;}
+.hero p{color:rgba(255,255,255,.6);font-size:1rem;max-width:560px;margin:0 auto;}
+
+/* PERKS STRIP */
+.perks{background:var(--white);border-bottom:1px solid var(--border);}
+.perks-inner{max-width:900px;margin:0 auto;padding:1.5rem 2rem;display:flex;justify-content:center;gap:3rem;flex-wrap:wrap;}
+.perk{display:flex;align-items:center;gap:.5rem;font-size:.85rem;font-weight:500;color:var(--body);}
+.perk-icon{font-size:1rem;}
+
+/* FORM WRAP */
+.form-wrap{max-width:720px;margin:0 auto;padding:3rem 2rem 5rem;}
+
+/* SECTION HEADING */
+.form-section{margin-bottom:2.5rem;}
+.form-section-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-family:var(--mono);margin-bottom:1.2rem;padding-bottom:.6rem;border-bottom:1px solid var(--border);}
+
+/* FIELDS */
+.field{margin-bottom:1.25rem;}
+.field label{display:block;font-size:.85rem;font-weight:600;color:var(--ink);margin-bottom:.4rem;}
+.field label .req{color:var(--green);margin-left:.15rem;}
+.field input,.field select,.field textarea{width:100%;padding:.7rem 1rem;border:1.5px solid var(--border);border-radius:10px;font-size:.93rem;color:var(--ink);background:var(--white);transition:border-color .15s,box-shadow .15s;outline:none;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(26,107,60,.1);}
+.field textarea{resize:vertical;min-height:130px;line-height:1.65;}
+.field .hint{font-size:.78rem;color:var(--muted);margin-top:.35rem;line-height:1.5;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.cefr-select{background-image:none;}
+
+/* CEFR HELPER */
+.cefr-pills{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.6rem;}
+.cefr-pill{padding:.25rem .75rem;border-radius:100px;font-size:.78rem;font-weight:600;font-family:var(--mono);border:1.5px solid var(--border);color:var(--muted);cursor:default;}
+.cefr-pill.a{border-color:#60A5FA;color:#1D4ED8;background:#EFF6FF;}
+.cefr-pill.b{border-color:#34D399;color:#065F46;background:#ECFDF5;}
+.cefr-pill.c{border-color:#A78BFA;color:#5B21B6;background:#F5F3FF;}
+
+/* SUBMIT */
+.form-submit{margin-top:2rem;}
+.btn-submit{display:inline-flex;align-items:center;gap:.5rem;background:var(--gold);color:var(--forest);font-weight:700;font-size:1rem;padding:.85rem 2rem;border-radius:10px;border:none;cursor:pointer;transition:background .15s,transform .1s;font-family:'DM Sans',sans-serif;}
+.btn-submit:hover{background:#f7ce3a;transform:translateY(-1px);}
+.form-note{font-size:.8rem;color:var(--muted);margin-top:.9rem;line-height:1.6;}
+
+/* SUCCESS STATE */
+.success-card{display:none;background:var(--white);border:1.5px solid rgba(26,107,60,.25);border-radius:var(--radius);padding:3rem 2rem;text-align:center;}
+.success-card.visible{display:block;}
+.success-icon{font-size:2.8rem;margin-bottom:1rem;}
+.success-card h2{font-size:1.6rem;font-weight:800;color:var(--forest);margin-bottom:.6rem;}
+.success-card p{font-size:.93rem;color:var(--body);line-height:1.7;max-width:420px;margin:0 auto .5rem;}
+.success-card a{color:var(--green);font-weight:600;font-size:.9rem;margin-top:1.5rem;display:inline-block;}
+
+/* FOOTER */
+footer{background:var(--ink);color:rgba(255,255,255,.6);padding:4rem 2rem 2rem}
+.foot-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+.foot-logo{margin-bottom:.9rem}
+.foot-brand p{font-size:.85rem;line-height:1.7;max-width:260px;margin-bottom:.6rem}
+.foot-brand .ga{font-size:.78rem;color:rgba(255,255,255,.3)}
+footer h5{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);font-family:var(--mono);margin-bottom:1.1rem}
+footer h5 .ga-sm{display:block;font-size:.65rem;text-transform:none;letter-spacing:0;margin-top:.2rem;color:rgba(255,255,255,.2)}
+footer ul{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+footer ul a{font-size:.88rem;color:rgba(255,255,255,.55);transition:color .15s}
+footer ul a:hover{color:var(--white)}
+.foot-bottom{max-width:1200px;margin:0 auto;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem}
+.foot-bottom span{font-size:.8rem;color:rgba(255,255,255,.25)}
+.foot-bottom .tag{font-size:.75rem;font-style:italic}
+@media(max-width:1024px){.foot-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){
+  .nav{padding:.75rem 1rem}.nav-links{gap:1rem;font-size:.82rem}
+  .foot-grid{grid-template-columns:1fr}
+  .field-row{grid-template-columns:1fr}
+  .perks-inner{gap:1.5rem}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <img src="assets/poist-logo-trans.png" alt="poist.ie" style="height:70px; width:auto; display:block;">
+  </a>
+  <div class="nav-links">
+    <a href="jobs.html">Browse Jobs <span class="ga-sm">/ Poist</span></a>
+    <a href="employers.html">For Employers</a>
+    <a href="cefr-guide.html">CEFR Guide</a>
+    <a href="about.html">About</a>
+    <a href="login.html" class="ghost">Log in</a>
+    <a href="register-candidate.html" class="cta">Get Started</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-kicker">Fostóirí · Free during launch</div>
+    <h1>Post a Job on poist.ie</h1>
+    <p>Reach Ireland's most motivated Irish-language job seekers — CEFR-verified candidates ready to work.</p>
+  </div>
+</div>
+
+<div class="perks">
+  <div class="perks-inner">
+    <div class="perk"><span class="perk-icon">✓</span> Free during launch phase</div>
+    <div class="perk"><span class="perk-icon">✓</span> CEFR-matched candidates</div>
+    <div class="perk"><span class="perk-icon">✓</span> Live on the jobs map</div>
+    <div class="perk"><span class="perk-icon">✓</span> 2030 Act compliance</div>
+  </div>
+</div>
+
+<div class="form-wrap">
+
+  <form id="jobForm" onsubmit="submitForm(event)" novalidate>
+
+    <div class="form-section">
+      <div class="form-section-title">Role details</div>
+
+      <div class="field">
+        <label>Job title <span class="req">*</span></label>
+        <input type="text" name="title" placeholder="e.g. Irish Language Officer" required>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Organisation <span class="req">*</span></label>
+          <input type="text" name="org" placeholder="e.g. An Roinn Oideachais" required>
+        </div>
+        <div class="field">
+          <label>Sector <span class="req">*</span></label>
+          <select name="sector" required>
+            <option value="">Select sector…</option>
+            <option>Government</option>
+            <option>Semi-state</option>
+            <option>Education</option>
+            <option>Healthcare</option>
+            <option>Technology</option>
+            <option>Media</option>
+            <option>Non-profit</option>
+            <option>Private sector</option>
+            <option>Legal</option>
+            <option>Finance</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Job type <span class="req">*</span></label>
+          <select name="type" required>
+            <option value="">Select type…</option>
+            <option>Full-time</option>
+            <option>Part-time</option>
+            <option>Contract</option>
+            <option>Temporary</option>
+            <option>Internship</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Closing date <span class="req">*</span></label>
+          <input type="date" name="closing" required>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Location</div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Town / City <span class="req">*</span></label>
+          <input type="text" name="location" placeholder="e.g. Gaillimh" required>
+        </div>
+        <div class="field">
+          <label>County <span class="req">*</span></label>
+          <select name="county" required>
+            <option value="">Select county…</option>
+            <option>Antrim</option><option>Armagh</option><option>Carlow</option>
+            <option>Cavan</option><option>Clare</option><option>Cork</option>
+            <option>Derry</option><option>Donegal</option><option>Down</option>
+            <option>Dublin</option><option>Fermanagh</option><option>Galway</option>
+            <option>Kerry</option><option>Kildare</option><option>Kilkenny</option>
+            <option>Laois</option><option>Leitrim</option><option>Limerick</option>
+            <option>Longford</option><option>Louth</option><option>Mayo</option>
+            <option>Meath</option><option>Monaghan</option><option>Offaly</option>
+            <option>Roscommon</option><option>Sligo</option><option>Tipperary</option>
+            <option>Tyrone</option><option>Waterford</option><option>Westmeath</option>
+            <option>Wexford</option><option>Wicklow</option>
+            <option>Remote / Nationwide</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Irish language requirement</div>
+
+      <div class="field">
+        <label>Minimum CEFR level required <span class="req">*</span></label>
+        <select name="cefr" required>
+          <option value="">Select level…</option>
+          <option value="A1">A1 — Beginner / Tosaitheoir</option>
+          <option value="A2">A2 — Elementary / Bunrang</option>
+          <option value="B1">B1 — Intermediate / Meánrang</option>
+          <option value="B2">B2 — Upper-intermediate / Ardmheánrang</option>
+          <option value="C1">C1 — Advanced / Ardleibhéal</option>
+          <option value="C2">C2 — Proficient / Ar ardchaighdeán</option>
+        </select>
+        <div class="hint">Select the lowest level you would consider. Candidates at or above this level will be matched to your listing.</div>
+        <div class="cefr-pills">
+          <span class="cefr-pill a">A1</span>
+          <span class="cefr-pill a">A2</span>
+          <span class="cefr-pill b">B1</span>
+          <span class="cefr-pill b">B2</span>
+          <span class="cefr-pill c">C1</span>
+          <span class="cefr-pill c">C2</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Role description</div>
+
+      <div class="field">
+        <label>Job description <span class="req">*</span></label>
+        <textarea name="desc" placeholder="Describe the role, responsibilities and what you're looking for in a candidate…" required></textarea>
+        <div class="hint">Plain text is fine. Aim for 80–300 words to give candidates a clear picture of the role.</div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Salary / salary range</label>
+          <input type="text" name="salary" placeholder="e.g. €45,000 – €55,000">
+          <div class="hint">Optional but recommended — listings with salary attract more applicants.</div>
+        </div>
+        <div class="field">
+          <label>How to apply</label>
+          <input type="text" name="apply" placeholder="URL or email address">
+          <div class="hint">Link to your application page, or an email address.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Your contact details</div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Your name <span class="req">*</span></label>
+          <input type="text" name="contactName" placeholder="Full name" required>
+        </div>
+        <div class="field">
+          <label>Contact email <span class="req">*</span></label>
+          <input type="email" name="contactEmail" placeholder="you@organisation.ie" required>
+          <div class="hint">Not published — used to confirm your listing.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-submit">
+      <button type="submit" class="btn-submit">Submit Listing →</button>
+      <p class="form-note">
+        By submitting you confirm this is a genuine vacancy and that you agree to our
+        <a href="terms.html" style="color:var(--green);font-weight:600;">Terms of Service</a>.
+        Listings are reviewed before going live — usually within one working day.
+        poist.ie is <strong>free for employers</strong> during our launch phase.
+      </p>
+    </div>
+
+  </form>
+
+  <div class="success-card" id="successCard">
+    <div class="success-icon">✓</div>
+    <h2>Listing submitted!</h2>
+    <p>Thanks — we'll review your listing and have it live on poist.ie within one working day. We'll email you at the address you provided once it's published.</p>
+    <p style="margin-top:.75rem;font-size:.85rem;color:var(--muted);">In the meantime, you can <a href="employer-search.html" style="color:var(--green);font-weight:600;">browse verified candidates</a> on our platform.</p>
+    <a href="jobs.html">← Browse current listings</a>
+  </div>
+
+</div>
+
+<footer>
+  <div class="foot-grid">
+    <div class="foot-brand">
+      <div class="foot-logo">
+        <a href="index.html">
+          <img src="assets/poist-logo-trans.png" alt="poist.ie" style="height:56px; width:auto; filter:brightness(0) invert(1);">
+        </a>
+      </div>
+      <p>Ireland's CEFR-verified jobs platform. Every candidate, every hire, every level — backed by evidence.</p>
+      <div class="ga">Ag nascadh cainteoirí Gaeilge le deiseanna.</div>
+    </div>
+    <div>
+      <h5>Candidates<span class="ga-sm">Iarrthóirí</span></h5>
+      <ul>
+        <li><a href="candidates.html">Language Passport</a></li>
+        <li><a href="jobs.html">Browse Jobs</a></li>
+        <li><a href="cefr-guide.html">CEFR Guide</a></li>
+        <li><a href="assessment.html">Take the assessment</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Employers<span class="ga-sm">Fostóirí</span></h5>
+      <ul>
+        <li><a href="add-job.html">Post a Job</a></li>
+        <li><a href="employer-search.html">Candidate Search</a></li>
+        <li><a href="employers.html">2030 Compliance</a></li>
+        <li><a href="employers.html">Pricing</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Company<span class="ga-sm">An chuideachta</span></h5>
+      <ul>
+        <li><a href="about.html">About poist.ie</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="privacy.html">Privacy</a></li>
+        <li><a href="terms.html">Terms</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 poist.ie · Séamus Ó Fátharta</span>
+    <span class="tag">Ag nascadh cainteoirí Gaeilge le deiseanna · Connecting Irish speakers with opportunity</span>
+  </div>
+</footer>
+
+<script>
+window.submitForm = function(e) {
+  e.preventDefault();
+  const form = document.getElementById('jobForm');
+  const required = form.querySelectorAll('[required]');
+  let valid = true;
+  required.forEach(el => {
+    if (!el.value.trim()) {
+      el.style.borderColor = '#EF4444';
+      el.style.boxShadow = '0 0 0 3px rgba(239,68,68,.1)';
+      valid = false;
+      el.addEventListener('input', () => {
+        el.style.borderColor = '';
+        el.style.boxShadow = '';
+      }, {once: true});
+    }
+  });
+  if (!valid) {
+    const first = form.querySelector('[required]:placeholder-shown, [required][value=""]');
+    (first || form.querySelector('[required]')).scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+  form.style.display = 'none';
+  const sc = document.getElementById('successCard');
+  sc.classList.add('visible');
+  sc.scrollIntoView({behavior:'smooth',block:'start'});
+};
+</script>
+</body>
+</html>

@@ -3,55 +3,61 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>poist.ie — Terms of Service</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--teal:#1A7A6E;--teal-dark:#0f5a51;--teal-mid:#2a9d8f;--teal-light:#E8F5F3;--gold:#F5C518;--gold-dark:#d4a800;--navy:#1A1A2E;--gray:#6B7280;--cream:#F5F2ED;--border:#E5E7EB;--white:#ffffff;}
+:root{
+  --forest:#0D3B2E;--green:#1A6B3C;--green2:#2D8653;
+  --gold:#F5C518;--gold2:#C9921A;
+  --ink:#0F1A13;--body:#2E3C34;--muted:#6B7F72;
+  --gray-faint:#C4D4CB;--off:#F5F7F5;--border:#DDE8E2;
+  --white:#ffffff;--radius:14px;--mono:'JetBrains Mono',monospace;
+}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--navy);overflow-x:hidden;}
-a{text-decoration:none;color:var(--teal);}
+body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--ink);overflow-x:hidden;}
+a{text-decoration:none;color:var(--green);}
 a:hover{text-decoration:underline;}
 h1,h2,h3,h4{font-family:'Syne',sans-serif;}
-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 2rem;height:68px;display:flex;align-items:center;justify-content:space-between;}
-.nav-logo{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;background:linear-gradient(90deg,var(--teal-dark),var(--teal-mid));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.nav-logo span{-webkit-text-fill-color:var(--navy);}
-.nav-links{display:flex;align-items:center;gap:2rem;}
-.nav-links a{color:var(--gray);font-weight:500;font-size:.95rem;transition:color .2s;text-decoration:none;}
-.nav-links a:hover{color:var(--teal);}
-.nav-cta{background:var(--gold);color:var(--navy)!important;padding:.5rem 1.3rem;border-radius:8px;font-weight:600;font-size:.9rem;transition:all .2s;}
-.nav-cta:hover{background:var(--gold-dark);transform:translateY(-1px);}
-.hero{background:linear-gradient(135deg,var(--teal-dark),var(--teal));color:#fff;padding:8rem 2rem 4rem;text-align:center;}
-.doc-wrap{max-width:800px;margin:0 auto;padding:3rem 2rem 5rem;}
-.doc-card{background:var(--white);border-radius:20px;padding:2.5rem;border:1px solid var(--border);margin-bottom:1.5rem;}
-.doc-card h2{font-size:1.15rem;font-weight:700;margin-bottom:.9rem;color:var(--navy);padding-bottom:.6rem;border-bottom:2px solid var(--teal-light);}
-.doc-card p{font-size:.93rem;color:#374151;line-height:1.8;margin-bottom:.9rem;}
-.doc-card p:last-child{margin-bottom:0;}
-.doc-card ul,.doc-card ol{margin:.5rem 0 .9rem 1.4rem;display:flex;flex-direction:column;gap:.4rem;}
-.doc-card li{font-size:.93rem;color:#374151;line-height:1.7;}
-.doc-card strong{color:var(--navy);}
-.highlight-box{background:var(--teal-light);border:1px solid rgba(26,122,110,.2);border-radius:12px;padding:1rem 1.2rem;margin:.8rem 0;font-size:.88rem;color:var(--teal-dark);line-height:1.7;}
-.warning-box{background:#FEF2F2;border:1px solid #FECACA;border-radius:12px;padding:1rem 1.2rem;margin:.8rem 0;font-size:.88rem;color:#991B1B;line-height:1.7;}
-.toc{background:var(--cream);border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:2rem;border:1px solid var(--border);}
-.toc h3{font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray);margin-bottom:.7rem;}
-.toc ol{margin-left:1.2rem;}
-.toc li{font-size:.88rem;margin-bottom:.3rem;}
-.toc a{color:var(--teal);font-weight:500;}
-footer{background:var(--navy);color:rgba(255,255,255,.55);padding:3rem 2rem 2rem;}
-.footer-logo{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;display:inline-block;margin-bottom:.8rem;background:linear-gradient(90deg,var(--teal-dark),var(--teal-mid));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.footer-logo span{-webkit-text-fill-color:rgba(255,255,255,.3);}
-.footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:1.5rem;display:flex;justify-content:space-between;max-width:1100px;margin:1.5rem auto 0;font-size:.8rem;flex-wrap:wrap;gap:.5rem;}
-@media(max-width:768px){.nav-links{display:none;}.doc-card{padding:1.5rem;}}
+
 /* NAV */
 nav{height:auto}
 .nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:.5rem 2rem}
 .nav-logo{display:block}
 .nav-links{display:flex;align-items:center;gap:1.8rem;font-size:.9rem;font-weight:500}
-.nav-links a{color:var(--body);transition:color .15s}
+.nav-links a{color:var(--body);transition:color .15s;text-decoration:none;}
 .nav-links a:hover{color:var(--green)}
 .ga-sm{font-size:.75rem;color:var(--muted);margin-left:.25rem}
 .nav-links a.ghost{border:1.5px solid var(--border);border-radius:8px;padding:.4rem .9rem;color:var(--body)}
 .nav-links a.ghost:hover{border-color:var(--green);color:var(--green)}
 .nav-links a.cta{background:var(--gold);color:var(--forest);border-radius:8px;padding:.45rem 1.1rem;font-weight:700;transition:background .15s}
 .nav-links a.cta:hover{background:#f7ce3a}
+
+/* HERO */
+.hero{background:var(--forest);color:#fff;padding:5rem 2rem 3.5rem;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 65% 50%,rgba(45,134,83,.3) 0%,transparent 65%);pointer-events:none;}
+.hero-inner{position:relative;z-index:1;}
+.hero-kicker{background:rgba(245,197,24,.15);border:1px solid rgba(245,197,24,.35);color:var(--gold);padding:.35rem .9rem;border-radius:100px;font-size:.78rem;font-weight:600;letter-spacing:.04em;display:inline-block;margin-bottom:1.3rem;font-family:var(--mono);}
+.hero h1{font-size:clamp(1.9rem,4vw,2.8rem);font-weight:800;margin-bottom:.75rem;line-height:1.1;}
+.hero p{color:rgba(255,255,255,.55);font-size:.92rem;}
+
+/* CONTENT */
+.doc-wrap{max-width:800px;margin:0 auto;padding:3rem 2rem 5rem;}
+.doc-card{background:var(--white);border-radius:var(--radius);padding:2.5rem;border:1px solid var(--border);margin-bottom:1.5rem;}
+.doc-card h2{font-size:1.05rem;font-weight:700;margin-bottom:.9rem;color:var(--ink);padding-bottom:.6rem;border-bottom:2px solid var(--off);}
+.doc-card p{font-size:.93rem;color:var(--body);line-height:1.8;margin-bottom:.9rem;}
+.doc-card p:last-child{margin-bottom:0;}
+.doc-card ul,.doc-card ol{margin:.5rem 0 .9rem 1.4rem;display:flex;flex-direction:column;gap:.4rem;}
+.doc-card li{font-size:.93rem;color:var(--body);line-height:1.7;}
+.doc-card strong{color:var(--ink);}
+.highlight-box{background:rgba(26,107,60,.07);border:1px solid rgba(26,107,60,.18);border-radius:10px;padding:1rem 1.2rem;margin:.8rem 0;font-size:.88rem;color:var(--forest);line-height:1.7;}
+.warning-box{background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:1rem 1.2rem;margin:.8rem 0;font-size:.88rem;color:#991B1B;line-height:1.7;}
+.toc{background:var(--white);border-radius:var(--radius);padding:1.3rem 1.6rem;margin-bottom:2rem;border:1px solid var(--border);}
+.toc h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-family:var(--mono);margin-bottom:.75rem;}
+.toc ol{margin-left:1.2rem;}
+.toc li{font-size:.88rem;margin-bottom:.35rem;}
+.toc a{color:var(--green);font-weight:500;}
+.doc-bottom-link{text-align:center;margin-top:2rem;}
+.doc-bottom-link a{color:var(--green);font-weight:600;font-size:.9rem;}
+
 /* FOOTER */
 footer{background:var(--ink);color:rgba(255,255,255,.6);padding:4rem 2rem 2rem}
 .foot-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
@@ -67,194 +73,198 @@ footer ul a:hover{color:var(--white)}
 .foot-bottom span{font-size:.8rem;color:rgba(255,255,255,.25)}
 .foot-bottom .tag{font-size:.75rem;font-style:italic}
 @media(max-width:1024px){.foot-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:640px){.nav{padding:.75rem 1rem}.nav-links{gap:1rem;font-size:.82rem}.foot-grid{grid-template-columns:1fr}}
+@media(max-width:640px){.nav{padding:.75rem 1rem}.nav-links{gap:1rem;font-size:.82rem}.foot-grid{grid-template-columns:1fr}.doc-card{padding:1.5rem;}}
 </style>
 </head>
 <body>
 
-<nav>
-  <a href="index.html" class="nav-logo"><img src="assets/poist-logo-trans.png" alt="poist.ie" style="height:48px;width:auto;display:block;"></a>
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <img src="assets/poist-logo-trans.png" alt="poist.ie" style="height:70px; width:auto; display:block;">
+  </a>
   <div class="nav-links">
-    <a href="jobs.html">Browse Jobs</a>
+    <a href="jobs.html">Browse Jobs <span class="ga-sm">/ Poist</span></a>
     <a href="employers.html">For Employers</a>
+    <a href="cefr-guide.html">CEFR Guide</a>
     <a href="about.html">About</a>
-    <a href="login.html">Sign In</a>
-    <a href="register-candidate.html" class="nav-cta">Get Started — Free</a>
+    <a href="login.html" class="ghost">Log in</a>
+    <a href="register-candidate.html" class="cta">Get Started</a>
   </div>
 </nav>
 
-<div style="padding-top:68px;">
-  <div class="hero">
-    <div style="background:rgba(245,197,24,.15);border:1px solid rgba(245,197,24,.3);color:var(--gold);padding:.35rem .9rem;border-radius:100px;font-size:.82rem;font-weight:600;display:inline-block;margin-bottom:1.2rem;">📄 Legal</div>
-    <h1 style="font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:.8rem;">Terms of Service</h1>
-    <p style="color:rgba(255,255,255,.65);font-size:.95rem;">Last updated: 15 April 2026</p>
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-kicker">📄 Legal</div>
+    <h1>Terms of Service</h1>
+    <p>Last updated: 15 April 2026</p>
+  </div>
+</div>
+
+<div class="doc-wrap">
+
+  <div class="highlight-box" style="margin-bottom:1.5rem;">
+    <strong>Plain English summary:</strong> poist.ie is free to use for both candidates and employers during our launch phase. By using the platform you agree to these terms. Be honest about your Irish level, don't misuse the platform, and respect other users. Full details below.
   </div>
 
-  <div class="doc-wrap">
-
-    <div class="highlight-box" style="margin-bottom:1.5rem;">
-      <strong>Plain English summary:</strong> poist.ie is free to use for both candidates and employers during our launch phase. By using the platform you agree to these terms. Be honest about your Irish level, don't misuse the platform, and respect other users. Full details below.
-    </div>
-
-    <div class="toc">
-      <h3>Contents</h3>
-      <ol>
-        <li><a href="#t1">Who these terms apply to</a></li>
-        <li><a href="#t2">The service</a></li>
-        <li><a href="#t3">Accounts and registration</a></li>
-        <li><a href="#t4">Candidate terms</a></li>
-        <li><a href="#t5">Employer terms</a></li>
-        <li><a href="#t6">Acceptable use</a></li>
-        <li><a href="#t7">Content and intellectual property</a></li>
-        <li><a href="#t8">Disclaimers and liability</a></li>
-        <li><a href="#t9">Pricing and free access</a></li>
-        <li><a href="#t10">Termination</a></li>
-        <li><a href="#t11">Governing law</a></li>
-        <li><a href="#t12">Changes to these terms</a></li>
-        <li><a href="#t13">Contact</a></li>
-      </ol>
-    </div>
-
-    <div class="doc-card" id="t1">
-      <h2>1. Who these terms apply to</h2>
-      <p>These Terms of Service ("Terms") govern your use of poist.ie, operated by <strong>Séamus Ó Fátharta</strong>, sole trader trading as <strong>poist.ie</strong>, Ireland ("we", "us", "poist.ie").</p>
-      <p>By creating an account or using poist.ie in any way, you agree to be bound by these Terms. If you do not agree, please do not use the platform.</p>
-      <p>These Terms apply to all users including candidates (job seekers), employers (organisations posting jobs or searching for candidates), and visitors to the site.</p>
-      <div class="highlight-box"><strong>Note on future incorporation:</strong> poist.ie intends to incorporate as a limited company in Ireland. When that occurs, these Terms will be updated to reflect the new legal entity. Registered users will be notified by email.</div>
-    </div>
-
-    <div class="doc-card" id="t2">
-      <h2>2. The service</h2>
-      <p>poist.ie is an Irish language employment platform that:</p>
-      <ul>
-        <li>Allows candidates to create a Language Passport showcasing their CEFR-verified Irish language proficiency</li>
-        <li>Allows employers to post Irish-language job listings and search for verified candidates</li>
-        <li>Facilitates matching between candidates and employers based on Irish language level, location and skills</li>
-        <li>Provides a CEFR language assessment tool to help candidates verify their Irish proficiency</li>
-      </ul>
-      <p>We reserve the right to modify, suspend or discontinue any aspect of the service at any time, with reasonable notice where possible.</p>
-    </div>
-
-    <div class="doc-card" id="t3">
-      <h2>3. Accounts and registration</h2>
-      <p>To use core features of poist.ie you must create an account. When registering you agree to:</p>
-      <ul>
-        <li>Provide accurate and truthful information</li>
-        <li>Keep your account credentials secure and not share your password</li>
-        <li>Notify us immediately if you suspect unauthorised access to your account</li>
-        <li>Be at least 16 years of age</li>
-        <li>Have only one account per person or organisation</li>
-      </ul>
-      <p>You are responsible for all activity that occurs under your account. We may suspend or terminate accounts that we reasonably believe have been compromised or are being misused.</p>
-    </div>
-
-    <div class="doc-card" id="t4">
-      <h2>4. Candidate terms</h2>
-      <p>As a candidate on poist.ie, you agree that:</p>
-      <ul>
-        <li><strong>Your Language Passport is accurate.</strong> The CEFR level you select must genuinely reflect your Irish language ability. Misrepresenting your level is a breach of these Terms and may result in account suspension.</li>
-        <li><strong>Your profile is your own.</strong> You may only create a profile for yourself, not for another person.</li>
-        <li><strong>Speaking clips are authentic.</strong> Any audio recording you upload must be your own voice and must accurately represent your Irish language ability.</li>
-        <li><strong>You control your visibility.</strong> You can set your profile to active or passive at any time, and delete your account at any time.</li>
-        <li>Candidate profiles are <strong>free</strong> and will remain free for individual job seekers.</li>
-      </ul>
-    </div>
-
-    <div class="doc-card" id="t5">
-      <h2>5. Employer terms</h2>
-      <p>As an employer on poist.ie, you agree that:</p>
-      <ul>
-        <li><strong>Job listings are genuine.</strong> You may only post real, current job vacancies. Speculative or fictitious listings are prohibited.</li>
-        <li><strong>CEFR requirements are accurate.</strong> The Irish language level stated in a job listing must reflect a genuine business requirement for the role.</li>
-        <li><strong>You represent your organisation.</strong> You must have authority to post jobs on behalf of your organisation.</li>
-        <li><strong>Candidate data is used only for recruitment.</strong> Candidate profiles accessed through poist.ie may only be used for genuine recruitment. You may not use candidate data for any other commercial purpose, pass it to third parties, or use it to contact candidates outside of poist.ie for non-recruitment purposes.</li>
-        <li><strong>Equal opportunities.</strong> You agree to comply with all applicable employment equality legislation, including the Employment Equality Acts 1998–2015.</li>
-        <li>poist.ie is a <strong>platform</strong> — we facilitate connections but are not a recruitment agency and do not guarantee the suitability of any candidate.</li>
-      </ul>
-    </div>
-
-    <div class="doc-card" id="t6">
-      <h2>6. Acceptable use</h2>
-      <p>You agree not to use poist.ie to:</p>
-      <ul>
-        <li>Post false, misleading or fraudulent information</li>
-        <li>Scrape, harvest or systematically extract data from the platform</li>
-        <li>Send unsolicited communications (spam) to other users</li>
-        <li>Harass, abuse or threaten other users</li>
-        <li>Attempt to gain unauthorised access to other accounts or systems</li>
-        <li>Upload malware, viruses or any malicious code</li>
-        <li>Use the platform for any unlawful purpose</li>
-        <li>Circumvent any security or access controls</li>
-        <li>Create multiple accounts to evade a suspension or ban</li>
-      </ul>
-      <div class="warning-box">Violations of this acceptable use policy may result in immediate account suspension and, where appropriate, referral to law enforcement.</div>
-    </div>
-
-    <div class="doc-card" id="t7">
-      <h2>7. Content and intellectual property</h2>
-      <p><strong>Your content:</strong> You retain ownership of any content you upload to poist.ie (profile information, speaking clips, job descriptions). By uploading content, you grant poist.ie a non-exclusive, royalty-free licence to store, display and process that content for the purpose of operating the platform.</p>
-      <p><strong>Our content:</strong> The poist.ie platform, branding, design, code and all content we produce is owned by Séamus Ó Fátharta trading as poist.ie and protected by copyright. You may not reproduce, distribute or create derivative works without our written permission.</p>
-      <p><strong>Irish language content:</strong> We respect the cultural significance of the Irish language. Content posted on poist.ie should treat the language with appropriate respect.</p>
-    </div>
-
-    <div class="doc-card" id="t8">
-      <h2>8. Disclaimers and liability</h2>
-      <p>poist.ie is provided "as is". While we work hard to keep the platform reliable, we make no warranties that:</p>
-      <ul>
-        <li>The service will be uninterrupted or error-free</li>
-        <li>Any job listing will result in a successful hire</li>
-        <li>Candidate CEFR levels, while self-declared in good faith, are certified qualifications</li>
-      </ul>
-      <p><strong>Limitation of liability:</strong> To the maximum extent permitted by Irish law, poist.ie's total liability to you for any claim arising from your use of the platform shall not exceed €100. We are not liable for indirect, consequential or economic loss.</p>
-      <p>Nothing in these Terms limits our liability for death or personal injury caused by our negligence, or for fraudulent misrepresentation.</p>
-      <div class="highlight-box">The CEFR assessment on poist.ie is a <strong>self-assessment and skills indicator</strong>, not a formal certified qualification. Employers should conduct their own language verification as part of their recruitment process.</div>
-    </div>
-
-    <div class="doc-card" id="t9">
-      <h2>9. Pricing and free access</h2>
-      <p>poist.ie is currently <strong>free for all users</strong> during our launch phase:</p>
-      <ul>
-        <li>Candidate Language Passports are free and will remain free for individual job seekers</li>
-        <li>Employer job postings and candidate searches are free during the launch period</li>
-      </ul>
-      <p>We intend to introduce paid tiers for employers in a future phase. When we do:</p>
-      <ul>
-        <li>We will give at least <strong>60 days' notice</strong> before introducing paid plans</li>
-        <li>Early employers registered during the free launch period will receive a <strong>loyalty discount</strong></li>
-        <li>Any free features that become paid will be clearly communicated in advance</li>
-        <li>Candidate profiles will remain free</li>
-      </ul>
-    </div>
-
-    <div class="doc-card" id="t10">
-      <h2>10. Termination</h2>
-      <p><strong>By you:</strong> You may delete your account at any time through your account settings. Deletion is permanent and your data will be removed within 30 days in accordance with our Privacy Policy.</p>
-      <p><strong>By us:</strong> We may suspend or terminate your account if you breach these Terms, or if we reasonably believe you are misusing the platform. We will give notice where possible, except in cases of serious or urgent breach.</p>
-      <p>Upon termination, your right to use the platform ceases immediately. Sections of these Terms that should survive termination (including disclaimers, liability limits and governing law) will continue to apply.</p>
-    </div>
-
-    <div class="doc-card" id="t11">
-      <h2>11. Governing law</h2>
-      <p>These Terms are governed by the laws of <strong>Ireland</strong>. Any disputes arising from these Terms or your use of poist.ie shall be subject to the exclusive jurisdiction of the <strong>Irish courts</strong>.</p>
-      <p>If you are a consumer in another EU member state, you may also have rights under the law of your own country and may be able to bring proceedings in your local courts.</p>
-    </div>
-
-    <div class="doc-card" id="t12">
-      <h2>12. Changes to these terms</h2>
-      <p>We may update these Terms from time to time. When we make significant changes, we will notify registered users by email at least <strong>14 days before</strong> the changes take effect, and update the "Last updated" date at the top of this page.</p>
-      <p>Continued use of poist.ie after the effective date of updated Terms constitutes acceptance of the changes.</p>
-    </div>
-
-    <div class="doc-card" id="t13">
-      <h2>13. Contact</h2>
-      <p>For questions about these Terms:</p>
-      <p style="margin-top:.5rem;"><strong>Email:</strong> <a href="mailto:privacy@poist.ie">privacy@poist.ie</a></p>
-    </div>
-
-    <div style="text-align:center;margin-top:2rem;">
-      <a href="privacy.html" style="color:var(--teal);font-weight:600;font-size:.9rem;">← Read our Privacy Policy</a>
-    </div>
+  <div class="toc">
+    <h3>Contents</h3>
+    <ol>
+      <li><a href="#t1">Who these terms apply to</a></li>
+      <li><a href="#t2">The service</a></li>
+      <li><a href="#t3">Accounts and registration</a></li>
+      <li><a href="#t4">Candidate terms</a></li>
+      <li><a href="#t5">Employer terms</a></li>
+      <li><a href="#t6">Acceptable use</a></li>
+      <li><a href="#t7">Content and intellectual property</a></li>
+      <li><a href="#t8">Disclaimers and liability</a></li>
+      <li><a href="#t9">Pricing and free access</a></li>
+      <li><a href="#t10">Termination</a></li>
+      <li><a href="#t11">Governing law</a></li>
+      <li><a href="#t12">Changes to these terms</a></li>
+      <li><a href="#t13">Contact</a></li>
+    </ol>
   </div>
+
+  <div class="doc-card" id="t1">
+    <h2>1. Who these terms apply to</h2>
+    <p>These Terms of Service ("Terms") govern your use of poist.ie, operated by <strong>Séamus Ó Fátharta</strong>, sole trader trading as <strong>poist.ie</strong>, Ireland ("we", "us", "poist.ie").</p>
+    <p>By creating an account or using poist.ie in any way, you agree to be bound by these Terms. If you do not agree, please do not use the platform.</p>
+    <p>These Terms apply to all users including candidates (job seekers), employers (organisations posting jobs or searching for candidates), and visitors to the site.</p>
+    <div class="highlight-box"><strong>Note on future incorporation:</strong> poist.ie intends to incorporate as a limited company in Ireland. When that occurs, these Terms will be updated to reflect the new legal entity. Registered users will be notified by email.</div>
+  </div>
+
+  <div class="doc-card" id="t2">
+    <h2>2. The service</h2>
+    <p>poist.ie is an Irish language employment platform that:</p>
+    <ul>
+      <li>Allows candidates to create a Language Passport showcasing their CEFR-verified Irish language proficiency</li>
+      <li>Allows employers to post Irish-language job listings and search for verified candidates</li>
+      <li>Facilitates matching between candidates and employers based on Irish language level, location and skills</li>
+      <li>Provides a CEFR language assessment tool to help candidates verify their Irish proficiency</li>
+    </ul>
+    <p>We reserve the right to modify, suspend or discontinue any aspect of the service at any time, with reasonable notice where possible.</p>
+  </div>
+
+  <div class="doc-card" id="t3">
+    <h2>3. Accounts and registration</h2>
+    <p>To use core features of poist.ie you must create an account. When registering you agree to:</p>
+    <ul>
+      <li>Provide accurate and truthful information</li>
+      <li>Keep your account credentials secure and not share your password</li>
+      <li>Notify us immediately if you suspect unauthorised access to your account</li>
+      <li>Be at least 16 years of age</li>
+      <li>Have only one account per person or organisation</li>
+    </ul>
+    <p>You are responsible for all activity that occurs under your account. We may suspend or terminate accounts that we reasonably believe have been compromised or are being misused.</p>
+  </div>
+
+  <div class="doc-card" id="t4">
+    <h2>4. Candidate terms</h2>
+    <p>As a candidate on poist.ie, you agree that:</p>
+    <ul>
+      <li><strong>Your Language Passport is accurate.</strong> The CEFR level you select must genuinely reflect your Irish language ability. Misrepresenting your level is a breach of these Terms and may result in account suspension.</li>
+      <li><strong>Your profile is your own.</strong> You may only create a profile for yourself, not for another person.</li>
+      <li><strong>Speaking clips are authentic.</strong> Any audio recording you upload must be your own voice and must accurately represent your Irish language ability.</li>
+      <li><strong>You control your visibility.</strong> You can set your profile to active or passive at any time, and delete your account at any time.</li>
+      <li>Candidate profiles are <strong>free</strong> and will remain free for individual job seekers.</li>
+    </ul>
+  </div>
+
+  <div class="doc-card" id="t5">
+    <h2>5. Employer terms</h2>
+    <p>As an employer on poist.ie, you agree that:</p>
+    <ul>
+      <li><strong>Job listings are genuine.</strong> You may only post real, current job vacancies. Speculative or fictitious listings are prohibited.</li>
+      <li><strong>CEFR requirements are accurate.</strong> The Irish language level stated in a job listing must reflect a genuine business requirement for the role.</li>
+      <li><strong>You represent your organisation.</strong> You must have authority to post jobs on behalf of your organisation.</li>
+      <li><strong>Candidate data is used only for recruitment.</strong> Candidate profiles accessed through poist.ie may only be used for genuine recruitment. You may not use candidate data for any other commercial purpose, pass it to third parties, or use it to contact candidates outside of poist.ie for non-recruitment purposes.</li>
+      <li><strong>Equal opportunities.</strong> You agree to comply with all applicable employment equality legislation, including the Employment Equality Acts 1998–2015.</li>
+      <li>poist.ie is a <strong>platform</strong> — we facilitate connections but are not a recruitment agency and do not guarantee the suitability of any candidate.</li>
+    </ul>
+  </div>
+
+  <div class="doc-card" id="t6">
+    <h2>6. Acceptable use</h2>
+    <p>You agree not to use poist.ie to:</p>
+    <ul>
+      <li>Post false, misleading or fraudulent information</li>
+      <li>Scrape, harvest or systematically extract data from the platform</li>
+      <li>Send unsolicited communications (spam) to other users</li>
+      <li>Harass, abuse or threaten other users</li>
+      <li>Attempt to gain unauthorised access to other accounts or systems</li>
+      <li>Upload malware, viruses or any malicious code</li>
+      <li>Use the platform for any unlawful purpose</li>
+      <li>Circumvent any security or access controls</li>
+      <li>Create multiple accounts to evade a suspension or ban</li>
+    </ul>
+    <div class="warning-box">Violations of this acceptable use policy may result in immediate account suspension and, where appropriate, referral to law enforcement.</div>
+  </div>
+
+  <div class="doc-card" id="t7">
+    <h2>7. Content and intellectual property</h2>
+    <p><strong>Your content:</strong> You retain ownership of any content you upload to poist.ie (profile information, speaking clips, job descriptions). By uploading content, you grant poist.ie a non-exclusive, royalty-free licence to store, display and process that content for the purpose of operating the platform.</p>
+    <p><strong>Our content:</strong> The poist.ie platform, branding, design, code and all content we produce is owned by Séamus Ó Fátharta trading as poist.ie and protected by copyright. You may not reproduce, distribute or create derivative works without our written permission.</p>
+    <p><strong>Irish language content:</strong> We respect the cultural significance of the Irish language. Content posted on poist.ie should treat the language with appropriate respect.</p>
+  </div>
+
+  <div class="doc-card" id="t8">
+    <h2>8. Disclaimers and liability</h2>
+    <p>poist.ie is provided "as is". While we work hard to keep the platform reliable, we make no warranties that:</p>
+    <ul>
+      <li>The service will be uninterrupted or error-free</li>
+      <li>Any job listing will result in a successful hire</li>
+      <li>Candidate CEFR levels, while self-declared in good faith, are certified qualifications</li>
+    </ul>
+    <p><strong>Limitation of liability:</strong> To the maximum extent permitted by Irish law, poist.ie's total liability to you for any claim arising from your use of the platform shall not exceed €100. We are not liable for indirect, consequential or economic loss.</p>
+    <p>Nothing in these Terms limits our liability for death or personal injury caused by our negligence, or for fraudulent misrepresentation.</p>
+    <div class="highlight-box">The CEFR assessment on poist.ie is a <strong>self-assessment and skills indicator</strong>, not a formal certified qualification. Employers should conduct their own language verification as part of their recruitment process.</div>
+  </div>
+
+  <div class="doc-card" id="t9">
+    <h2>9. Pricing and free access</h2>
+    <p>poist.ie is currently <strong>free for all users</strong> during our launch phase:</p>
+    <ul>
+      <li>Candidate Language Passports are free and will remain free for individual job seekers</li>
+      <li>Employer job postings and candidate searches are free during the launch period</li>
+    </ul>
+    <p>We intend to introduce paid tiers for employers in a future phase. When we do:</p>
+    <ul>
+      <li>We will give at least <strong>60 days' notice</strong> before introducing paid plans</li>
+      <li>Early employers registered during the free launch period will receive a <strong>loyalty discount</strong></li>
+      <li>Any free features that become paid will be clearly communicated in advance</li>
+      <li>Candidate profiles will remain free</li>
+    </ul>
+  </div>
+
+  <div class="doc-card" id="t10">
+    <h2>10. Termination</h2>
+    <p><strong>By you:</strong> You may delete your account at any time through your account settings. Deletion is permanent and your data will be removed within 30 days in accordance with our Privacy Policy.</p>
+    <p><strong>By us:</strong> We may suspend or terminate your account if you breach these Terms, or if we reasonably believe you are misusing the platform. We will give notice where possible, except in cases of serious or urgent breach.</p>
+    <p>Upon termination, your right to use the platform ceases immediately. Sections of these Terms that should survive termination (including disclaimers, liability limits and governing law) will continue to apply.</p>
+  </div>
+
+  <div class="doc-card" id="t11">
+    <h2>11. Governing law</h2>
+    <p>These Terms are governed by the laws of <strong>Ireland</strong>. Any disputes arising from these Terms or your use of poist.ie shall be subject to the exclusive jurisdiction of the <strong>Irish courts</strong>.</p>
+    <p>If you are a consumer in another EU member state, you may also have rights under the law of your own country and may be able to bring proceedings in your local courts.</p>
+  </div>
+
+  <div class="doc-card" id="t12">
+    <h2>12. Changes to these terms</h2>
+    <p>We may update these Terms from time to time. When we make significant changes, we will notify registered users by email at least <strong>14 days before</strong> the changes take effect, and update the "Last updated" date at the top of this page.</p>
+    <p>Continued use of poist.ie after the effective date of updated Terms constitutes acceptance of the changes.</p>
+  </div>
+
+  <div class="doc-card" id="t13">
+    <h2>13. Contact</h2>
+    <p>For questions about these Terms:</p>
+    <p style="margin-top:.5rem;"><strong>Email:</strong> <a href="mailto:privacy@poist.ie">privacy@poist.ie</a></p>
+  </div>
+
+  <div class="doc-bottom-link">
+    <a href="privacy.html">← Read our Privacy Policy</a>
+  </div>
+
 </div>
 
 <footer>
@@ -280,7 +290,7 @@ footer ul a:hover{color:var(--white)}
     <div>
       <h5>Employers<span class="ga-sm">Fostóirí</span></h5>
       <ul>
-        <li><a href="employer-post-job.html">Post a Job</a></li>
+        <li><a href="add-job.html">Post a Job</a></li>
         <li><a href="employer-search.html">Candidate Search</a></li>
         <li><a href="employers.html">2030 Compliance</a></li>
         <li><a href="employers.html">Pricing</a></li>
