@@ -10,26 +10,14 @@
   --teal:#1A6B3C;--teal-dark:#0D3B2E;--teal-mid:#2D8653;--teal-light:#F5F7F5;
   --gold:#F5C518;--gold-dark:#C9921A;
   --navy:#0F1A13;--gray:#6B7F72;--cream:#FFFFFF;--border:#E5E7EB;--white:#ffffff;
-  --forest:#0D3B2E;
-  --green:#1A6B3C;
-  --green2:#2D8653;
-  --gold2:#C9921A;
-  --ink:#0F1A13;
-  --body:#2E3C34;
-  --muted:#6B7F72;
-  --gray-faint:#C4D4CB;
-  --off:#F5F7F5;
-  --radius:14px;
-  --mono:'JetBrains Mono',monospace;}
+  --forest:#0D3B2E;--green:#1A6B3C;--green2:#2D8653;--gold2:#C9921A;
+  --ink:#0F1A13;--body:#2E3C34;--muted:#6B7F72;--gray-faint:#C4D4CB;
+  --off:#F5F7F5;--radius:14px;--mono:'JetBrains Mono',monospace;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--navy);overflow-x:hidden;}
 input,select{font-family:'DM Sans',sans-serif;}
 a{text-decoration:none;}
-
-/* LAYOUT */
 .layout{display:grid;grid-template-columns:380px 1fr;height:calc(100vh - 86px);}
-
-/* SIDEBAR */
 .sidebar{display:flex;flex-direction:column;border-right:1px solid var(--border);overflow:hidden;background:var(--white);}
 .filters{padding:1rem;background:var(--white);border-bottom:1px solid var(--border);}
 .search-input{width:100%;padding:.7rem 1rem;border:1.5px solid var(--border);border-radius:10px;font-size:.9rem;color:var(--ink);background:var(--white);outline:none;margin-bottom:.6rem;transition:border-color .18s;font-family:'DM Sans',sans-serif;}
@@ -39,8 +27,6 @@ a{text-decoration:none;}
 .filter-select:focus{border-color:var(--green);}
 .job-list{overflow-y:auto;flex:1;padding:.8rem;display:flex;flex-direction:column;gap:.5rem;}
 .job-count{font-size:.78rem;font-weight:600;color:var(--muted);padding:.2rem 0 .4rem;}
-
-/* JOB CARDS */
 .job-card{border:1px solid var(--border);border-radius:14px;padding:1rem;cursor:pointer;transition:all .18s;background:var(--white);}
 .job-card:hover,.job-card.sel{border-color:var(--green);box-shadow:0 4px 16px rgba(26,107,60,.1);}
 .job-card.sel{background:var(--off);}
@@ -50,12 +36,9 @@ a{text-decoration:none;}
 .job-org{font-size:.82rem;font-weight:500;margin-bottom:.2rem;}
 .job-meta{font-size:.78rem;color:var(--muted);display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;}
 .badge-gray{background:#F3F4F6;color:var(--muted);font-size:.7rem;font-weight:600;padding:.15rem .45rem;border-radius:5px;}
-
-/* MAP */
+.badge-agg{background:#EEF2FF;color:#4338CA;font-size:.68rem;font-weight:600;padding:.15rem .45rem;border-radius:5px;}
 #map{height:100%;}
-
-/* DETAIL PANEL */
-.detail-panel{display:none;position:absolute;top:1rem;right:1rem;width:310px;background:var(--white);border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.18);padding:1.3rem;z-index:1000;max-height:calc(100vh - 106px);overflow-y:auto;}
+.detail-panel{display:none;position:absolute;top:1rem;right:1rem;width:320px;background:var(--white);border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.18);padding:1.3rem;z-index:1000;max-height:calc(100vh - 106px);overflow-y:auto;}
 .detail-close{position:absolute;top:.8rem;right:.8rem;background:none;border:none;cursor:pointer;font-size:1.2rem;color:var(--muted);transition:color .15s;}
 .detail-close:hover{color:var(--ink);}
 .detail-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:var(--green);margin-bottom:.25rem;padding-right:1.5rem;line-height:1.3;}
@@ -66,13 +49,12 @@ a{text-decoration:none;}
 .detail-desc{font-size:.83rem;color:var(--muted);line-height:1.6;margin-bottom:.6rem;}
 .detail-salary{font-size:.8rem;color:var(--muted);margin-bottom:1rem;display:flex;gap:1rem;flex-wrap:wrap;}
 .detail-salary span{display:flex;align-items:center;gap:.3rem;}
-.btn-primary{display:flex;align-items:center;justify-content:center;width:100%;padding:.8rem;border-radius:10px;font-weight:700;font-size:.9rem;background:var(--gold);color:var(--forest);margin-bottom:.5rem;transition:all .2s;}
+.agg-note{background:rgba(26,107,60,.06);border:1px solid rgba(26,107,60,.15);border-radius:8px;padding:.6rem .8rem;font-size:.78rem;color:var(--muted);margin-bottom:.8rem;}
+.btn-primary{display:flex;align-items:center;justify-content:center;width:100%;padding:.8rem;border-radius:10px;font-weight:700;font-size:.9rem;background:var(--gold);color:var(--forest);margin-bottom:.5rem;transition:all .2s;text-decoration:none;}
 .btn-primary:hover{background:#f7ce3a;transform:translateY(-1px);}
-.btn-teal{display:flex;align-items:center;justify-content:center;width:100%;padding:.8rem;border-radius:10px;font-weight:700;font-size:.9rem;background:var(--green);color:#fff;transition:all .2s;}
+.btn-teal{display:flex;align-items:center;justify-content:center;width:100%;padding:.8rem;border-radius:10px;font-weight:700;font-size:.9rem;background:var(--green);color:#fff;transition:all .2s;text-decoration:none;}
 .btn-teal:hover{background:var(--forest);transform:translateY(-1px);}
-
 @media(max-width:768px){.layout{grid-template-columns:1fr;}.layout>div:last-child{display:none;}}
-/* NAV */
 nav{height:auto}
 .nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:.5rem 2rem}
 .nav-logo{display:block}
@@ -84,20 +66,16 @@ nav{height:auto}
 .nav-links a.ghost:hover{border-color:var(--green);color:var(--green)}
 .nav-links a.cta{background:var(--gold);color:var(--forest);border-radius:8px;padding:.45rem 1.1rem;font-weight:700;transition:background .15s}
 .nav-links a.cta:hover{background:#f7ce3a}
-/* FOOTER */
 footer{background:var(--ink);color:rgba(255,255,255,.6);padding:4rem 2rem 2rem}
 .foot-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
 .foot-logo{margin-bottom:.9rem}
 .foot-brand p{font-size:.85rem;line-height:1.7;max-width:260px;margin-bottom:.6rem}
-.foot-brand .ga{font-size:.78rem;color:rgba(255,255,255,.3)}
 footer h5{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);font-family:var(--mono);margin-bottom:1.1rem}
-footer h5 .ga-sm{display:block;font-size:.65rem;text-transform:none;letter-spacing:0;margin-top:.2rem;color:rgba(255,255,255,.2)}
 footer ul{list-style:none;display:flex;flex-direction:column;gap:.6rem}
 footer ul a{font-size:.88rem;color:rgba(255,255,255,.55);transition:color .15s}
 footer ul a:hover{color:var(--white)}
 .foot-bottom{max-width:1200px;margin:0 auto;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem}
 .foot-bottom span{font-size:.8rem;color:rgba(255,255,255,.25)}
-.foot-bottom .tag{font-size:.75rem;font-style:italic}
 @media(max-width:1024px){.foot-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:640px){.nav{padding:.75rem 1rem}.nav-links{gap:1rem;font-size:.82rem}.foot-grid{grid-template-columns:1fr}}
 </style>
@@ -106,7 +84,7 @@ footer ul a:hover{color:var(--white)}
 
 <nav class="nav">
   <a href="index.html" class="nav-logo">
-    <img src="assets/poist-logo-trans.png" alt="poist.ie" style="height:70px; width:auto; display:block;">
+    <img src="assets/poist-logo-trans.png" alt="poist.ie" style="height:70px;width:auto;display:block;">
   </a>
   <div class="nav-links">
     <a href="jobs.html">Browse Jobs <span class="ga-sm">/ Poist</span></a>
@@ -121,15 +99,17 @@ footer ul a:hover{color:var(--white)}
 <div class="layout">
   <div class="sidebar">
     <div class="filters">
-      <input type="text" id="sQ" class="search-input" placeholder="Search jobs, organisations…" oninput="filt()">
+      <input type="text" id="sQ" class="search-input" placeholder="Search jobs, organisations…" oninput="filtJobs()">
       <div class="filter-row">
-        <select id="sCefr" class="filter-select" onchange="filt()">
+        <select id="sCefr" class="filter-select" onchange="filtJobs()">
           <option value="">All levels</option>
           <option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option>
         </select>
-        <select id="sType" class="filter-select" onchange="filt()">
+        <select id="sType" class="filter-select" onchange="filtJobs()">
           <option value="">All types</option>
-          <option>Full-time</option><option>Part-time</option><option>Contract</option>
+          <option value="full_time">Full-time</option>
+          <option value="part_time">Part-time</option>
+          <option value="contract">Contract</option>
         </select>
       </div>
     </div>
@@ -138,11 +118,10 @@ footer ul a:hover{color:var(--white)}
       <div id="jList"></div>
     </div>
   </div>
-
   <div style="position:relative;">
     <div id="map"></div>
     <div id="jDetail" class="detail-panel">
-      <button class="detail-close" onclick="closeD()">×</button>
+      <button class="detail-close" onclick="closeDetail()">×</button>
       <div id="jDContent"></div>
     </div>
   </div>
@@ -151,14 +130,11 @@ footer ul a:hover{color:var(--white)}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const createClient = supabase.createClient;
-const sb = createClient(
-  'https://kpfshjarepmazrgzffot.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwZnNoamFyZXBtYXpyZ3pmZm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNzQ0MjIsImV4cCI6MjA5MDY1MDQyMn0.yU-6ASii1duNXgGMs0ZWTkgTYXonVfqVOnEQr0J8FhU'
-);
+var JOBS = [];
+var activeJ = null;
+var markers = {};
 
-// County centroids for map markers when no exact coords stored
-const COUNTY_COORDS = {
+var COUNTY_COORDS = {
   Antrim:[54.72,-6.21],Armagh:[54.35,-6.65],Carlow:[52.84,-6.93],Cavan:[53.99,-7.36],
   Clare:[52.89,-9.0],Cork:[51.9,-8.47],Derry:[55.0,-7.31],Donegal:[54.65,-8.12],
   Down:[54.32,-5.95],Dublin:[53.35,-6.26],Fermanagh:[54.35,-7.63],Galway:[53.27,-9.06],
@@ -166,156 +142,172 @@ const COUNTY_COORDS = {
   Leitrim:[54.0,-8.0],Limerick:[52.66,-8.63],Longford:[53.73,-7.79],Louth:[53.92,-6.49],
   Mayo:[53.85,-9.3],Meath:[53.61,-6.66],Monaghan:[54.25,-6.97],Offaly:[53.27,-7.49],
   Roscommon:[53.63,-8.19],Sligo:[54.27,-8.47],Tipperary:[52.47,-8.16],Tyrone:[54.6,-7.2],
-  Waterford:[52.26,-7.12],Westmeath:[53.53,-7.46],Wexford:[52.34,-6.46],Wicklow:[52.98,-6.44],
+  Waterford:[52.26,-7.12],Westmeath:[53.53,-7.46],Wexford:[52.34,-6.46],Wicklow:[52.98,-6.44]
 };
 
-let JOBS = [];
+// Irish place name to county mapping
+var IRISH_PLACE_TO_COUNTY = {
+  'corcaigh':'Cork','luimneach':'Limerick','gaillimh':'Galway','baile atha cliath':'Dublin',
+  'baile átha cliath':'Dublin','port láirge':'Waterford','cill áirne':'Kerry',
+  'loch an iúir':'Donegal','an daingean':'Kerry','dingle':'Kerry',
+  'conamara':'Galway','connemara':'Galway','gaeltacht':'Galway',
+  'an cheathrú rua':'Galway','spiddal':'Galway','an spidéal':'Galway',
+  'ros muc':'Galway','carna':'Galway','clifden':'Galway','an clochán':'Galway',
+  'letterkenny':'Donegal','leitir ceanainn':'Donegal','gweedore':'Donegal',
+  'gaoth dobhair':'Donegal','falcarragh':'Donegal','belmullet':'Mayo',
+  'westport':'Mayo','castlebar':'Mayo','sligo':'Sligo',
+  'tralee':'Kerry','killarney':'Kerry','cork':'Cork',
+  'dublin':'Dublin','galway':'Galway','limerick':'Limerick',
+  'waterford':'Waterford','drogheda':'Louth','dundalk':'Louth'
+};
 
-const map = L.map('map').setView([53.4,-8.0],7);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+function getCountyFromTitle(title) {
+  var t = title.toLowerCase();
+  for (var place in IRISH_PLACE_TO_COUNTY) {
+    if (t.indexOf(place) !== -1) return IRISH_PLACE_TO_COUNTY[place];
+  }
+  for (var county in COUNTY_COORDS) {
+    if (t.indexOf(county.toLowerCase()) !== -1) return county;
+  }
+  return '';
+}
 
-const iconDefault = L.divIcon({html:`<div style="background:var(--gold,#F5C518);width:14px;height:14px;border-radius:50%;border:2px solid #C9921A;box-shadow:0 2px 6px rgba(0,0,0,.3);"></div>`,className:'',iconSize:[14,14]});
-const iconActive  = L.divIcon({html:`<div style="background:#1A6B3C;width:18px;height:18px;border-radius:50%;border:2px solid #0D3B2E;box-shadow:0 2px 8px rgba(26,107,60,.5);"></div>`,className:'',iconSize:[18,18]});
+var sbClient = supabase.createClient(
+  'https://kpfshjarepmazrgzffot.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwZnNoamFyZXBtYXpyZ3pmZm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNzQ0MjIsImV4cCI6MjA5MDY1MDQyMn0.yU-6ASii1duNXgGMs0ZWTkgTYXonVfqVOnEQr0J8FhU'
+);
 
-let activeJ = null;
-const mk = {};
+var theMap = L.map('map').setView([53.4,-8.0],7);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(theMap);
+
+var iconDefault = L.divIcon({html:'<div style="background:#F5C518;width:14px;height:14px;border-radius:50%;border:2px solid #C9921A;box-shadow:0 2px 6px rgba(0,0,0,.3);"></div>',className:'',iconSize:[14,14]});
+var iconActive  = L.divIcon({html:'<div style="background:#1A6B3C;width:18px;height:18px;border-radius:50%;border:2px solid #0D3B2E;box-shadow:0 2px 8px rgba(26,107,60,.5);"></div>',className:'',iconSize:[18,18]});
 
 function daysAgo(dateStr) {
   if (!dateStr) return 'Recently';
-  const d = Math.floor((Date.now() - new Date(dateStr)) / 86400000);
+  var d = Math.floor((Date.now() - new Date(dateStr)) / 86400000);
   if (d === 0) return 'Today';
   if (d === 1) return '1 day ago';
-  if (d < 7) return `${d} days ago`;
+  if (d < 7) return d + ' days ago';
   if (d < 14) return '1 week ago';
-  return `${Math.floor(d/7)} weeks ago`;
+  return Math.floor(d/7) + ' weeks ago';
 }
 
 function toUIJob(row) {
-  const county = row.county || '';
-  const coords = COUNTY_COORDS[county];
+  var county = row.county || getCountyFromTitle(row.title || '');
+  var coords = COUNTY_COORDS[county];
   return {
     id: row.id,
     title: row.title || 'Untitled Role',
     org: row.org_name || row.source_name || '—',
-    location: row.location || county || 'Ireland',
-    county,
-    type: row.job_type || row.type || '',
-    cefr: row.cefr_level || row.cefr || '',
+    location: county || 'Ireland',
+    county: county,
+    type: row.job_type || '',
+    cefr: row.cefr_level || '',
     sector: row.sector || '',
     posted: daysAgo(row.created_at),
-    lat: row.lat ? parseFloat(row.lat) : (coords ? coords[0] : null),
-    lng: row.lng ? parseFloat(row.lng) : (coords ? coords[1] : null),
+    lat: coords ? coords[0] : null,
+    lng: coords ? coords[1] : null,
     desc: row.description || '',
-    salary: row.salary || '',
+    salary: row.salary || 'POA',
     closing: row.closing_date || '',
     source_url: row.source_url || null,
-    is_aggregated: !!row.is_aggregated,
+    source_name: row.source_name || '',
+    is_aggregated: !!row.is_aggregated
   };
 }
 
-async function loadJobs() {
+function loadJobs() {
   document.getElementById('jCnt').textContent = 'Loading…';
-  const { data, error } = await sb
-    .from('jobs')
-    .select('*')
-    .eq('status', 'approved')
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error('Supabase error:', error);
-    document.getElementById('jCnt').textContent = `Error: ${error.message || error.code || JSON.stringify(error)}`;
-    return;
-  }
-  if (!data || data.length === 0) {
-    document.getElementById('jCnt').textContent = 'No approved jobs found (0 rows returned)';
-    return;
-  }
-
-  JOBS = (data || []).map(toUIJob);
-
-  JOBS.forEach(j => {
-    if (j.lat && j.lng) {
-      const m = L.marker([j.lat, j.lng], {icon: iconDefault}).addTo(map);
-      m.on('click', () => showJ(j.id));
-      mk[j.id] = m;
-    }
-  });
-
-  filt();
-
-  const hId = new URLSearchParams(window.location.search).get('highlight');
-  if (hId) {
-    const found = JOBS.find(x => String(x.id) === hId);
-    if (found) setTimeout(() => showJ(found.id), 400);
-  }
+  sbClient.from('jobs').select('*').eq('status','approved').order('created_at',{ascending:false})
+    .then(function(result) {
+      if (result.error) {
+        console.error('Supabase error:', result.error);
+        document.getElementById('jCnt').textContent = 'Could not load jobs';
+        return;
+      }
+      JOBS = (result.data || []).map(toUIJob);
+      JOBS.forEach(function(j) {
+        if (j.lat && j.lng) {
+          var m = L.marker([j.lat, j.lng], {icon: iconDefault}).addTo(theMap);
+          m.on('click', function() { showJob(j.id); });
+          markers[j.id] = m;
+        }
+      });
+      filtJobs();
+      var hId = new URLSearchParams(window.location.search).get('highlight');
+      if (hId) {
+        var found = JOBS.find(function(x) { return String(x.id) === hId; });
+        if (found) setTimeout(function() { showJob(found.id); }, 400);
+      }
+    });
 }
 
 function cefrBadge(l) {
-  return l ? `<span class="cefr-badge">${l}</span>` : '';
+  return l ? '<span class="cefr-badge">' + l + '</span>' : '';
 }
 
-window.filt = () => {
-  const q = document.getElementById('sQ').value.toLowerCase();
-  const c = document.getElementById('sCefr').value;
-  const t = document.getElementById('sType').value;
-  const r = JOBS.filter(j =>
-    (!q || j.title.toLowerCase().includes(q) || j.org.toLowerCase().includes(q) || j.location.toLowerCase().includes(q)) &&
-    (!c || j.cefr === c) && (!t || j.type === t)
-  );
-  document.getElementById('jCnt').textContent = `${r.length} Irish language job${r.length!==1?'s':''}`;
-  document.getElementById('jList').innerHTML = r.map(j => `
-    <div class="job-card ${activeJ===j.id?'sel':''}" onclick="showJ(${JSON.stringify(j.id)})">
-      <div class="job-card-top">
-        <div class="job-title">${j.title}</div>
-        ${cefrBadge(j.cefr)}
-      </div>
-      <div class="job-org">${j.org}</div>
-      <div class="job-meta">
-        📍 ${j.location}
-        ${j.type ? `<span class="badge-gray">${j.type}</span>` : ''}
-        <span style="margin-left:auto;">${j.posted}</span>
-      </div>
-    </div>`).join('') || '<p style="padding:.5rem;font-size:.85rem;color:var(--muted);">No jobs match your filters.</p>';
-};
+function filtJobs() {
+  var q = document.getElementById('sQ').value.toLowerCase();
+  var c = document.getElementById('sCefr').value;
+  var t = document.getElementById('sType').value;
+  var r = JOBS.filter(function(j) {
+    return (!q || j.title.toLowerCase().indexOf(q) !== -1 || j.org.toLowerCase().indexOf(q) !== -1 || j.location.toLowerCase().indexOf(q) !== -1) &&
+           (!c || j.cefr === c) && (!t || j.type === t);
+  });
+  document.getElementById('jCnt').textContent = r.length + ' Irish language job' + (r.length !== 1 ? 's' : '');
+  var html = '';
+  r.forEach(function(j) {
+    html += '<div class="job-card' + (activeJ === j.id ? ' sel' : '') + '" onclick="showJob(\'' + j.id + '\')">';
+    html += '<div class="job-card-top"><div class="job-title">' + j.title + '</div>' + cefrBadge(j.cefr) + '</div>';
+    html += '<div class="job-org">' + j.org + '</div>';
+    html += '<div class="job-meta">📍 ' + j.location;
+    if (j.type) html += ' <span class="badge-gray">' + j.type + '</span>';
+    if (j.is_aggregated) html += ' <span class="badge-agg">Via ' + j.source_name + '</span>';
+    html += ' <span style="margin-left:auto;">' + j.posted + '</span></div></div>';
+  });
+  document.getElementById('jList').innerHTML = html || '<p style="padding:.5rem;font-size:.85rem;color:var(--muted);">No jobs match your filters.</p>';
+}
 
-window.showJ = (id) => {
-  const j = JOBS.find(x => String(x.id) === String(id));
+function showJob(id) {
+  var j = JOBS.find(function(x) { return String(x.id) === String(id); });
   if (!j) return;
   activeJ = j.id;
-  if (j.lat && j.lng) map.setView([j.lat, j.lng], 10);
-  Object.values(mk).forEach(m => m.setIcon(iconDefault));
-  if (mk[j.id]) mk[j.id].setIcon(iconActive);
+  if (j.lat && j.lng) theMap.setView([j.lat, j.lng], 10);
+  Object.values(markers).forEach(function(m) { m.setIcon(iconDefault); });
+  if (markers[j.id]) markers[j.id].setIcon(iconActive);
   document.getElementById('jDetail').style.display = 'block';
-  const viewBtn = j.source_url
-    ? `<a href="${j.source_url}" target="_blank" rel="noopener" class="btn-primary">View Full Role →</a>`
-    : `<a href="job.html?id=${j.id}" class="btn-primary">View Full Role →</a>`;
-  const applyBtn = j.source_url
-    ? `<a href="${j.source_url}" target="_blank" rel="noopener" class="btn-teal">Apply Now →</a>`
-    : `<a href="job.html?id=${j.id}" class="btn-teal">Apply Now →</a>`;
-  document.getElementById('jDContent').innerHTML = `
-    <div class="detail-title">${j.title}</div>
-    <div class="detail-org">${j.org}</div>
-    <div class="detail-meta">📍 ${j.location} · ${j.type || 'See listing'} · ${j.posted}</div>
-    <div class="detail-tags">
-      ${cefrBadge(j.cefr)}
-      ${j.sector ? `<span class="badge-teal">${j.sector}</span>` : ''}
-    </div>
-    ${j.desc ? `<p class="detail-desc">${j.desc.substring(0,220)}${j.desc.length>220?'…':''}</p>` : ''}
-    <div class="detail-salary">
-      ${j.salary ? `<span>💰 ${j.salary}</span>` : ''}
-      ${j.closing ? `<span>📅 Closes ${j.closing}</span>` : ''}
-    </div>
-    ${viewBtn}
-    ${applyBtn}`;
-  filt();
-};
 
-window.closeD = () => {
+  var aggNote = j.is_aggregated ? '<div class="agg-note">📡 Found on <strong>' + j.source_name + '</strong> — Irish language required (CEFR level not specified). View original listing for full details.</div>' : '';
+  var viewBtn = j.source_url
+    ? '<a href="' + j.source_url + '" target="_blank" rel="noopener" class="btn-primary">View Original Listing →</a>'
+    : '<a href="job.html?id=' + j.id + '" class="btn-primary">View Full Role →</a>';
+  var applyBtn = j.source_url
+    ? '<a href="' + j.source_url + '" target="_blank" rel="noopener" class="btn-teal">Apply on ' + j.source_name + ' →</a>'
+    : '<a href="job.html?id=' + j.id + '" class="btn-teal">Apply Now →</a>';
+
+  document.getElementById('jDContent').innerHTML =
+    '<div class="detail-title">' + j.title + '</div>' +
+    '<div class="detail-org">' + j.org + '</div>' +
+    '<div class="detail-meta">📍 ' + j.location + ' · ' + (j.type || 'See listing') + ' · ' + j.posted + '</div>' +
+    '<div class="detail-tags">' + cefrBadge(j.cefr) + (j.sector ? '<span class="badge-teal">' + j.sector + '</span>' : '') + '</div>' +
+    aggNote +
+    (j.desc ? '<p class="detail-desc">' + j.desc.substring(0,220) + (j.desc.length > 220 ? '…' : '') + '</p>' : '') +
+    '<div class="detail-salary">' +
+    (j.salary ? '<span>💰 ' + j.salary + '</span>' : '<span>💰 POA</span>') +
+    (j.closing ? '<span>📅 Closes ' + j.closing + '</span>' : '') +
+    '</div>' +
+    viewBtn + applyBtn;
+
+  filtJobs();
+}
+
+function closeDetail() {
   document.getElementById('jDetail').style.display = 'none';
   activeJ = null;
-  Object.values(mk).forEach(m => m.setIcon(iconDefault));
-  filt();
-};
+  Object.values(markers).forEach(function(m) { m.setIcon(iconDefault); });
+  filtJobs();
+}
 
 loadJobs();
 </script>
