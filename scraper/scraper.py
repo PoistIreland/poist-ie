@@ -83,7 +83,7 @@ def insert_job(job: dict) -> bool:
         "sector":        job.get("sector", ""),
         "org_name":      job.get("org_name", ""),
         "salary":        job.get("salary", "POA"),
-        "cefr_required": job.get("cefr_required", "Irish language required — level not specified"),
+        
         "status":        "approved",
         "is_aggregated": True,
         "source_url":    job["source_url"],
@@ -178,7 +178,7 @@ def scrape_headings(url: str, source_name: str, sector: str,
                 "sector":       sector,
                 "org_name":     employer or org_name,
                 "salary":       salary or "POA",
-                "cefr_required": "Irish language required — level not specified",
+                
                 "source_url":   full_url,
                 "source_name":  source_name,
             })
@@ -211,7 +211,7 @@ def scrape_headings(url: str, source_name: str, sector: str,
                     "sector":        sector,
                     "org_name":      org_name,
                     "salary":        salary,
-                    "cefr_required": "Irish language required — level not specified",
+                    
                     "source_url":    full_url,
                     "source_name":   source_name,
                 })
@@ -301,7 +301,7 @@ def scrape_adzuna() -> list:
                     "sector":        item.get("category", {}).get("label", ""),
                     "org_name":      item.get("company", {}).get("display_name", ""),
                     "salary":        salary or "POA",
-                    "cefr_required": "Irish language required — level not specified",
+                    
                     "source_url":    redirect_url,
                     "source_name":   "adzuna.ie",
                 })
