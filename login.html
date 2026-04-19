@@ -144,7 +144,7 @@ footer ul a:hover{color:var(--white)}
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-const sb = createClient('https://kpfshjarepmazrgzffot.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwZnNoamFyZXBtYXpyZ3pmZm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2MDI1NTUsImV4cCI6MjA1OTE3ODU1NX0.pjCXFhFHMl0A5XFM1KGQdEBQ_WmFAz_of0VdvXfJ_5k');
+const sb = createClient('https://kpfshjarepmazrgzffot.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwZnNoamFyZXBtYXpyZ3pmZm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNzQ0MjIsImV4cCI6MjA5MDY1MDQyMn0.yU-6ASii1duNXgGMs0ZWTkgTYXonVfqVOnEQr0J8FhU');
 const { data:{ session } } = await sb.auth.getSession();
 if(session){ const { data:c } = await sb.from('candidates').select('id').eq('id',session.user.id).single(); window.location.href=c?'candidate-dashboard.html':'employer-dashboard.html'; }
 let currentRole='candidate';
