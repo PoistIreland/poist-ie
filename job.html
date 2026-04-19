@@ -8,9 +8,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --teal:#1A7A6E; --teal-dark:#0f5a51; --teal-light:#E8F5F3; --teal-mid:#2a9d8f;
-  --gold:#F5C518; --gold-dark:#d4a800;
-  --dark:#1A1A2E; --gray:#6B7280; --cream:#F5F2ED; --border:#E5E7EB; --white:#ffffff;
+  --teal:#1A6B3C; --teal-dark:#0D3B2E; --teal-light:#F5F7F5; --teal-mid:#2D8653;
+  --gold:#F5C518; --gold-dark:#C9921A;
+  --dark:#0F1A13; --gray:#6B7F72; --cream:#FFFFFF; --border:#E5E7EB; --white:#ffffff;
   --forest:#0D3B2E;
   --green:#1A6B3C;
   --green2:#2D8653;
@@ -54,7 +54,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--dark);
 .job-pills{display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:1.2rem;}
 .pill{display:inline-flex;align-items:center;gap:0.3rem;padding:0.35rem 0.8rem;border-radius:100px;font-size:0.8rem;font-weight:600;}
 .pill-gold{background:rgba(245,197,24,0.15);color:#8a6d00;border:1px solid rgba(245,197,24,0.4);}
-.pill-teal{background:var(--teal-light);color:var(--teal);border:1px solid rgba(26,122,110,0.2);}
+.pill-teal{background:var(--teal-light);color:var(--teal);border:1px solid rgba(26,107,60,0.2);}
 .pill-gray{background:#F3F4F6;color:var(--gray);border:1px solid var(--border);}
 .cefr-large{display:inline-flex;align-items:center;gap:0.6rem;background:var(--gold);color:var(--dark);padding:0.5rem 1rem;border-radius:10px;font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;}
 
@@ -192,12 +192,12 @@ const cefrLabel = { A1:'Beginner', A2:'Elementary', B1:'Intermediate', B2:'Upper
 
 function cefrBadge(level, large=false){
   if(large) return `<div class="cefr-large">${level} <span style="font-size:0.8rem;font-weight:600;opacity:0.7;">${cefrLabel[level]||''}</span></div>`;
-  return `<span style="background:#F5C518;color:#1A1A2E;font-size:0.75rem;font-weight:700;padding:0.2rem 0.55rem;border-radius:5px;">${level}</span>`;
+  return `<span style="background:#F5C518;color:#0F1A13;font-size:0.75rem;font-weight:700;padding:0.2rem 0.55rem;border-radius:5px;">${level}</span>`;
 }
 
 function toast(msg){
   const t=document.createElement('div');
-  t.style.cssText=`position:fixed;bottom:1.5rem;right:1.5rem;background:#1A7A6E;color:#fff;padding:0.8rem 1.3rem;border-radius:10px;font-size:0.9rem;font-weight:500;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.2);animation:slideUp 0.3s ease;`;
+  t.style.cssText=`position:fixed;bottom:1.5rem;right:1.5rem;background:#1A6B3C;color:#fff;padding:0.8rem 1.3rem;border-radius:10px;font-size:0.9rem;font-weight:500;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.2);animation:slideUp 0.3s ease;`;
   t.textContent=msg;
   document.body.appendChild(t);
   setTimeout(()=>t.remove(),3000);
@@ -396,10 +396,10 @@ function render(){
       </div>
     </div>
 
-    <div class="sidebar-card" style="background:var(--teal-light);border-color:rgba(26,122,110,0.2);">
+    <div class="sidebar-card" style="background:var(--teal-light);border-color:rgba(26,107,60,0.2);">
       <h4 style="color:var(--teal-dark);">Not ready to apply yet?</h4>
       <p style="font-size:0.85rem;color:var(--gray);margin-bottom:1rem;line-height:1.6;">Create a free Language Passport and go passive — employers can find you without you applying.</p>
-      <a href="register-candidate.html" style="display:block;text-align:center;background:var(--teal);color:#fff;padding:0.7rem;border-radius:8px;font-weight:600;font-size:0.88rem;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#0f5a51'" onmouseout="this.style.background='#1A7A6E'">Create Language Passport →</a>
+      <a href="register-candidate.html" style="display:block;text-align:center;background:var(--teal);color:#fff;padding:0.7rem;border-radius:8px;font-weight:600;font-size:0.88rem;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#0D3B2E'" onmouseout="this.style.background='#1A6B3C'">Create Language Passport →</a>
     </div>
 
     <div class="sidebar-card" style="background:var(--dark);border:none;">

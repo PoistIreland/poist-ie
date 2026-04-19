@@ -6,9 +6,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>/* poist.ie base styles — shared across all pages */
 :root {
-  --teal:#1A7A6E;--teal-dark:#0f5a51;--teal-light:#E8F5F3;--teal-mid:#2a9d8f;
-  --gold:#F5C518;--gold-dark:#d4a800;
-  --dark:#1A1A2E;--gray:#6B7280;--cream:#F5F2ED;--border:#E5E7EB;--white:#ffffff;
+  --teal:#1A6B3C;--teal-dark:#0D3B2E;--teal-light:#F5F7F5;--teal-mid:#2D8653;
+  --gold:#F5C518;--gold-dark:#C9921A;
+  --dark:#0F1A13;--gray:#6B7F72;--cream:#FFFFFF;--border:#E5E7EB;--white:#ffffff;
   --red:#dc2626;--green:#16a34a;
   --sidebar-w:220px;
   --forest:#0D3B2E;
@@ -22,9 +22,9 @@
   --radius:14px;
   --mono:'JetBrains Mono',monospace;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;background:#F5F2ED;color:var(--dark);overflow-x:hidden;}
+body{font-family:'DM Sans',sans-serif;background:#FFFFFF;color:var(--dark);overflow-x:hidden;}
 input,select,textarea{font-family:'DM Sans',sans-serif;}
-.logo{text-decoration:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.65rem;letter-spacing:-0.03em;background:linear-gradient(90deg,#0f5a51,#2a9d8f);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.logo{text-decoration:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.65rem;letter-spacing:-0.03em;background:linear-gradient(90deg,#0D3B2E,#2D8653);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 
 /* Layout */
 .app-shell{display:flex;min-height:100vh;}
@@ -83,7 +83,7 @@ select.form-input{cursor:pointer;}
 .section-hdr h2{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;}
 
 /* Verified badge */
-.verified{display:inline-flex;align-items:center;gap:0.3rem;background:#E8F5F3;color:var(--teal);font-size:0.72rem;font-weight:600;padding:0.18rem 0.55rem;border-radius:4px;}
+.verified{display:inline-flex;align-items:center;gap:0.3rem;background:#F5F7F5;color:var(--teal);font-size:0.72rem;font-weight:600;padding:0.18rem 0.55rem;border-radius:4px;}
 
 /* Animations */
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
@@ -145,7 +145,7 @@ footer ul a:hover{color:var(--white)}
 const POIST = {
   // ── Brand ──────────────────────────────────────────
   logo: (dark = false) => `
-    <a href="index.html" style="text-decoration:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.65rem;letter-spacing:-0.03em;background:linear-gradient(90deg,${dark?'rgba(255,255,255,0.9),rgba(255,255,255,0.6)':'#0f5a51,#2a9d8f'});-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">poist.ie</a>`,
+    <a href="index.html" style="text-decoration:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.65rem;letter-spacing:-0.03em;background:linear-gradient(90deg,${dark?'rgba(255,255,255,0.9),rgba(255,255,255,0.6)':'#0D3B2E,#2D8653'});-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">poist.ie</a>`,
 
   // ── Auth helpers (swap for Supabase auth) ──────────
   getUser: () => JSON.parse(localStorage.getItem('poist_user') || 'null'),
@@ -200,7 +200,7 @@ const POIST = {
     ];
     const links = role==='employer' ? employerLinks : role==='admin' ? adminLinks : candidateLinks;
     return `
-      <aside style="width:220px;min-height:100vh;background:#0f5a51;display:flex;flex-direction:column;flex-shrink:0;">
+      <aside style="width:220px;min-height:100vh;background:#0D3B2E;display:flex;flex-direction:column;flex-shrink:0;">
         <div style="padding:1.4rem 1.2rem 1rem;border-bottom:1px solid rgba(255,255,255,0.1);">
           ${POIST.logo(true)}
         </div>
@@ -226,20 +226,20 @@ const POIST = {
   // ── Top bar for dashboards ──────────────────────────
   renderTopBar: (title, user) => `
     <div style="height:60px;background:#fff;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;flex-shrink:0;">
-      <h1 style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#1A1A2E;">${title}</h1>
+      <h1 style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#0F1A13;">${title}</h1>
       <div style="display:flex;align-items:center;gap:0.8rem;">
-        <div style="width:32px;height:32px;border-radius:50%;background:#E8F5F3;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">${user?.avatar||'👤'}</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:#F5F7F5;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">${user?.avatar||'👤'}</div>
         <span style="font-size:0.88rem;font-weight:500;color:#374151;">${user?.name||'User'}</span>
       </div>
     </div>`,
 
   // ── CEFR badge ─────────────────────────────────────
-  cefrBadge: (level) => `<span style="background:#F5C518;color:#1A1A2E;font-size:0.7rem;font-weight:700;padding:0.18rem 0.5rem;border-radius:4px;">${level}</span>`,
+  cefrBadge: (level) => `<span style="background:#F5C518;color:#0F1A13;font-size:0.7rem;font-weight:700;padding:0.18rem 0.5rem;border-radius:4px;">${level}</span>`,
 
   // ── Toast notification ──────────────────────────────
   toast: (msg, type='success') => {
     const t = document.createElement('div');
-    const bg = type==='success'?'#1A7A6E':type==='error'?'#dc2626':'#1A1A2E';
+    const bg = type==='success'?'#1A6B3C':type==='error'?'#dc2626':'#0F1A13';
     t.style.cssText=`position:fixed;bottom:1.5rem;right:1.5rem;background:${bg};color:#fff;padding:0.8rem 1.3rem;border-radius:10px;font-size:0.9rem;font-weight:500;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.2);animation:slideIn 0.3s ease;`;
     t.textContent=msg;
     document.body.appendChild(t);

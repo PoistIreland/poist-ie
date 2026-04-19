@@ -7,9 +7,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --teal:#1A7A6E;--teal-dark:#0f5a51;--teal-light:#E8F5F3;
-    --gold:#F5C518;--gold-dark:#d4a800;
-    --dark:#1A1A2E;--gray:#6B7280;--cream:#F5F2ED;--border:#E5E7EB;
+    --teal:#1A6B3C;--teal-dark:#0D3B2E;--teal-light:#F5F7F5;
+    --gold:#F5C518;--gold-dark:#C9921A;
+    --dark:#0F1A13;--gray:#6B7F72;--cream:#FFFFFF;--border:#E5E7EB;
   --forest:#0D3B2E;
   --green:#1A6B3C;
   --green2:#2D8653;
@@ -27,7 +27,7 @@
 
   .container{max-width:700px;margin:0 auto;}
 
-  .header{background:linear-gradient(135deg,#0f5a51,#1A7A6E);border-radius:16px;padding:1.8rem 2rem;color:#fff;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+  .header{background:linear-gradient(135deg,#0D3B2E,#1A6B3C);border-radius:16px;padding:1.8rem 2rem;color:#fff;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
   .header h1{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:0.2rem;}
   .header p{font-size:0.85rem;color:rgba(255,255,255,0.7);}
   .badge{background:rgba(245,197,24,0.2);border:1px solid rgba(245,197,24,0.4);color:#F5C518;padding:0.3rem 0.8rem;border-radius:100px;font-size:0.75rem;font-weight:600;white-space:nowrap;}
@@ -82,7 +82,7 @@
   .control-group .val{font-size:0.78rem;font-weight:700;color:var(--teal);}
 
   /* Note */
-  .note{background:#E8F5F3;border:1px solid rgba(26,122,110,0.2);border-radius:10px;padding:1rem;font-size:0.82rem;color:var(--teal);line-height:1.6;}
+  .note{background:#F5F7F5;border:1px solid rgba(26,107,60,0.2);border-radius:10px;padding:1rem;font-size:0.82rem;color:var(--teal);line-height:1.6;}
   .note strong{font-weight:600;}
 
   /* Waveform animation */
@@ -389,7 +389,7 @@ async function synthesise(text, playBtn, sampleEl) {
     const fallbackUrl = 'https://www.abair.ie/synthesis?text=' + encodeURIComponent(text) + '&dialect=' + (currentVoice.includes('UL') ? 'Ulster' : currentVoice.includes('MU') ? 'Munster' : 'Connemara');
     const openBtn = document.createElement('button');
     openBtn.textContent = '→ Open in Abair.ie directly';
-    openBtn.style.cssText = 'margin-left:0.8rem;background:#F5C518;color:#1A1A2E;border:none;padding:0.3rem 0.8rem;border-radius:6px;cursor:pointer;font-size:0.8rem;font-weight:600;';
+    openBtn.style.cssText = 'margin-left:0.8rem;background:#F5C518;color:#0F1A13;border:none;padding:0.3rem 0.8rem;border-radius:6px;cursor:pointer;font-size:0.8rem;font-weight:600;';
     openBtn.onclick = () => window.open(fallbackUrl, '_blank');
     document.getElementById('statusText').after(openBtn);
   }

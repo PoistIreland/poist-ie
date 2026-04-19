@@ -5,23 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>poist.ie — For Candidates | Find Your Irish Language Career</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --teal:#1A7A6E; --teal-dark:#0f5a51; --teal-mid:#2a9d8f; --teal-light:#E8F5F3;
-  --gold:#F5C518; --gold-dark:#d4a800;
-  --navy:#1A1A2E; --gray:#6B7280; --light:#F9FAFB; --border:#E5E7EB; --white:#ffffff;
-  --forest:#0D3B2E;
-  --green:#1A6B3C;
-  --green2:#2D8653;
-  --gold2:#C9921A;
-  --ink:#0F1A13;
-  --body:#2E3C34;
-  --muted:#6B7F72;
-  --gray-faint:#C4D4CB;
-  --off:#F5F7F5;
-  --radius:14px;
-  --mono:'JetBrains Mono',monospace;}
+  --teal:#1A6B3C; --teal-dark:#0D3B2E; --teal-mid:#2D8653; --teal-light:#F5F7F5;
+  --gold:#F5C518; --gold-dark:#C9921A;
+  --navy:#0F1A13; --gray:#6B7F72; --light:#F9FAFB; --border:#E5E7EB; --white:#ffffff;
+}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--navy);overflow-x:hidden;}
 h1,h2,h3,h4,h5,h6{font-family:'Syne',sans-serif;}
@@ -112,7 +102,7 @@ section{padding:80px 2rem;}
 .jobs-preview{background:var(--light);}
 .jobs-list{display:flex;flex-direction:column;gap:.9rem;margin-top:2rem;}
 .job-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:1.3rem 1.5rem;display:flex;align-items:center;gap:1.2rem;transition:all .2s;color:var(--navy);}
-.job-card:hover{border-color:var(--teal);box-shadow:0 4px 20px rgba(26,122,110,.1);transform:translateX(4px);}
+.job-card:hover{border-color:var(--teal);box-shadow:0 4px 20px rgba(26,107,60,.1);transform:translateX(4px);}
 .job-logo{width:52px;height:52px;border-radius:12px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;}
 .job-info{flex:1;}
 .job-title{font-weight:700;font-size:1rem;margin-bottom:.25rem;color:var(--teal);}
@@ -149,17 +139,13 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:3rem 2rem 1.5r
 </head>
 <body>
 
-<nav class="nav">
-  <a href="index.html" class="nav-logo">
-    <img src="assets/poist-logo-trans.png" alt="poist.ie" style="height:70px; width:auto; display:block;">
-  </a>
+<nav>
+  <a href="index.html" class="nav-logo"><img src="assets/poist-logo-trans.png" alt="poist.ie" style="height:48px;width:auto;display:block;"></a>
   <div class="nav-links">
-    <a href="jobs.html">Browse Jobs <span class="ga-sm">/ Poist</span></a>
+    <a href="index.html">← Home</a>
+    <a href="jobs.html">Browse Jobs</a>
     <a href="employers.html">For Employers</a>
-    <a href="cefr-guide.html">CEFR Guide</a>
-    <a href="about.html">About</a>
-    <a href="login.html" class="ghost">Log in</a>
-    <a href="register-candidate.html" class="cta">Get Started</a>
+    <a href="register-candidate.html" class="nav-cta">Create Passport</a>
   </div>
 </nav>
 
@@ -328,6 +314,5 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:3rem 2rem 1.5r
     <span class="tag">Ag nascadh cainteoirí Gaeilge le deiseanna · Connecting Irish speakers with opportunity</span>
   </div>
 </footer>
-
 </body>
 </html>
