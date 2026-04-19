@@ -149,6 +149,171 @@ footer ul a:hover{color:var(--white)}
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const sb = createClient(
+  'https://kpfshjarepmazrgzffot.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwZnNoamFyZXBtYXpyZ3pmZm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2MDI1NTUsImV4cCI6MjA1OTE3ODU1NX0.pjCXFhFHMl0A5XFM1KGQdEBQ_WmFAz_of0VdvXfJ_5k'
+);
+
+// County centroids for map markers when no exact coords stored
+const COUNTY_COORDS = {
+  Antrim:[54.72,-6.21],Armagh:[54.35,-6.65],Carlow:[52.84,-6.93],Cavan:[53.99,-7.36],
+  Clare:[52.89,-9.0],Cork:[51.9,-8.47],Derry:[55.0,-7.31],Donegal:[54.65,-8.12],
+  Down:[54.32,-5.95],Dublin:[53.35,-6.26],Fermanagh:[54.35,-7.63],Galway:[53.27,-9.06],
+  Kerry:[52.16,-9.57],Kildare:[53.16,-6.91],Kilkenny:[52.65,-7.25],Laois:[52.99,-7.33],
+  Leitrim:[54.0,-8.0],Limerick:[52.66,-8.63],Longford:[53.73,-7.79],Louth:[53.92,-6.49],
+  Mayo:[53.85,-9.3],Meath:[53.61,-6.66],Monaghan:[54.25,-6.97],Offaly:[53.27,-7.49],
+  Roscommon:[53.63,-8.19],Sligo:[54.27,-8.47],Tipperary:[52.47,-8.16],Tyrone:[54.6,-7.2],
+  Waterford:[52.26,-7.12],Westmeath:[53.53,-7.46],Wexford:[52.34,-6.46],Wicklow:[52.98,-6.44],
+};
+
+let JOBS = [];
+
+const map = L.map('map').setView([53.4,-8.0],7);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+
+const iconDefault = L.divIcon({html:`<div style="background:var(--gold,#F5C518);width:14px;height:14px;border-radius:50%;border:2px solid #C9921A;box-shadow:0 2px 6px rgba(0,0,0,.3);"></div>`,className:'',iconSize:[14,14]});
+const iconActive  = L.divIcon({html:`<div style="background:#1A6B3C;width:18px;height:18px;border-radius:50%;border:2px solid #0D3B2E;box-shadow:0 2px 8px rgba(26,107,60,.5);"></div>`,className:'',iconSize:[18,18]});
+
+let activeJ = null;
+const mk = {};
+
+function daysAgo(dateStr) {
+  if (!dateStr) return 'Recently';
+  const d = Math.floor((Date.now() - new Date(dateStr)) / 86400000);
+  if (d === 0) return 'Today';
+  if (d === 1) return '1 day ago';
+  if (d < 7) return `${d} days ago`;
+  if (d < 14) return '1 week ago';
+  return `${Math.floor(d/7)} weeks ago`;
+}
+
+function toUIJob(row) {
+  const county = row.county || '';
+  const coords = COUNTY_COORDS[county];
+  return {
+    id: row.id,
+    title: row.title || 'Untitled Role',
+    org: row.org_name || row.source_name || '—',
+    location: row.location || county || 'Ireland',
+    county,
+    type: row.job_type || row.type || '',
+    cefr: row.cefr_level || row.cefr || '',
+    sector: row.sector || '',
+    posted: daysAgo(row.created_at),
+    lat: row.lat ? parseFloat(row.lat) : (coords ? coords[0] : null),
+    lng: row.lng ? parseFloat(row.lng) : (coords ? coords[1] : null),
+    desc: row.description || '',
+    salary: row.salary || '',
+    closing: row.closing_date || '',
+    source_url: row.source_url || null,
+    is_aggregated: !!row.is_aggregated,
+  };
+}
+
+async function loadJobs() {
+  document.getElementById('jCnt').textContent = 'Loading…';
+  const { data, error } = await sb
+    .from('jobs')
+    .select('*')
+    .eq('status', 'approved')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Supabase error:', error);
+    document.getElementById('jCnt').textContent = 'Could not load jobs';
+    return;
+  }
+
+  JOBS = (data || []).map(toUIJob);
+
+  JOBS.forEach(j => {
+    if (j.lat && j.lng) {
+      const m = L.marker([j.lat, j.lng], {icon: iconDefault}).addTo(map);
+      m.on('click', () => showJ(j.id));
+      mk[j.id] = m;
+    }
+  });
+
+  filt();
+
+  const hId = new URLSearchParams(window.location.search).get('highlight');
+  if (hId) {
+    const found = JOBS.find(x => String(x.id) === hId);
+    if (found) setTimeout(() => showJ(found.id), 400);
+  }
+}
+
+function cefrBadge(l) {
+  return l ? `<span class="cefr-badge">${l}</span>` : '';
+}
+
+window.filt = () => {
+  const q = document.getElementById('sQ').value.toLowerCase();
+  const c = document.getElementById('sCefr').value;
+  const t = document.getElementById('sType').value;
+  const r = JOBS.filter(j =>
+    (!q || j.title.toLowerCase().includes(q) || j.org.toLowerCase().includes(q) || j.location.toLowerCase().includes(q)) &&
+    (!c || j.cefr === c) && (!t || j.type === t)
+  );
+  document.getElementById('jCnt').textContent = `${r.length} Irish language job${r.length!==1?'s':''}`;
+  document.getElementById('jList').innerHTML = r.map(j => `
+    <div class="job-card ${activeJ===j.id?'sel':''}" onclick="showJ(${JSON.stringify(j.id)})">
+      <div class="job-card-top">
+        <div class="job-title">${j.title}</div>
+        ${cefrBadge(j.cefr)}
+      </div>
+      <div class="job-org">${j.org}</div>
+      <div class="job-meta">
+        📍 ${j.location}
+        ${j.type ? `<span class="badge-gray">${j.type}</span>` : ''}
+        <span style="margin-left:auto;">${j.posted}</span>
+      </div>
+    </div>`).join('') || '<p style="padding:.5rem;font-size:.85rem;color:var(--muted);">No jobs match your filters.</p>';
+};
+
+window.showJ = (id) => {
+  const j = JOBS.find(x => String(x.id) === String(id));
+  if (!j) return;
+  activeJ = j.id;
+  if (j.lat && j.lng) map.setView([j.lat, j.lng], 10);
+  Object.values(mk).forEach(m => m.setIcon(iconDefault));
+  if (mk[j.id]) mk[j.id].setIcon(iconActive);
+  document.getElementById('jDetail').style.display = 'block';
+  const viewBtn = j.source_url
+    ? `<a href="${j.source_url}" target="_blank" rel="noopener" class="btn-primary">View Full Role →</a>`
+    : `<a href="job.html?id=${j.id}" class="btn-primary">View Full Role →</a>`;
+  const applyBtn = j.source_url
+    ? `<a href="${j.source_url}" target="_blank" rel="noopener" class="btn-teal">Apply Now →</a>`
+    : `<a href="job.html?id=${j.id}" class="btn-teal">Apply Now →</a>`;
+  document.getElementById('jDContent').innerHTML = `
+    <div class="detail-title">${j.title}</div>
+    <div class="detail-org">${j.org}</div>
+    <div class="detail-meta">📍 ${j.location} · ${j.type || 'See listing'} · ${j.posted}</div>
+    <div class="detail-tags">
+      ${cefrBadge(j.cefr)}
+      ${j.sector ? `<span class="badge-teal">${j.sector}</span>` : ''}
+    </div>
+    ${j.desc ? `<p class="detail-desc">${j.desc.substring(0,220)}${j.desc.length>220?'…':''}</p>` : ''}
+    <div class="detail-salary">
+      ${j.salary ? `<span>💰 ${j.salary}</span>` : ''}
+      ${j.closing ? `<span>📅 Closes ${j.closing}</span>` : ''}
+    </div>
+    ${viewBtn}
+    ${applyBtn}`;
+  filt();
+};
+
+window.closeD = () => {
+  document.getElementById('jDetail').style.display = 'none';
+  activeJ = null;
+  Object.values(mk).forEach(m => m.setIcon(iconDefault));
+  filt();
+};
+
+loadJobs();
+</script>
 <script>
 const JOBS = [
   { id:1, title:'Irish Language Officer', org:'Department of Education', location:'Dublin', county:'Dublin', type:'Full-time', cefr:'B2', sector:'Government', posted:'2 days ago', lat:53.349, lng:-6.260, desc:'Lead Irish language strategy across the department, supporting the 2030 Official Languages Act targets.', salary:'€55,000 – €70,000', closing:'30 April 2026' },

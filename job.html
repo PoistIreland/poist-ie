@@ -142,49 +142,14 @@ footer ul a:hover{color:var(--white)}
   <div id="sideCol"></div>
 </div>
 
-<script>
-// All demo jobs — same dataset as jobs.html
-// When Supabase is wired, replace this with a fetch from the jobs table by id
-const JOBS = [
-  { id:1, title:'Léiritheoir Faisnéise — Irish Language Documentary Producer', org:'TG4', location:'An Spidéal, Co. Galway', county:'Galway', type:'Full-time', cefr:'C1', sector:'Broadcasting', posted:'2 days ago', icon:'📺',
-    tagline:'Create award-winning Irish-language documentaries for Ireland\'s national broadcaster.',
-    desc:'This is a senior production role within TG4\'s documentary division, based at the broadcaster\'s headquarters in An Spidéal, Connemara. You will be responsible for the end-to-end production of Irish-language documentary content for broadcast and digital platforms.\n\nWorking with commissioning editors, directors and post-production teams, you will develop original documentary concepts, manage production budgets and schedules, and ensure all content meets TG4\'s editorial and language standards.\n\nThe role requires advanced Irish at C1 level or above, as all production meetings and editorial discussions are conducted through Irish.',
-    responsibilities:['Develop and pitch original documentary concepts','Manage production from pre-production through to delivery','Work with directors, cameramen and editors throughout production','Ensure content meets TG4 editorial guidelines and CEFR Irish language standards','Manage production budgets typically ranging from €80,000 to €250,000'],
-    requirements:['C1 Irish essential — all meetings conducted as Gaeilge','3+ years broadcast production experience','Degree in Media, Film or Communications (or equivalent)','Strong project management and budgeting skills','Experience with commissioning processes an advantage'],
-    salary:'€48,000 – €62,000', closing:'30 April 2026', experience:'3+ years broadcast production' },
-
-  { id:2, title:'Irish Language Officer — Oifigeach Gaeilge', org:'Galway City Council', location:'Galway', county:'Galway', type:'Full-time', cefr:'B2', sector:'Public Sector', posted:'1 day ago', icon:'🏛️',
-    tagline:'Help Galway City Council meet its Irish language obligations under the Official Languages Act.',
-    desc:'Galway City Council is seeking an Irish Language Officer to coordinate the delivery of its statutory Irish Language Scheme. This is a key role in ensuring the Council meets its obligations under the Official Languages (Amendment) Act 2021, including the 20% Irish-speaking staff target by 2030.\n\nYou will work across all Council departments to promote Irish language use, coordinate translations, develop staff training programmes and engage with the public and community groups through Irish.\n\nThe role is based at City Hall, Galway City, with occasional travel to community venues.',
-    responsibilities:['Coordinate delivery of the Council\'s Irish Language Scheme','Commission and review translations of official documents and signage','Develop and deliver Irish language training for Council staff','Represent the Council at Irish language events and community meetings','Prepare annual reports on Irish language activity for elected members'],
-    requirements:['B2 Irish minimum — B2 assessed at interview','Degree in Irish or related discipline, or equivalent experience','Knowledge of the Official Languages Acts 2003 and 2021','Excellent written and spoken Irish and English','Experience in public administration an advantage'],
-    salary:'€45,000 – €57,000', closing:'25 April 2026', experience:'2+ years in public sector or Irish language sector' },
-
-  { id:3, title:'Príomhfhorbróir — Tech Lead Gaeilge', org:'GlobalTech Ireland', location:'Cork · Hybrid', county:'Cork', type:'Full-time', cefr:'C1', sector:'Technology', posted:'3 days ago', icon:'💻',
-    tagline:'Lead a bilingual engineering team at one of Ireland\'s fastest-growing tech companies.',
-    desc:'GlobalTech Ireland is committed to building a bilingual workplace and is seeking a Tech Lead to manage a team of 8 engineers working on our enterprise SaaS platform. This is a rare opportunity to bring your technical skills and Irish language ability together in a forward-thinking tech environment.\n\nAll internal team communications, stand-ups and documentation for this team are conducted through Irish. You will report to the Engineering Director and work closely with Product, Design and QA.\n\nThe role is hybrid — 2 days per week at our Cork city office, remote otherwise.',
-    responsibilities:['Lead and mentor a team of 8 software engineers','Drive technical architecture decisions for the core platform','Conduct code reviews and set engineering standards','Work with Product to plan and deliver quarterly roadmaps','Foster a bilingual (Irish/English) team culture'],
-    requirements:['C1 Irish essential — team operates as Gaeilge','5+ years software engineering experience','2+ years in a technical leadership role','Strong knowledge of React, Node.js and cloud infrastructure','Experience with agile delivery methodologies'],
-    salary:'€95,000 – €120,000 + equity', closing:'10 May 2026', experience:'5+ years engineering, 2+ years leadership' },
-
-  { id:4, title:'Cruthaitheoir Ábhair — Irish Content Creator', org:'Creative Nua', location:'Galway · Part-time / Freelance', county:'Galway', type:'Part-time', cefr:'B2', sector:'Media', posted:'Today', icon:'✍️',
-    tagline:'Create compelling Irish-language content for brands and organisations across Ireland.',
-    desc:'Creative Nua is a leading Irish-language digital agency based in Galway, working with brands, public bodies and NGOs to create engaging Irish-language content. We are seeking a talented content creator to join our growing team on a part-time or freelance basis.\n\nYou will produce written, visual and video content in Irish across social media, web and print channels. You will work with our creative and strategy teams to develop content that is engaging, accurate and on-brand for a range of clients.\n\nThis is a flexible role suited to someone with strong Irish writing skills and a passion for digital content.',
-    responsibilities:['Write and edit Irish-language copy for social media, web and print','Create short-form video scripts and captions','Manage content calendars for 3–5 client accounts','Collaborate with designers and videographers','Proofread and quality-check all Irish-language outputs'],
-    requirements:['B2 Irish minimum — strong written Irish essential','1+ year experience in content creation, journalism or copywriting','Familiarity with social media platforms and digital tools','Portfolio of Irish-language written work','Video editing skills an advantage'],
-    salary:'€22–28 per hour (freelance) / €32,000–38,000 pro rata (part-time)', closing:'22 April 2026', experience:'1+ year content creation' },
-
-  { id:5, title:'Bainisteoir Pobail — Community Manager', org:'Startup Hub Limerick', location:'Limerick', county:'Limerick', type:'Full-time', cefr:'B1', sector:'Community', posted:'Today', icon:'👥',
-    tagline:'Build and manage a vibrant bilingual startup community in Limerick.',
-    desc:'Startup Hub Limerick is a co-working and incubation space committed to fostering innovation and the Irish language in the mid-west. We are seeking a Community Manager to grow and manage our member community of 150+ founders, freelancers and remote workers.\n\nYou will be the face of the Hub — organising events, welcoming members, managing communications and building partnerships with local businesses and educational institutions. The ability to engage members through Irish as well as English is important to our mission.',
-    responsibilities:['Manage day-to-day community operations and member relations','Organise 2–3 events per month including networking, workshops and pitch nights','Develop and manage bilingual (Irish/English) communications','Onboard new members and maintain strong retention rates','Build partnerships with local universities, councils and enterprise agencies'],
-    requirements:['B1 Irish minimum — comfortable conducting some conversations as Gaeilge','2+ years community management, events or hospitality experience','Excellent interpersonal and communication skills','Strong organisational ability and attention to detail','Interest in startups and entrepreneurship an advantage'],
-    salary:'€34,000 – €42,000', closing:'28 April 2026', experience:'2+ years community management or events' },
-];
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const sb = createClient('https://kpfshjarepmazrgzffot.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwZnNoamFyZXBtYXpyZ3pmZm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2MDI1NTUsImV4cCI6MjA1OTE3ODU1NX0.pjCXFhFHMl0A5XFM1KGQdEBQ_WmFAz_of0VdvXfJ_5k');
 
 const cefrLabel = { A1:'Beginner', A2:'Elementary', B1:'Intermediate', B2:'Upper-Intermediate', C1:'Advanced', C2:'Proficient/Native' };
 
 function cefrBadge(level, large=false){
+  if(!level) return '';
   if(large) return `<div class="cefr-large">${level} <span style="font-size:0.8rem;font-weight:600;opacity:0.7;">${cefrLabel[level]||''}</span></div>`;
   return `<span style="background:#F5C518;color:#0F1A13;font-size:0.75rem;font-weight:700;padding:0.2rem 0.55rem;border-radius:5px;">${level}</span>`;
 }
@@ -197,216 +162,187 @@ function toast(msg){
   setTimeout(()=>t.remove(),3000);
 }
 
-function render(){
-  const params = new URLSearchParams(window.location.search);
-  const id = parseInt(params.get('id'));
-  const job = JOBS.find(j => j.id === id);
+function daysAgo(ts){
+  if(!ts) return '';
+  const d=Math.floor((Date.now()-new Date(ts))/(1000*60*60*24));
+  if(d===0) return 'Today'; if(d===1) return '1 day ago'; return `${d} days ago`;
+}
 
-  if(!job){
-    document.getElementById('mainCol').innerHTML = `
-      <div class="not-found">
-        <div style="font-size:3rem;margin-bottom:1rem;">🔍</div>
-        <h2>Role not found</h2>
-        <p>This job may have been filled or the link may be incorrect.</p>
-        <a href="jobs.html" style="display:inline-flex;align-items:center;gap:0.5rem;background:var(--teal);color:#fff;padding:0.8rem 1.8rem;border-radius:10px;font-weight:600;text-decoration:none;">← Back to all jobs</a>
-      </div>`;
-    document.title = 'poist.ie — Job Not Found';
-    return;
+function showNotFound(){
+  document.getElementById('mainCol').innerHTML = `
+    <div class="not-found">
+      <div style="font-size:3rem;margin-bottom:1rem;">🔍</div>
+      <h2>Role not found</h2>
+      <p>This job may have been filled or the link may be incorrect.</p>
+      <a href="jobs.html" style="display:inline-flex;align-items:center;gap:0.5rem;background:var(--green);color:#fff;padding:0.8rem 1.8rem;border-radius:10px;font-weight:600;text-decoration:none;">← Back to all jobs</a>
+    </div>`;
+  document.title = 'poist.ie — Job Not Found';
+}
+
+async function render(){
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  if(!id){ showNotFound(); return; }
+
+  const { data: row, error } = await sb.from('jobs').select('*').eq('id', id).eq('status','approved').single();
+  if(error || !row){ showNotFound(); return; }
+
+  const title = row.title || 'Untitled Role';
+  const org = row.org_name || row.source_name || '—';
+  const location = row.location || row.county || 'Ireland';
+  const county = row.county || '';
+  const sector = row.sector || '';
+  const cefr = row.cefr_level || row.cefr || '';
+  const jobType = row.job_type || row.type || '';
+  const salary = row.salary || '';
+  const closing = row.closing_date || '';
+  const experience = row.experience || '';
+  const desc = row.description || '';
+  const isAggregated = !!row.is_aggregated;
+  const sourceUrl = row.source_url || null;
+  const sourceName = row.source_name || '';
+  const posted = daysAgo(row.created_at);
+  const responsibilities = Array.isArray(row.responsibilities) ? row.responsibilities : null;
+  const requirements = Array.isArray(row.requirements) ? row.requirements : null;
+
+  document.title = `${title} — ${org} | poist.ie`;
+
+  // Fetch similar jobs (same sector, exclude current)
+  let similar = [];
+  if(sector){
+    const { data: simData } = await sb.from('jobs').select('id,title,org_name,source_name,county,location,sector,cefr_level,cefr,job_type,type,created_at,source_url,is_aggregated')
+      .eq('status','approved').eq('sector',sector).neq('id',id).limit(3);
+    similar = simData || [];
   }
 
-  document.title = `${job.title} — ${job.org} | poist.ie`;
+  const applyBtn = isAggregated && sourceUrl
+    ? `<a href="${sourceUrl}" target="_blank" rel="noopener" class="apply-btn">View Original Listing →</a>`
+    : `<a href="register-candidate.html" class="apply-btn">🎓 Apply Now — Free</a>`;
 
-  // Similar jobs (same sector or same CEFR, excluding current)
-  const similar = JOBS.filter(j => j.id !== job.id && (j.sector === job.sector || j.cefr === job.cefr)).slice(0,3);
+  const sectorPill = sector ? `<div class="pill pill-teal">${sector}</div>` : '';
+  const typePill = jobType ? `<div class="pill pill-gray">${jobType}</div>` : '';
+  const locationPill = location ? `<div class="pill pill-gray">📍 ${location}</div>` : '';
 
-  // MAIN COLUMN
-  document.getElementById('mainCol').innerHTML = `
-    <!-- Breadcrumb -->
-    <div class="breadcrumb">
-      <a href="jobs.html">← Browse Jobs</a>
-      <span>/</span>
-      <span>${job.sector}</span>
-      <span>/</span>
-      <span style="color:var(--dark);font-weight:500;">${job.title}</span>
-    </div>
+  const detailRows = [
+    salary ? `<div class="detail-item"><div class="detail-icon">💰</div><div><div class="detail-label">Salary</div><div class="detail-value">${salary}</div></div></div>` : '',
+    location ? `<div class="detail-item"><div class="detail-icon">📍</div><div><div class="detail-label">Location</div><div class="detail-value">${location}</div></div></div>` : '',
+    jobType ? `<div class="detail-item"><div class="detail-icon">⏰</div><div><div class="detail-label">Contract Type</div><div class="detail-value">${jobType}</div></div></div>` : '',
+    cefr ? `<div class="detail-item"><div class="detail-icon">🗣️</div><div><div class="detail-label">Irish Level Required</div><div class="detail-value">${cefr} — ${cefrLabel[cefr]||''}</div></div></div>` : '',
+    experience ? `<div class="detail-item"><div class="detail-icon">🎓</div><div><div class="detail-label">Experience</div><div class="detail-value">${experience}</div></div></div>` : '',
+    closing ? `<div class="detail-item"><div class="detail-icon">📅</div><div><div class="detail-label">Closing Date</div><div class="detail-value">${closing}</div></div></div>` : '',
+    sector ? `<div class="detail-item"><div class="detail-icon">🏷️</div><div><div class="detail-label">Sector</div><div class="detail-value">${sector}</div></div></div>` : '',
+  ].filter(Boolean).join('');
 
-    <!-- Job Header -->
-    <div class="job-header">
-      <div class="org-row">
-        <div class="org-logo">${job.icon}</div>
-        <div>
-          <div class="org-name">${job.org}</div>
-          <div class="org-meta">📍 ${job.location} &nbsp;·&nbsp; ${job.type} &nbsp;·&nbsp; Posted ${job.posted}</div>
-        </div>
-      </div>
-      <h1 class="job-title-main">${job.title}</h1>
-      <div class="job-pills">
-        ${cefrBadge(job.cefr, true)}
-        <div class="pill pill-teal">${job.sector}</div>
-        <div class="pill pill-gray">${job.type}</div>
-        <div class="pill pill-gray">📍 ${job.location}</div>
-      </div>
-      <p style="font-size:1rem;color:var(--gray);line-height:1.6;font-style:italic;">${job.tagline}</p>
-    </div>
-
-    <!-- About the role -->
-    <div class="content-card">
-      <h3>About the Role</h3>
-      <p class="body-text">${job.desc}</p>
-    </div>
-
-    <!-- Responsibilities -->
+  const responsibilitiesHtml = responsibilities ? `
     <div class="content-card">
       <h3>Key Responsibilities</h3>
       <div style="display:flex;flex-direction:column;gap:0.7rem;">
-        ${job.responsibilities.map(r=>`
-          <div style="display:flex;gap:0.7rem;font-size:0.9rem;line-height:1.6;">
-            <span style="color:var(--teal);font-weight:700;flex-shrink:0;margin-top:0.05rem;">→</span>
-            <span>${r}</span>
-          </div>`).join('')}
+        ${responsibilities.map(r=>`<div style="display:flex;gap:0.7rem;font-size:0.9rem;line-height:1.6;"><span style="color:var(--green);font-weight:700;flex-shrink:0;margin-top:0.05rem;">→</span><span>${r}</span></div>`).join('')}
       </div>
-    </div>
+    </div>` : '';
 
-    <!-- Requirements -->
+  const requirementsHtml = requirements ? `
     <div class="content-card">
       <h3>Requirements</h3>
       <div style="display:flex;flex-direction:column;gap:0.7rem;">
-        ${job.requirements.map((r,i)=>`
-          <div style="display:flex;gap:0.7rem;font-size:0.9rem;line-height:1.6;${i===0?'background:rgba(245,197,24,0.08);border:1px solid rgba(245,197,24,0.3);border-radius:8px;padding:0.6rem 0.8rem;':''}">
-            <span style="color:${i===0?'#8a6d00':'var(--teal)'};font-weight:700;flex-shrink:0;margin-top:0.05rem;">${i===0?'🗣️':'✓'}</span>
-            <span>${r}</span>
-          </div>`).join('')}
+        ${requirements.map((r,i)=>`<div style="display:flex;gap:0.7rem;font-size:0.9rem;line-height:1.6;${i===0?'background:rgba(245,197,24,0.08);border:1px solid rgba(245,197,24,0.3);border-radius:8px;padding:0.6rem 0.8rem;':''}"><span style="color:${i===0?'#8a6d00':'var(--green)'};font-weight:700;flex-shrink:0;margin-top:0.05rem;">${i===0?'🗣️':'✓'}</span><span>${r}</span></div>`).join('')}
       </div>
-    </div>
+    </div>` : '';
 
-    <!-- Key details -->
-    <div class="content-card">
-      <h3>Role Details</h3>
-      <div class="detail-list">
-        <div class="detail-item">
-          <div class="detail-icon">💰</div>
-          <div>
-            <div class="detail-label">Salary</div>
-            <div class="detail-value">${job.salary}</div>
-          </div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-icon">📍</div>
-          <div>
-            <div class="detail-label">Location</div>
-            <div class="detail-value">${job.location}</div>
-          </div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-icon">⏰</div>
-          <div>
-            <div class="detail-label">Contract Type</div>
-            <div class="detail-value">${job.type}</div>
-          </div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-icon">🗣️</div>
-          <div>
-            <div class="detail-label">Irish Level Required</div>
-            <div class="detail-value">${job.cefr} — ${cefrLabel[job.cefr]}</div>
-          </div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-icon">🎓</div>
-          <div>
-            <div class="detail-label">Experience</div>
-            <div class="detail-value">${job.experience}</div>
-          </div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-icon">📅</div>
-          <div>
-            <div class="detail-label">Closing Date</div>
-            <div class="detail-value">${job.closing}</div>
-          </div>
-        </div>
-      </div>
-    </div>
+  const sourceNote = isAggregated && sourceName ? `
+    <div style="background:rgba(26,107,60,.06);border:1px solid rgba(26,107,60,.15);border-radius:10px;padding:.7rem 1rem;font-size:.82rem;color:var(--muted);margin-bottom:1.2rem;">
+      📡 Aggregated from <strong>${sourceName}</strong> — view the original listing for full details and to apply.
+    </div>` : '';
 
-    <!-- CTA bar — mobile / bottom of content -->
-    <div style="background:var(--teal-dark);border-radius:16px;padding:1.8rem;text-align:center;display:none;" id="mobileCta">
-      <p style="color:rgba(255,255,255,0.8);font-size:0.88rem;margin-bottom:1rem;">Create a free Language Passport to apply — it takes 5 minutes.</p>
-      <a href="register-candidate.html" style="display:inline-flex;align-items:center;gap:0.5rem;background:var(--gold);color:var(--dark);padding:1rem 2rem;border-radius:10px;font-weight:700;font-size:1rem;text-decoration:none;">🎓 Apply Now — It's Free</a>
-    </div>
-
-    ${similar.length ? `
-    <!-- Similar roles -->
+  const similarHtml = similar.length ? `
     <div class="content-card">
       <h3>Similar Roles</h3>
       <div class="similar-card">
-        ${similar.map(s=>`
-          <a href="job.html?id=${s.id}" class="sim-job">
-            <div class="sim-title">${s.title}</div>
-            <div class="sim-org">${s.org} · ${s.location}</div>
+        ${similar.map(s=>{
+          const sOrg = s.org_name || s.source_name || '—';
+          const sLoc = s.location || s.county || 'Ireland';
+          const sCefr = s.cefr_level || s.cefr || '';
+          const sType = s.job_type || s.type || '';
+          const href = s.is_aggregated && s.source_url ? s.source_url : `job.html?id=${s.id}`;
+          const target = s.is_aggregated && s.source_url ? ' target="_blank" rel="noopener"' : '';
+          return `<a href="${href}"${target} class="sim-job">
+            <div class="sim-title">${s.title||'Untitled'}</div>
+            <div class="sim-org">${sOrg} · ${sLoc}</div>
             <div class="sim-meta">
-              ${cefrBadge(s.cefr)}
-              <span class="pill pill-gray" style="font-size:0.75rem;padding:0.2rem 0.6rem;">${s.type}</span>
-              <span style="font-size:0.75rem;color:var(--gray);margin-left:auto;">${s.posted}</span>
+              ${cefrBadge(sCefr)}
+              ${sType ? `<span class="pill pill-gray" style="font-size:0.75rem;padding:0.2rem 0.6rem;">${sType}</span>` : ''}
+              <span style="font-size:0.75rem;color:var(--muted);margin-left:auto;">${daysAgo(s.created_at)}</span>
             </div>
-          </a>`).join('')}
+          </a>`;
+        }).join('')}
       </div>
-    </div>` : ''}
+    </div>` : '';
+
+  document.getElementById('mainCol').innerHTML = `
+    <div class="breadcrumb">
+      <a href="jobs.html">← Browse Jobs</a>
+      ${sector ? `<span>/</span><span>${sector}</span>` : ''}
+      <span>/</span>
+      <span style="color:var(--dark);font-weight:500;">${title}</span>
+    </div>
+    ${sourceNote}
+    <div class="job-header">
+      <div class="org-row">
+        <div class="org-logo">🏢</div>
+        <div>
+          <div class="org-name">${org}</div>
+          <div class="org-meta">📍 ${location}${jobType ? ' &nbsp;·&nbsp; '+jobType : ''}${posted ? ' &nbsp;·&nbsp; Posted '+posted : ''}</div>
+        </div>
+      </div>
+      <h1 class="job-title-main">${title}</h1>
+      <div class="job-pills">
+        ${cefrBadge(cefr, true)}
+        ${sectorPill}${typePill}${locationPill}
+      </div>
+    </div>
+    <div class="content-card">
+      <h3>About the Role</h3>
+      <p class="body-text">${desc || 'See original listing for full details.'}</p>
+    </div>
+    ${responsibilitiesHtml}
+    ${requirementsHtml}
+    ${detailRows ? `<div class="content-card"><h3>Role Details</h3><div class="detail-list">${detailRows}</div></div>` : ''}
+    ${similarHtml}
   `;
 
-  // SIDEBAR
+  const sdItems = [
+    cefr ? `<div class="sd-item"><span class="sd-label">Irish Level</span><span class="sd-value">${cefr}${cefrLabel[cefr]?' — '+cefrLabel[cefr]:''}</span></div>` : '',
+    salary ? `<div class="sd-item"><span class="sd-label">Salary</span><span class="sd-value" style="text-align:right;max-width:180px;">${salary}</span></div>` : '',
+    jobType ? `<div class="sd-item"><span class="sd-label">Type</span><span class="sd-value">${jobType}</span></div>` : '',
+    sector ? `<div class="sd-item"><span class="sd-label">Sector</span><span class="sd-value">${sector}</span></div>` : '',
+    location ? `<div class="sd-item"><span class="sd-label">Location</span><span class="sd-value">${location}</span></div>` : '',
+    closing ? `<div class="sd-item"><span class="sd-label">Closing</span><span class="sd-value">${closing}</span></div>` : '',
+  ].filter(Boolean).join('');
+
   document.getElementById('sideCol').innerHTML = `
     <div class="sidebar-card">
-      <h4>Apply for this role</h4>
-      <a href="register-candidate.html" class="apply-btn">🎓 Apply Now — Free</a>
-      <button class="save-btn" onclick="toast('Role saved! Sign in to view saved jobs.')">🔖 Save Role</button>
-      <div class="sidebar-detail">
-        <div class="sd-item">
-          <span class="sd-label">Irish Level</span>
-          <span class="sd-value">${job.cefr} ${cefrLabel[job.cefr]?'— '+cefrLabel[job.cefr]:''}</span>
-        </div>
-        <div class="sd-item">
-          <span class="sd-label">Salary</span>
-          <span class="sd-value" style="text-align:right;max-width:180px;">${job.salary}</span>
-        </div>
-        <div class="sd-item">
-          <span class="sd-label">Type</span>
-          <span class="sd-value">${job.type}</span>
-        </div>
-        <div class="sd-item">
-          <span class="sd-label">Sector</span>
-          <span class="sd-value">${job.sector}</span>
-        </div>
-        <div class="sd-item">
-          <span class="sd-label">Location</span>
-          <span class="sd-value">${job.location}</span>
-        </div>
-        <div class="sd-item">
-          <span class="sd-label">Closing</span>
-          <span class="sd-value">${job.closing}</span>
-        </div>
-      </div>
-      <div class="deadline-warning">
-        ⏰ Closes ${job.closing} — don't leave it late
-      </div>
+      <h4>${isAggregated ? 'View this role' : 'Apply for this role'}</h4>
+      ${applyBtn}
+      <button class="save-btn" onclick="window._toast('Role saved! Sign in to view saved jobs.')">🔖 Save Role</button>
+      ${sdItems ? `<div class="sidebar-detail">${sdItems}</div>` : ''}
+      ${closing ? `<div class="deadline-warning">⏰ Closes ${closing} — don't leave it late</div>` : ''}
     </div>
-
-    <div class="sidebar-card" style="background:var(--teal-light);border-color:rgba(26,107,60,0.2);">
-      <h4 style="color:var(--teal-dark);">Not ready to apply yet?</h4>
-      <p style="font-size:0.85rem;color:var(--gray);margin-bottom:1rem;line-height:1.6;">Create a free Language Passport and go passive — employers can find you without you applying.</p>
-      <a href="register-candidate.html" style="display:block;text-align:center;background:var(--teal);color:#fff;padding:0.7rem;border-radius:8px;font-weight:600;font-size:0.88rem;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#0D3B2E'" onmouseout="this.style.background='#1A6B3C'">Create Language Passport →</a>
-    </div>
-
-    <div class="sidebar-card" style="background:var(--dark);border:none;">
+    ${!isAggregated ? `
+    <div class="sidebar-card" style="background:var(--off);border-color:rgba(26,107,60,0.2);">
+      <h4 style="color:var(--forest);">Not ready to apply yet?</h4>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Create a free Language Passport and go passive — employers can find you without you applying.</p>
+      <a href="register-candidate.html" style="display:block;text-align:center;background:var(--green);color:#fff;padding:0.7rem;border-radius:8px;font-weight:600;font-size:0.88rem;text-decoration:none;">Create Language Passport →</a>
+    </div>` : ''}
+    <div class="sidebar-card" style="background:var(--ink);border:none;">
       <h4 style="color:#fff;margin-bottom:0.5rem;">Share this role</h4>
       <p style="font-size:0.82rem;color:rgba(255,255,255,0.55);margin-bottom:1rem;">Know someone who'd be perfect?</p>
-      <button onclick="copyLink()" style="width:100%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:0.7rem;border-radius:8px;font-weight:600;font-size:0.85rem;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">🔗 Copy Link</button>
+      <button onclick="window._copyLink()" style="width:100%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:0.7rem;border-radius:8px;font-weight:600;font-size:0.85rem;cursor:pointer;">🔗 Copy Link</button>
     </div>
   `;
 }
 
-function copyLink(){
-  navigator.clipboard.writeText(window.location.href).then(()=>toast('Link copied!')).catch(()=>toast('Copy failed — try manually'));
-}
+window._toast = toast;
+window._copyLink = function(){ navigator.clipboard.writeText(window.location.href).then(()=>toast('Link copied!')).catch(()=>toast('Copy failed — try manually')); };
 
 render();
 </script>
