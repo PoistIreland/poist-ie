@@ -1,129 +1,30 @@
-import os
-import requests
-from bs4 import BeautifulSoup
-from datetime import date
-import time
+name: Irish Language Job Scraper
 
-SUPABASE_URL = os.environ["SUPABASE_URL"]
-SUPABASE_KEY = os.environ["SUPABASE_KEY"]
+on:
+  schedule:
+    - cron: "0 23 * * *"
+  workflow_dispatch:
 
-HEADERS_SB = {
-    "apikey": SUPABASE_KEY,
-    "Authorization": f"Bearer {SUPABASE_KEY}",
-    "Content-Type": "application/json",
-    "Prefer": "return=minimal",
-}
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
 
-IRISH_KEYWORDS = [
-    "gaeilge", "irish language", "líofa", "as gaeilge", "gaeltacht",
-    "irish speaker", "fluent irish", "native irish", "inniúlacht",
-    "oifigeach gaeilge", "irish officer", "bilingual", "dátheangach",
-    "rannóg an aistriúcháin", "aistritheoir", "ateangaire",
-]
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-SCRAPE_HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; poist.ie-bot/1.0; +https://poist.ie)"
-}
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-def is_irish_keyword_match(title: str, description: str = "") -> bool:
-    text = (title + " " + description).lower()
-    return any(kw in text for kw in IRISH_KEYWORDS)
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
 
-def url_already_exists(source_url: str) -> bool:
-    try:
-        resp = requests.get(
-            f"{SUPABASE_URL}/rest/v1/jobs",
-            headers=HEADERS_SB,
-            params={"source_url": f"eq.{source_url}", "select": "id"},
-            timeout=10,
-        )
-        return resp.status_code == 200 and len(resp.json()) > 0
-    except Exception:
-        return False
-
-def insert_job(job: dict) -> bool:
-    payload = {
-        "title":         job["title"],
-        "description":   job.get("description", ""),
-        "county":        job.get("county", ""),
-        "sector":        job.get("sector", ""),
-        "status":        "approved", 
-        "is_aggregated": True,
-        "source_url":    job["source_url"],
-        "source_name":   job["source_name"],
-    }
-    payload = {k: v for k, v in payload.items() if v is not None}
-    resp = requests.post(f"{SUPABASE_URL}/rest/v1/jobs", headers=HEADERS_SB, json=payload, timeout=10)
-    if resp.status_code in (200, 201):
-        print(f"  INSERTED: {job['title']} [{job['source_name']}]")
-        return True
-    else:
-        print(f"  FAILED ({resp.status_code}): {job['title']}")
-        return False
-
-def scrape_page(url: str, source_name: str, sector: str, base_url: str, href_keywords: list, title_filter: bool = False) -> list:
-    jobs = []
-    # Strict blacklist for navigation links and buttons
-    BLACKLIST = [
-        "gaillimh", "maigh eo", "baile átha cliath", "cill mhantáin", "loch garman", 
-        "aontroim", "dún na ngall", "thar lear", "timpeall na tíre", "folúntais", 
-        "cláraigh", "older entries", "nua-iontrálacha", "next page", "previous page", 
-        "contact", "resources", "faisnéis", "eolas", "search", "nuachtlitir", "privacy",
-        "an tAontas Eorpach", "post-primary schools", "primary schools", "tuilleadh eolais"
-    ]
-
-    try:
-        resp = requests.get(url, headers=SCRAPE_HEADERS, timeout=15)
-        if resp.status_code != 200: return []
-        soup = BeautifulSoup(resp.text, "html.parser")
-        seen = set()
-        for link in soup.find_all("a", href=True):
-            title = link.get_text(strip=True)
-            href  = link.get("href", "")
-            if not title or len(title) < 14 or len(title) > 200: continue
-            if any(bad.lower() in title.lower() for bad in BLACKLIST) or "«" in title or "»" in title: continue
-            if not href or href.startswith("#") or "javascript:" in href: continue
-            if href_keywords and not any(w in href.lower() for w in href_keywords): continue
-            full_url = href if href.startswith("http") else f"{base_url.rstrip('/')}{href if href.startswith('/') else '/' + href}"
-            if full_url in seen: continue
-            seen.add(full_url)
-            if title_filter and not is_irish_keyword_match(title): continue
-            jobs.append({"title": title, "description": f"Role advertised on {source_name}.", "county": "Teagmháil leis an bhfostóir", "sector": sector, "source_url": full_url, "source_name": source_name})
-        time.sleep(1)
-    except: pass
-    return jobs
-
-# --- SOURCES ---
-def scrape_peig(): return scrape_page("https://sceal.ie/foluntais/", "peig.ie", "Irish Language Community", "https://sceal.ie", ["job", "post", "foluntais"])
-def scrape_foras(): return scrape_page("https://www.forasnagaeilge.ie/about-foras-na-gaeilge/vacancies/?lang=en", "forasnagaeilge.ie", "Irish Language", "https://www.forasnagaeilge.ie", ["vacanc", "job", "post"])
-def scrape_udaras():
-    j = scrape_page("https://udaras.ie/oiliuint-fostaiocht/fostaiocht/cliantchomhlachtai-an-udarais-sa-ghaeltacht/", "udaras.ie (cliant)", "Gaeltacht Development", "https://udaras.ie", ["job", "foluntas", "post"])
-    j += scrape_page("https://udaras.ie/oiliuint-fostaiocht/fostaiocht/poist-udaras-na-gaeltachta/", "udaras.ie (poist)", "Gaeltacht Development", "https://udaras.ie", ["job", "foluntas", "post"])
-    return j
-def scrape_cnag(): return scrape_page("https://cnag.ie/ga/eolas/foluntais.html", "cnag.ie", "Irish Language Promotion", "https://cnag.ie", ["foluntais", "post", "job"])
-def scrape_gaeloideachas(): return scrape_page("https://gaeloideachas.ie/foluntais/", "gaeloideachas.ie", "Education", "https://gaeloideachas.ie", ["foluntais", "post"])
-def scrape_coimisineir(): return scrape_page("https://www.coimisineir.ie/index.cfm?page=vacancies", "coimisineir.ie", "Irish Language", "https://www.coimisineir.ie", ["vacanc", "foluntais"])
-def scrape_localgovt():
-    j = []
-    for t in ["gaeilge", "irish"]: j += scrape_page(f"https://www.localgovernmentjobs.ie/jobs?keywords={t}", "localgovernmentjobs.ie", "Local Government", "https://www.localgovernmentjobs.ie", ["/job/", "jobid"], True)
-    return j
-def scrape_hse(): return scrape_page("https://about.hse.ie/jobs/job-search/", "careerhub.hse.ie", "Health", "https://about.hse.ie", ["job", "vacanc"], True)
-def scrape_jobsireland(): return scrape_page("https://jobsireland.ie/en-US/Search?term=gaeilge", "jobsireland.ie", "General", "https://jobsireland.ie", ["/job/", "jobId"], True)
-
-def main():
-    scrapers = [("PEIG", scrape_peig), ("Foras", scrape_foras), ("Udaras", scrape_udaras), ("CnaG", scrape_cnag), ("Gaeloideachas", scrape_gaeloideachas), ("Coimisineir", scrape_coimisineir), ("LocalGov", scrape_localgovt), ("HSE", scrape_hse), ("JobsIreland", scrape_jobsireland)]
-    all_jobs = []
-    for name, fn in scrapers:
-        print(f"Checking {name}...")
-        all_jobs += fn()
-    inserted = skipped = 0
-    for job in all_jobs:
-        if url_already_exists(job["source_url"]):
-            skipped += 1
-            continue
-        if insert_job(job): inserted += 1
-        time.sleep(0.3)
-    print(f"\nFinished: {inserted} inserted, {skipped} skipped")
-
-if __name__ == "__main__":
-    main()
+      - name: Run scraper
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
+          ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
+        run: python scraper/scraper.py
