@@ -11,6 +11,9 @@
   --teal:#1A6B3C; --teal-dark:#0D3B2E; --teal-mid:#2D8653; --teal-light:#F5F7F5;
   --gold:#F5C518; --gold-dark:#C9921A;
   --navy:#0F1A13; --gray:#6B7F72; --light:#F9FAFB; --border:#E5E7EB; --white:#ffffff;
+  --forest:#0D3B2E;--green:#1A6B3C;--green2:#2D8653;--gold2:#C9921A;
+  --ink:#0F1A13;--body:#2E3C34;--muted:#6B7F72;
+  --gray-faint:#C4D4CB;--off:#F5F7F5;--radius:14px;--mono:'JetBrains Mono',monospace;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--navy);overflow-x:hidden;}
@@ -53,13 +56,17 @@ footer ul a:hover{color:var(--white)}
 </head>
 <body>
 
-<nav>
-  <a href="index.html" class="nav-logo"><img src="assets/poist-logo-trans.png" alt="poist.ie" style="height:48px;width:auto;display:block;"></a>
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <img src="assets/poist-logo-trans.png" alt="poist.ie" style="height:70px; width:auto; display:block;">
+  </a>
   <div class="nav-links">
-    <a href="index.html">← Home</a>
-    <a href="jobs.html">Browse Jobs</a>
+    <a href="jobs.html">Browse Jobs <span class="ga-sm">/ Poist</span></a>
     <a href="employers.html">For Employers</a>
-    <a href="register-candidate.html" class="nav-cta">Create Passport</a>
+    <a href="cefr-guide.html">CEFR Guide</a>
+    <a href="about.html">About</a>
+    <a href="login.html" class="ghost">Log in</a>
+    <a href="register-candidate.html" class="cta">Get Started</a>
   </div>
 </nav>
 
@@ -207,7 +214,7 @@ footer ul a:hover{color:var(--white)}
     <div>
       <h5>Employers<span class="ga-sm">Fostóirí</span></h5>
       <ul>
-        <li><a href="employer-post-job.html">Post a Job</a></li>
+        <li><a href="add-job.html">Post a Job</a></li>
         <li><a href="employer-search.html">Candidate Search</a></li>
         <li><a href="employers.html">2030 Compliance</a></li>
         <li><a href="employers.html">Pricing</a></li>
