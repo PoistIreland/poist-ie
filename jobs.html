@@ -151,7 +151,7 @@ footer ul a:hover{color:var(--white)}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const { createClient } = supabase;
+const createClient = supabase.createClient;
 const sb = createClient(
   'https://kpfshjarepmazrgzffot.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwZnNoamFyZXBtYXpyZ3pmZm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNzQ0MjIsImV4cCI6MjA5MDY1MDQyMn0.yU-6ASii1duNXgGMs0ZWTkgTYXonVfqVOnEQr0J8FhU'
