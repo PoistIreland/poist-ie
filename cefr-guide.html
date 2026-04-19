@@ -5,7 +5,7 @@
 <title>poist.ie — CEFR Guide</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--teal:#1A6B3C;--teal-dark:#0D3B2E;--teal-mid:#2D8653;--teal-light:#F5F7F5;--gold:#F5C518;--gold-dark:#C9921A;--navy:#0F1A13;--gray:#6B7F72;--cream:#FFFFFF;--border:#E5E7EB;--white:#ffffff;}
+:root{--teal:#1A6B3C;--teal-dark:#0D3B2E;--teal-mid:#2D8653;--teal-light:#F5F7F5;--gold:#F5C518;--gold-dark:#C9921A;--navy:#0F1A13;--gray:#6B7F72;--cream:#FFFFFF;--border:#E5E7EB;--white:#ffffff;--forest:#0D3B2E;--green:#1A6B3C;--green2:#2D8653;--gold2:#C9921A;--ink:#0F1A13;--body:#2E3C34;--muted:#6B7F72;--gray-faint:#C4D4CB;--off:#F5F7F5;--radius:14px;--mono:'JetBrains Mono',monospace;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--navy);overflow-x:hidden;}
 a{text-decoration:none;}
@@ -73,19 +73,20 @@ footer ul a:hover{color:var(--white)}
 </style>
 </head>
 <body>
-<nav>
-  <a href="index.html" class="nav-logo"><img src="assets/poist-logo-trans.png" alt="poist.ie" style="height:48px;width:auto;display:block;"></a>
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <img src="assets/poist-logo-trans.png" alt="poist.ie" style="height:70px; width:auto; display:block;">
+  </a>
   <div class="nav-links">
-    <a href="jobs.html">Browse Jobs</a>
+    <a href="jobs.html">Browse Jobs <span class="ga-sm">/ Poist</span></a>
     <a href="employers.html">For Employers</a>
-    <a href="cefr-guide.html" class="active">CEFR Guide</a>
+    <a href="cefr-guide.html">CEFR Guide</a>
     <a href="about.html">About</a>
-    <a href="login.html">Sign In</a>
-    <a href="register-candidate.html" class="nav-cta">Get Started — Free</a>
+    <a href="login.html" class="ghost">Log in</a>
+    <a href="register-candidate.html" class="cta">Get Started</a>
   </div>
 </nav>
 
-<div style="padding-top:68px;">
   <div class="hero">
     <div class="hero-badge">🎓 Language Framework</div>
     <h1 style="font-size:clamp(2rem,4vw,3rem);font-weight:800;margin-bottom:1rem;">The CEFR Guide for Irish Speakers</h1>
@@ -176,7 +177,7 @@ footer ul a:hover{color:var(--white)}
     <div>
       <h5>Employers<span class="ga-sm">Fostóirí</span></h5>
       <ul>
-        <li><a href="employer-post-job.html">Post a Job</a></li>
+        <li><a href="add-job.html">Post a Job</a></li>
         <li><a href="employer-search.html">Candidate Search</a></li>
         <li><a href="employers.html">2030 Compliance</a></li>
         <li><a href="employers.html">Pricing</a></li>

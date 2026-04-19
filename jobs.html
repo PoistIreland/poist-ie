@@ -26,6 +26,52 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--navy);
 input,select{font-family:'DM Sans',sans-serif;}
 a{text-decoration:none;}
 
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:380px 1fr;height:calc(100vh - 86px);}
+
+/* SIDEBAR */
+.sidebar{display:flex;flex-direction:column;border-right:1px solid var(--border);overflow:hidden;background:var(--white);}
+.filters{padding:1rem;background:var(--white);border-bottom:1px solid var(--border);}
+.search-input{width:100%;padding:.7rem 1rem;border:1.5px solid var(--border);border-radius:10px;font-size:.9rem;color:var(--ink);background:var(--white);outline:none;margin-bottom:.6rem;transition:border-color .18s;font-family:'DM Sans',sans-serif;}
+.search-input:focus{border-color:var(--green);}
+.filter-row{display:flex;gap:.5rem;}
+.filter-select{flex:1;padding:.6rem .8rem;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;color:var(--ink);background:var(--white);outline:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color .18s;}
+.filter-select:focus{border-color:var(--green);}
+.job-list{overflow-y:auto;flex:1;padding:.8rem;display:flex;flex-direction:column;gap:.5rem;}
+.job-count{font-size:.78rem;font-weight:600;color:var(--muted);padding:.2rem 0 .4rem;}
+
+/* JOB CARDS */
+.job-card{border:1px solid var(--border);border-radius:14px;padding:1rem;cursor:pointer;transition:all .18s;background:var(--white);}
+.job-card:hover,.job-card.sel{border-color:var(--green);box-shadow:0 4px 16px rgba(26,107,60,.1);}
+.job-card.sel{background:var(--off);}
+.job-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.3rem;}
+.job-title{font-weight:700;font-size:.9rem;color:var(--green);flex:1;line-height:1.3;}
+.cefr-badge{background:var(--gold);color:var(--forest);font-size:.68rem;font-weight:700;padding:.18rem .5rem;border-radius:5px;flex-shrink:0;margin-left:.5rem;}
+.job-org{font-size:.82rem;font-weight:500;margin-bottom:.2rem;}
+.job-meta{font-size:.78rem;color:var(--muted);display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;}
+.badge-gray{background:#F3F4F6;color:var(--muted);font-size:.7rem;font-weight:600;padding:.15rem .45rem;border-radius:5px;}
+
+/* MAP */
+#map{height:100%;}
+
+/* DETAIL PANEL */
+.detail-panel{display:none;position:absolute;top:1rem;right:1rem;width:310px;background:var(--white);border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.18);padding:1.3rem;z-index:1000;max-height:calc(100vh - 106px);overflow-y:auto;}
+.detail-close{position:absolute;top:.8rem;right:.8rem;background:none;border:none;cursor:pointer;font-size:1.2rem;color:var(--muted);transition:color .15s;}
+.detail-close:hover{color:var(--ink);}
+.detail-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:var(--green);margin-bottom:.25rem;padding-right:1.5rem;line-height:1.3;}
+.detail-org{font-size:.88rem;font-weight:600;margin-bottom:.2rem;}
+.detail-meta{font-size:.8rem;color:var(--muted);margin-bottom:.8rem;}
+.detail-tags{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem;}
+.badge-teal{background:rgba(26,107,60,.1);color:var(--green);font-size:.72rem;font-weight:600;padding:.18rem .5rem;border-radius:5px;}
+.detail-desc{font-size:.83rem;color:var(--muted);line-height:1.6;margin-bottom:.6rem;}
+.detail-salary{font-size:.8rem;color:var(--muted);margin-bottom:1rem;display:flex;gap:1rem;flex-wrap:wrap;}
+.detail-salary span{display:flex;align-items:center;gap:.3rem;}
+.btn-primary{display:flex;align-items:center;justify-content:center;width:100%;padding:.8rem;border-radius:10px;font-weight:700;font-size:.9rem;background:var(--gold);color:var(--forest);margin-bottom:.5rem;transition:all .2s;}
+.btn-primary:hover{background:#f7ce3a;transform:translateY(-1px);}
+.btn-teal{display:flex;align-items:center;justify-content:center;width:100%;padding:.8rem;border-radius:10px;font-weight:700;font-size:.9rem;background:var(--green);color:#fff;transition:all .2s;}
+.btn-teal:hover{background:var(--forest);transform:translateY(-1px);}
+
+@media(max-width:768px){.layout{grid-template-columns:1fr;}.layout>div:last-child{display:none;}}
 /* NAV */
 nav{height:auto}
 .nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:.5rem 2rem}
