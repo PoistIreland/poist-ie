@@ -1,7 +1,7 @@
 """
-poist.ie — Irish Language Job Scraper v7
-Captures employer name and county where possible.
-33 verified sources + Adzuna API.
+poist.ie — Irish Language Job Scraper v8
+Custom per-site scrapers for accuracy.
+Removes sites that consistently return junk.
 """
 
 import os
@@ -22,23 +22,10 @@ HEADERS_SB = {
 }
 
 SCRAPE_HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; poist.ie-bot/1.0; +https://poist.ie)"
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-IE,en;q=0.9,ga;q=0.8",
 }
-
-HEADING_BLACKLIST = [
-    "folúntais", "foluntais", "vacancies", "current vacancies", "all vacancies",
-    "jobs", "poist", "careers", "gairmeacha", "working with us",
-    "home", "about", "contact", "news", "nuacht", "search",
-    "no vacancies", "no current vacancies", "níl aon fholúntas",
-    "apply now", "read more", "tuilleadh eolais", "find out more",
-    "click here", "more information", "tuilleadh faisnéise",
-]
-
-IRISH_KEYWORDS = [
-    "gaeilge", "irish language", "gaeltacht", "líofa", "bilingual",
-    "múinteoir", "teacher", "oifigeach", "officer", "aistritheoir",
-    "translator", "ateangaire", "interpreter",
-]
 
 IRISH_COUNTIES = [
     "Antrim","Armagh","Carlow","Cavan","Clare","Cork","Derry","Donegal",
@@ -48,20 +35,56 @@ IRISH_COUNTIES = [
     "Waterford","Westmeath","Wexford","Wicklow",
 ]
 
+# Words that are never job titles
+NEVER_JOB = [
+    "tuilleadh eolais", "read more", "níos mó", "click here",
+    "folúntais", "foluntais", "vacancies", "careers", "jobs",
+    "home", "about", "contact", "search", "privacy", "cookies",
+    "meet the team", "work experience", "how we recruit", "why work with us",
+    "next page", "previous page", "older entries",
+    "register vacancy", "cláraigh folúntais",
+]
+
+# Must contain one of these to be considered a job title
+JOB_INDICATORS = [
+    "oifigeach", "officer", "manager", "bainisteoir", "múinteoir", "teacher",
+    "oibrí", "worker", "riarthóir", "administrator", "cléireach", "clerk",
+    "comhairleoir", "advisor", "analyst", "anailísí", "innealtóir", "engineer",
+    "stiúrthóir", "director", "cúntóir", "assistant", "speisialtóir", "specialist",
+    "ceannaire", "leader", "coordinator", "comhordaitheoir", "planner", "pleanálaí",
+    "editor", "eagarthóir", "journalist", "iriseoir", "producer", "léiritheoir",
+    "translator", "aistritheoir", "interpreter", "ateangaire",
+    "researcher", "taighdeoir", "developer", "forbróir",
+    "technician", "teicneoir", "nurse", "altra", "therapist", "teiripeoir",
+    "príomh", "head of", "ceann", "láithreoir", "presenter", "craoltóir",
+    "tuairisceoir", "reporter", "post i", "post in", "folúntas", "foluntas",
+    "vacancy", "ceapachán", "appointment", "intéirneacht", "internship",
+    "comórtas", "competition", "clerical", "executive", "feidhmiúchán",
+    "naíonra", "naíolann", "cúramóir", "caretaker", "glantóir", "cleaner",
+    "ionadaí", "representative", "tacaíocht", "support",
+]
+
+
+def is_job_title(title: str) -> bool:
+    t = title.strip().lower()
+    if len(t) < 8 or len(t) > 200:
+        return False
+    if any(bad.lower() == t for bad in NEVER_JOB):
+        return False
+    if any(bad.lower() in t for bad in ["@", "http", "www.", ".ie", ".com"]):
+        return False
+    # For Irish language sites, accept if contains a job indicator
+    if any(ind.lower() in t for ind in JOB_INDICATORS):
+        return True
+    return False
+
+
 def extract_county(text: str) -> str:
-    """Try to find an Irish county name in a string."""
     for county in IRISH_COUNTIES:
         if county.lower() in text.lower():
             return county
     return ""
 
-def is_valid_job_title(title: str) -> bool:
-    t = title.strip()
-    if len(t) < 8 or len(t) > 180:
-        return False
-    if t.lower() in [b.lower() for b in HEADING_BLACKLIST]:
-        return False
-    return True
 
 def url_already_exists(source_url: str) -> bool:
     try:
@@ -75,6 +98,7 @@ def url_already_exists(source_url: str) -> bool:
     except Exception:
         return False
 
+
 def insert_job(job: dict) -> bool:
     payload = {
         "title":         job["title"],
@@ -83,7 +107,6 @@ def insert_job(job: dict) -> bool:
         "sector":        job.get("sector", ""),
         "org_name":      job.get("org_name", ""),
         "salary":        job.get("salary", "POA"),
-        
         "status":        "approved",
         "is_aggregated": True,
         "source_url":    job["source_url"],
@@ -103,163 +126,349 @@ def insert_job(job: dict) -> bool:
         print(f"  FAILED ({resp.status_code}): {job['title']} -- {resp.text[:120]}")
         return False
 
-def scrape_headings(url: str, source_name: str, sector: str,
-                    base_url: str, org_name: str = "",
-                    irish_only: bool = False) -> list:
-    """
-    Extract job listings by targeting h2/h3 headings with links.
-    Also tries to extract employer name and county from surrounding context.
-    """
-    jobs = []
+
+def get_soup(url: str, source_name: str):
+    """Fetch a URL and return BeautifulSoup or None."""
     try:
-        resp = requests.get(url, headers=SCRAPE_HEADERS, timeout=15)
+        resp = requests.get(url, headers=SCRAPE_HEADERS, timeout=15, allow_redirects=True)
         print(f"  {source_name}: status {resp.status_code}")
         if resp.status_code != 200:
-            return []
-
-        soup = BeautifulSoup(resp.text, "html.parser")
-        seen = set()
-
-        for tag in soup.find_all(["h2", "h3", "h4"]):
-            link = tag.find("a", href=True)
-            if not link:
-                continue
-
-            title = tag.get_text(strip=True)
-            href  = link.get("href", "")
-
-            if not href or href.startswith("#") or "javascript:" in href:
-                continue
-
-            full_url = href if href.startswith("http") else f"{base_url.rstrip('/')}{href if href.startswith('/') else '/' + href}"
-
-            if full_url in seen:
-                continue
-            seen.add(full_url)
-
-            if not is_valid_job_title(title):
-                continue
-
-            if irish_only and not any(kw in title.lower() for kw in IRISH_KEYWORDS):
-                continue
-
-            # Try to extract employer and county from surrounding context
-            employer = org_name  # default to site org name
-            county   = extract_county(title)
-
-            # Look at sibling/parent elements for employer name
-            parent = tag.find_parent(["article", "li", "div", "section"])
-            if parent:
-                context_text = parent.get_text(strip=True)
-                if not county:
-                    county = extract_county(context_text)
-                # Look for small text near heading — often employer name
-                for small in parent.find_all(["p", "span", "small"]):
-                    t = small.get_text(strip=True)
-                    if 8 < len(t) < 80 and t != title:
-                        employer = t
-                        break
-
-            # Try to extract salary from context
-            salary = ""
-            if parent:
-                ctx = parent.get_text()
-                salary_match = re.search(
-                    r'€[\d,]+(?:\s*[-–]\s*€[\d,]+)?(?:\s*(?:per|p\.a\.|pa|a year|k))?',
-                    ctx, re.IGNORECASE
-                )
-                if salary_match:
-                    salary = salary_match.group(0).strip()
-
-            jobs.append({
-                "title":        title,
-                "description":  f"Role advertised on {source_name}. Visit the original listing for full details.",
-                "county":       county,
-                "sector":       sector,
-                "org_name":     employer or org_name,
-                "salary":       salary or "POA",
-                
-                "source_url":   full_url,
-                "source_name":  source_name,
-            })
-
-        # Fallback to article/li containers
-        if not jobs:
-            for container in soup.select("article, li.job, li.post, .job-listing, .vacancy-item"):
-                link = container.find("a", href=True)
-                if not link:
-                    continue
-                title = link.get_text(strip=True)
-                href  = link.get("href", "")
-                if not href or not title:
-                    continue
-                full_url = href if href.startswith("http") else f"{base_url.rstrip('/')}{href if href.startswith('/') else '/' + href}"
-                if full_url in seen:
-                    continue
-                seen.add(full_url)
-                if not is_valid_job_title(title):
-                    continue
-                if irish_only and not any(kw in title.lower() for kw in IRISH_KEYWORDS):
-                    continue
-                county = extract_county(title) or extract_county(container.get_text())
-                salary_match = re.search(r'€[\d,]+(?:\s*[-–]\s*€[\d,]+)?', container.get_text())
-                salary = salary_match.group(0) if salary_match else "POA"
-                jobs.append({
-                    "title":         title,
-                    "description":   f"Role advertised on {source_name}.",
-                    "county":        county,
-                    "sector":        sector,
-                    "org_name":      org_name,
-                    "salary":        salary,
-                    
-                    "source_url":    full_url,
-                    "source_name":   source_name,
-                })
-
-        print(f"  {source_name}: {len(jobs)} job titles found")
-        time.sleep(2)
-
+            return None
+        return BeautifulSoup(resp.text, "html.parser")
     except Exception as e:
         print(f"  {source_name} error: {e}")
+        return None
+
+
+def extract_jobs_from_headings(soup, source_name: str, sector: str,
+                                base_url: str, org_name: str,
+                                require_job_indicator: bool = True) -> list:
+    """Extract jobs from h2/h3/h4 headings that contain links."""
+    jobs = []
+    seen = set()
+
+    for tag in soup.find_all(["h2", "h3", "h4"]):
+        link = tag.find("a", href=True)
+        if not link:
+            continue
+        title = tag.get_text(strip=True)
+        href  = link.get("href", "")
+        if not href or href.startswith("#") or "javascript:" in href or "@" in href:
+            continue
+        full_url = href if href.startswith("http") else f"{base_url.rstrip('/')}{href if href.startswith('/') else '/' + href}"
+        if full_url in seen:
+            continue
+        seen.add(full_url)
+        if require_job_indicator and not is_job_title(title):
+            continue
+        county = extract_county(title)
+        parent = tag.find_parent(["article", "li", "div", "section"])
+        if parent and not county:
+            county = extract_county(parent.get_text())
+        salary = ""
+        if parent:
+            m = re.search(r'€[\d,]+(?:\s*[-–]\s*€[\d,]+)?', parent.get_text())
+            if m:
+                salary = m.group(0)
+        jobs.append({
+            "title":       title,
+            "description": f"Role advertised on {source_name}. Visit the original listing for full details.",
+            "county":      county,
+            "sector":      sector,
+            "org_name":    org_name,
+            "salary":      salary or "POA",
+            "source_url":  full_url,
+            "source_name": source_name,
+        })
 
     return jobs
 
 
-# ── ALL SOURCES ───────────────────────────────────────────────────────────────
+# ── CUSTOM SCRAPERS ───────────────────────────────────────────────────────────
 
-SOURCES = [
-    {"name": "sceal.ie",            "fn": lambda: scrape_headings("https://sceal.ie/foluntais/", "sceal.ie", "Irish Language Community", "https://sceal.ie", "Scéal")},
-    {"name": "forasnagaeilge.ie",   "fn": lambda: scrape_headings("https://www.forasnagaeilge.ie/about-foras-na-gaeilge/vacancies/?lang=en", "forasnagaeilge.ie", "Irish Language", "https://www.forasnagaeilge.ie", "Foras na Gaeilge")},
-    {"name": "udaras.ie",           "fn": lambda: scrape_headings("https://www.udaras.ie/foluntais/", "udaras.ie", "Gaeltacht Development", "https://www.udaras.ie", "Údarás na Gaeltachta")},
-    {"name": "cnag.ie",             "fn": lambda: scrape_headings("https://cnag.ie/en/info/conradh-na-gaeilge/facts-and-figures.html?view=article&id=1463:vacancy&catid=13", "cnag.ie", "Irish Language Promotion", "https://cnag.ie", "Conradh na Gaeilge")},
-    {"name": "gaeloideachas.ie",    "fn": lambda: scrape_headings("https://gaeloideachas.ie/foluntais/", "gaeloideachas.ie", "Education", "https://gaeloideachas.ie", "Gaeloideachas")},
-    {"name": "coimisineir.ie",      "fn": lambda: scrape_headings("https://www.coimisineir.ie/", "coimisineir.ie", "Irish Language", "https://www.coimisineir.ie", "Oifig an Choimisinéara Teanga")},
-    {"name": "tuairisc.ie",         "fn": lambda: scrape_headings("https://tuairisc.ie/foluntais/", "tuairisc.ie", "Media", "https://tuairisc.ie", "Tuairisc.ie")},
-    {"name": "comhar.ie",           "fn": lambda: scrape_headings("https://comhar.ie/eolas/foluntas/", "comhar.ie", "Irish Language Publishing", "https://comhar.ie", "Comhar")},
-    {"name": "gael-linn.ie",        "fn": lambda: scrape_headings("https://www.gael-linn.ie/en/working-with-us/", "gael-linn.ie", "Irish Language", "https://www.gael-linn.ie", "Gael Linn")},
-    {"name": "raidionalife.ie",     "fn": lambda: scrape_headings("https://www.raidionalife.ie/en/vacancies/", "raidionalife.ie", "Media", "https://www.raidionalife.ie", "Raidió na Life")},
-    {"name": "comharnaionrai.ie",   "fn": lambda: scrape_headings("https://www.comharnaionrai.ie/foluntais/", "comharnaionrai.ie", "Irish Language Education", "https://www.comharnaionrai.ie", "Comhar Naíonraí na Gaeltachta")},
-    {"name": "europus.ie",          "fn": lambda: scrape_headings("https://ga-europus.ie/vacancies/", "europus.ie", "Irish Language", "https://ga-europus.ie", "Europus")},
-    {"name": "glornangael.ie",      "fn": lambda: scrape_headings("https://www.glornangael.ie/", "glornangael.ie", "Irish Language Community", "https://www.glornangael.ie", "Glór na nGael")},
-    {"name": "comhairle-gaelscoil", "fn": lambda: scrape_headings("https://comahirle-na-gaelscolaiochta.squarespace.com/foluntais-vacancies", "comhairle-na-gaelscolaiochta.com", "Irish Language Education", "https://comahirle-na-gaelscolaiochta.squarespace.com", "Comhairle na Gaelscolaíochta")},
-    {"name": "tg4.ie",              "fn": lambda: scrape_headings("https://www.tg4.ie/en/corporate/vacancies/", "tg4.ie", "Media", "https://www.tg4.ie", "TG4")},
-    {"name": "rte.ie",              "fn": lambda: scrape_headings("https://about.rte.ie/working-with-rte/vacancies/", "rte.ie", "Media", "https://about.rte.ie", "RTÉ", irish_only=True)},
-    {"name": "oireachtas.ie",       "fn": lambda: scrape_headings("https://www.oireachtas.ie/en/how-parliament-is-run/houses-of-the-oireachtas-service/careers/", "oireachtas.ie", "Government", "https://www.oireachtas.ie", "Houses of the Oireachtas")},
-    {"name": "garda.ie",            "fn": lambda: scrape_headings("https://www.garda.ie/en/careers/", "garda.ie", "Public Safety", "https://www.garda.ie", "An Garda Síochána", irish_only=True)},
-    {"name": "avondhublackwater",   "fn": lambda: scrape_headings("https://www.avondhublackwater.com/leader-contracts/", "avondhublackwater.com", "Community Development", "https://www.avondhublackwater.com", "Avondhu Blackwater Partnership")},
-    {"name": "careerhub.hse.ie",    "fn": lambda: scrape_headings("https://careerhub.hse.ie/current-vacancies/", "careerhub.hse.ie", "Health", "https://careerhub.hse.ie", "HSE", irish_only=True)},
-    {"name": "localgovernment",     "fn": lambda: scrape_headings("https://www.localgovernmentjobs.ie/Search/Vacancies?keyword=gaeilge", "localgovernmentjobs.ie", "Local Government", "https://www.localgovernmentjobs.ie", "", irish_only=True)},
-    {"name": "educationposts.ie",   "fn": lambda: scrape_headings("https://www.educationposts.ie/", "educationposts.ie", "Education", "https://www.educationposts.ie", "", irish_only=True)},
-    {"name": "universityofgalway",  "fn": lambda: scrape_headings("https://www.universityofgalway.ie/about-us/jobs/", "universityofgalway.ie", "Higher Education", "https://www.universityofgalway.ie", "University of Galway", irish_only=True)},
-    {"name": "dcu.ie",              "fn": lambda: scrape_headings("https://www.dcu.ie/people/jobs", "dcu.ie", "Higher Education", "https://www.dcu.ie", "Dublin City University", irish_only=True)},
-    {"name": "ucc.ie",              "fn": lambda: scrape_headings("https://www.ucc.ie/en/hr/vacancies/academic/", "ucc.ie", "Higher Education", "https://www.ucc.ie", "University College Cork", irish_only=True)},
-    {"name": "ul.ie",               "fn": lambda: scrape_headings("https://www.ul.ie/vacancies", "ul.ie", "Higher Education", "https://www.ul.ie", "University of Limerick", irish_only=True)},
-    {"name": "mic.ul.ie",           "fn": lambda: scrape_headings("https://www.mic.ul.ie/about-mic/vacancies", "mic.ul.ie", "Higher Education", "https://www.mic.ul.ie", "Mary Immaculate College", irish_only=True)},
-    {"name": "eu-careers",          "fn": lambda: scrape_headings("https://eu-careers.europa.eu/en/job-opportunities/", "eu-careers.europa.eu", "EU Institutions", "https://eu-careers.europa.eu", "EU Institutions", irish_only=True)},
-    {"name": "ireland.ie",          "fn": lambda: scrape_headings("https://www.ireland.ie/en/eu-jobs/eu-careers-with-the-irish-language/", "ireland.ie", "EU Institutions", "https://www.ireland.ie", "EU Irish Language Careers")},
-    {"name": "publicjobs.ie",       "fn": lambda: scrape_headings("https://publicjobs.ie/en/", "publicjobs.ie", "Public Sector", "https://publicjobs.ie", "Public Appointments Service", irish_only=True)},
-    {"name": "jobsireland.ie",      "fn": lambda: scrape_headings("https://jobsireland.ie/en-US/browse-jobs", "jobsireland.ie", "General", "https://jobsireland.ie", "", irish_only=True)},
-]
+def scrape_sceal():
+    """sceal.ie — dedicated Irish language jobs board."""
+    soup = get_soup("https://sceal.ie/foluntais/", "sceal.ie")
+    if not soup:
+        return []
+    jobs = extract_jobs_from_headings(soup, "sceal.ie", "Irish Language Community",
+                                       "https://sceal.ie", "Scéal", require_job_indicator=True)
+    print(f"  sceal.ie: {len(jobs)} jobs")
+    return jobs
+
+
+def scrape_tuairisc():
+    """
+    tuairisc.ie — Irish language news site with a foluntais section.
+    Only accept links that go to /foluntais/ subpages, not news articles.
+    """
+    soup = get_soup("https://tuairisc.ie/foluntais/", "tuairisc.ie")
+    if not soup:
+        return []
+    jobs = []
+    seen = set()
+    for tag in soup.find_all(["h2", "h3", "h4"]):
+        link = tag.find("a", href=True)
+        if not link:
+            continue
+        title = tag.get_text(strip=True)
+        href  = link.get("href", "")
+        # Only accept links that are job posts — must go to /foluntais/ path
+        if "/foluntais/" not in href and "job" not in href.lower() and "post" not in href.lower():
+            continue
+        if not is_job_title(title):
+            continue
+        full_url = href if href.startswith("http") else f"https://tuairisc.ie{href}"
+        if full_url in seen:
+            continue
+        seen.add(full_url)
+        jobs.append({
+            "title":       title,
+            "description": "Role advertised on Tuairisc.ie.",
+            "county":      extract_county(title),
+            "sector":      "Media",
+            "org_name":    "Tuairisc.ie",
+            "salary":      "POA",
+            "source_url":  full_url,
+            "source_name": "tuairisc.ie",
+        })
+    print(f"  tuairisc.ie: {len(jobs)} jobs")
+    return jobs
+
+
+def scrape_tg4():
+    """TG4 vacancies — Irish language broadcaster."""
+    soup = get_soup("https://www.tg4.ie/en/corporate/vacancies/", "tg4.ie")
+    if not soup:
+        return []
+    jobs = extract_jobs_from_headings(soup, "tg4.ie", "Media",
+                                       "https://www.tg4.ie", "TG4", require_job_indicator=True)
+    print(f"  tg4.ie: {len(jobs)} jobs")
+    return jobs
+
+
+def scrape_foras():
+    """Foras na Gaeilge vacancies."""
+    soup = get_soup("https://www.forasnagaeilge.ie/about-foras-na-gaeilge/vacancies/?lang=en", "forasnagaeilge.ie")
+    if not soup:
+        return []
+    jobs = extract_jobs_from_headings(soup, "forasnagaeilge.ie", "Irish Language",
+                                       "https://www.forasnagaeilge.ie", "Foras na Gaeilge",
+                                       require_job_indicator=True)
+    print(f"  forasnagaeilge.ie: {len(jobs)} jobs")
+    return jobs
+
+
+def scrape_udaras():
+    """
+    Údarás na Gaeltachta — try both vacancy pages with new URLs.
+    """
+    jobs = []
+    urls = [
+        "https://udaras.ie/en/training-employment/vacancies/cliantchomhlachtai-an-udarais-sa-ghaeltacht/",
+        "https://udaras.ie/en/training-employment/vacancies/poist-udaras-na-gaeltachta/",
+    ]
+    for url in urls:
+        soup = get_soup(url, "udaras.ie")
+        if not soup:
+            continue
+        found = extract_jobs_from_headings(soup, "udaras.ie", "Gaeltacht Development",
+                                            "https://udaras.ie", "Údarás na Gaeltachta",
+                                            require_job_indicator=True)
+        # Also check for PDF links — udaras posts jobs as downloadable PDFs
+        seen_urls = {j["source_url"] for j in found}
+        for a in soup.find_all("a", href=True):
+            href = a.get("href", "")
+            text = a.get_text(strip=True)
+            if ".pdf" in href.lower() and len(text) > 8 and href not in seen_urls:
+                full_url = href if href.startswith("http") else f"https://udaras.ie{href}"
+                if is_job_title(text) or any(ind in text.lower() for ind in ["folúntas", "post", "vacancy"]):
+                    found.append({
+                        "title":       text,
+                        "description": "Role advertised by Údarás na Gaeltachta. PDF listing.",
+                        "county":      "Galway",
+                        "sector":      "Gaeltacht Development",
+                        "org_name":    "Údarás na Gaeltachta",
+                        "salary":      "POA",
+                        "source_url":  full_url,
+                        "source_name": "udaras.ie",
+                    })
+                    seen_urls.add(href)
+        jobs += found
+    print(f"  udaras.ie: {len(jobs)} jobs total")
+    return jobs
+
+
+def scrape_gaeloideachas():
+    """Gaeloideachas — Irish medium education jobs."""
+    soup = get_soup("https://gaeloideachas.ie/foluntais/", "gaeloideachas.ie")
+    if not soup:
+        return []
+    jobs = extract_jobs_from_headings(soup, "gaeloideachas.ie", "Education",
+                                       "https://gaeloideachas.ie", "Gaeloideachas",
+                                       require_job_indicator=True)
+    print(f"  gaeloideachas.ie: {len(jobs)} jobs")
+    return jobs
+
+
+def scrape_comharnaionrai():
+    """Comhar Naíonraí na Gaeltachta — Irish language childcare."""
+    soup = get_soup("https://www.comharnaionrai.ie/foluntais/", "comharnaionrai.ie")
+    if not soup:
+        return []
+    jobs = extract_jobs_from_headings(soup, "comharnaionrai.ie", "Irish Language Education",
+                                       "https://www.comharnaionrai.ie", "Comhar Naíonraí na Gaeltachta",
+                                       require_job_indicator=True)
+    print(f"  comharnaionrai.ie: {len(jobs)} jobs")
+    return jobs
+
+
+def scrape_cnag():
+    """Conradh na Gaeilge vacancies."""
+    soup = get_soup("https://cnag.ie/en/info/conradh-na-gaeilge/facts-and-figures.html?view=article&id=1463:vacancy&catid=13",
+                    "cnag.ie")
+    if not soup:
+        return []
+    jobs = extract_jobs_from_headings(soup, "cnag.ie", "Irish Language Promotion",
+                                       "https://cnag.ie", "Conradh na Gaeilge",
+                                       require_job_indicator=True)
+    print(f"  cnag.ie: {len(jobs)} jobs")
+    return jobs
+
+
+def scrape_coimisineir():
+    """Oifig an Choimisinéara Teanga."""
+    soup = get_soup("https://www.coimisineir.ie/index.cfm?page=vacancies", "coimisineir.ie")
+    if not soup:
+        return []
+    jobs = extract_jobs_from_headings(soup, "coimisineir.ie", "Irish Language",
+                                       "https://www.coimisineir.ie", "Oifig an Choimisinéara Teanga",
+                                       require_job_indicator=True)
+    print(f"  coimisineir.ie: {len(jobs)} jobs")
+    return jobs
+
+
+def scrape_comhar():
+    """Comhar — Irish language publisher."""
+    soup = get_soup("https://comhar.ie/eolas/foluntas/", "comhar.ie")
+    if not soup:
+        return []
+    jobs = extract_jobs_from_headings(soup, "comhar.ie", "Irish Language Publishing",
+                                       "https://comhar.ie", "Comhar",
+                                       require_job_indicator=True)
+    print(f"  comhar.ie: {len(jobs)} jobs")
+    return jobs
+
+
+def scrape_rte():
+    """RTÉ — Irish national broadcaster. Filter for Irish language roles only."""
+    soup = get_soup("https://about.rte.ie/working-with-rte/vacancies/", "rte.ie")
+    if not soup:
+        return []
+    all_jobs = extract_jobs_from_headings(soup, "rte.ie", "Media",
+                                           "https://about.rte.ie", "RTÉ",
+                                           require_job_indicator=True)
+    IRISH_KW = ["gaeilge", "irish", "gaeltacht", "raidió na gaeltachta", "nuacht"]
+    jobs = [j for j in all_jobs if any(kw in j["title"].lower() for kw in IRISH_KW)]
+    print(f"  rte.ie: {len(jobs)} Irish language jobs (from {len(all_jobs)} total)")
+    return jobs
+
+
+def scrape_raidionalife():
+    """Raidió na Life."""
+    soup = get_soup("https://www.raidionalife.ie/en/vacancies/", "raidionalife.ie")
+    if not soup:
+        return []
+    jobs = extract_jobs_from_headings(soup, "raidionalife.ie", "Media",
+                                       "https://www.raidionalife.ie", "Raidió na Life",
+                                       require_job_indicator=True)
+    print(f"  raidionalife.ie: {len(jobs)} jobs")
+    return jobs
+
+
+def scrape_oireachtas():
+    """
+    Houses of the Oireachtas — only accept links that go to actual job/recruitment pages.
+    """
+    soup = get_soup("https://www.oireachtas.ie/en/how-parliament-is-run/houses-of-the-oireachtas-service/careers/",
+                    "oireachtas.ie")
+    if not soup:
+        return []
+    jobs = []
+    seen = set()
+    for tag in soup.find_all(["h2", "h3", "h4"]):
+        link = tag.find("a", href=True)
+        if not link:
+            continue
+        title = tag.get_text(strip=True)
+        href  = link.get("href", "")
+        # Only accept links to actual vacancy/recruitment pages
+        if not any(w in href.lower() for w in ["vacanc", "recruit", "job", "competition", "compet"]):
+            continue
+        if not is_job_title(title):
+            continue
+        full_url = href if href.startswith("http") else f"https://www.oireachtas.ie{href}"
+        if full_url in seen:
+            continue
+        seen.add(full_url)
+        jobs.append({
+            "title":       title,
+            "description": "Role with Houses of the Oireachtas.",
+            "county":      "Dublin",
+            "sector":      "Government",
+            "org_name":    "Houses of the Oireachtas",
+            "salary":      "POA",
+            "source_url":  full_url,
+            "source_name": "oireachtas.ie",
+        })
+    print(f"  oireachtas.ie: {len(jobs)} jobs")
+    return jobs
+
+
+def scrape_localgovt():
+    """LocalGovernmentJobs.ie — search for gaeilge roles."""
+    jobs = []
+    for term in ["gaeilge", "irish+language"]:
+        soup = get_soup(f"https://www.localgovernmentjobs.ie/Search/Vacancies?keyword={term}",
+                        "localgovernmentjobs.ie")
+        if not soup:
+            continue
+        IRISH_KW = ["gaeilge", "irish language", "oifigeach gaeilge", "irish officer"]
+        all_jobs = extract_jobs_from_headings(soup, "localgovernmentjobs.ie", "Local Government",
+                                               "https://www.localgovernmentjobs.ie", "",
+                                               require_job_indicator=True)
+        jobs += [j for j in all_jobs if any(kw in j["title"].lower() for kw in IRISH_KW)]
+        time.sleep(1)
+    print(f"  localgovernmentjobs.ie: {len(jobs)} jobs")
+    return jobs
+
+
+def scrape_hse():
+    """HSE Career Hub — filter for Irish language roles."""
+    soup = get_soup("https://careerhub.hse.ie/current-vacancies/", "careerhub.hse.ie")
+    if not soup:
+        return []
+    IRISH_KW = ["gaeilge", "irish", "gaeltacht", "bilingual"]
+    all_jobs = extract_jobs_from_headings(soup, "careerhub.hse.ie", "Health",
+                                           "https://careerhub.hse.ie", "HSE",
+                                           require_job_indicator=True)
+    jobs = [j for j in all_jobs if any(kw in j["title"].lower() for kw in IRISH_KW)]
+    print(f"  careerhub.hse.ie: {len(jobs)} Irish language jobs")
+    return jobs
+
+
+def scrape_publicjobs():
+    """PublicJobs.ie — search for Irish language roles."""
+    soup = get_soup("https://publicjobs.ie/en/", "publicjobs.ie")
+    if not soup:
+        return []
+    IRISH_KW = ["gaeilge", "irish language", "irish stream", "gaeltacht"]
+    all_jobs = extract_jobs_from_headings(soup, "publicjobs.ie", "Public Sector",
+                                           "https://publicjobs.ie", "Public Appointments Service",
+                                           require_job_indicator=True)
+    jobs = [j for j in all_jobs if any(kw in j["title"].lower() for kw in IRISH_KW)]
+    print(f"  publicjobs.ie: {len(jobs)} Irish language jobs")
+    return jobs
 
 
 def scrape_adzuna() -> list:
@@ -284,26 +493,25 @@ def scrape_adzuna() -> list:
                 redirect_url = item.get("redirect_url", "")
                 if not redirect_url or not title:
                     continue
-                loc = item.get("location", {}).get("display_name", "")
+                loc    = item.get("location", {}).get("display_name", "")
                 county = extract_county(loc)
-                # Try to extract salary
-                salary = ""
-                salary_max = item.get("salary_max")
                 salary_min = item.get("salary_min")
+                salary_max = item.get("salary_max")
                 if salary_min and salary_max:
                     salary = f"€{int(salary_min):,} – €{int(salary_max):,}"
                 elif salary_min:
                     salary = f"From €{int(salary_min):,}"
+                else:
+                    salary = "POA"
                 jobs.append({
-                    "title":         title,
-                    "description":   item.get("description", "")[:300],
-                    "county":        county,
-                    "sector":        item.get("category", {}).get("label", ""),
-                    "org_name":      item.get("company", {}).get("display_name", ""),
-                    "salary":        salary or "POA",
-                    
-                    "source_url":    redirect_url,
-                    "source_name":   "adzuna.ie",
+                    "title":       title,
+                    "description": item.get("description", "")[:300],
+                    "county":      county,
+                    "sector":      item.get("category", {}).get("label", ""),
+                    "org_name":    item.get("company", {}).get("display_name", ""),
+                    "salary":      salary,
+                    "source_url":  redirect_url,
+                    "source_name": "adzuna.ie",
                 })
             time.sleep(1)
         except Exception as e:
@@ -326,15 +534,33 @@ def cleanup_expired_jobs():
 
 
 def main():
-    print(f"poist.ie job scraper v7 — {len(SOURCES) + 1} sources\n")
+    print("poist.ie job scraper v8 — custom per-site scrapers\n")
+
+    scrapers = [
+        ("sceal.ie",               scrape_sceal),
+        ("tuairisc.ie",            scrape_tuairisc),
+        ("tg4.ie",                 scrape_tg4),
+        ("foras na gaeilge",       scrape_foras),
+        ("udaras.ie",              scrape_udaras),
+        ("gaeloideachas.ie",       scrape_gaeloideachas),
+        ("comhar naionrai",        scrape_comharnaionrai),
+        ("cnag.ie",                scrape_cnag),
+        ("coimisineir.ie",         scrape_coimisineir),
+        ("comhar.ie",              scrape_comhar),
+        ("rte.ie",                 scrape_rte),
+        ("raidionalife.ie",        scrape_raidionalife),
+        ("oireachtas.ie",          scrape_oireachtas),
+        ("localgovernmentjobs.ie", scrape_localgovt),
+        ("careerhub.hse.ie",       scrape_hse),
+        ("publicjobs.ie",          scrape_publicjobs),
+        ("adzuna",                 scrape_adzuna),
+    ]
 
     all_jobs = []
-    for source in SOURCES:
-        print(f"Checking {source['name']}...")
-        all_jobs += source["fn"]()
-
-    print(f"\nChecking Adzuna...")
-    all_jobs += scrape_adzuna()
+    for name, fn in scrapers:
+        print(f"Checking {name}...")
+        all_jobs += fn()
+        time.sleep(1)
 
     print(f"\nFound {len(all_jobs)} genuine job listings\n")
 
