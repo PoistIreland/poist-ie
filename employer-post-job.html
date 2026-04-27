@@ -279,8 +279,8 @@ document.getElementById('shell').innerHTML = `
   const userId = session.user.id;
 
   // Load employer name
-  const { data: emp } = await sb.from('employers').select('org_name,contact_name').eq('id', userId).single();
-  const orgName = emp?.org_name || emp?.contact_name || 'Your organisation';
+  const { data: emp } = await sb.from('employers').select('organisation_name,contact_name').eq('id', userId).single();
+  const orgName = emp?.organisation_name || emp?.contact_name || 'Your organisation';
   document.getElementById('topName').textContent = orgName;
   document.getElementById('pvOrg').textContent = orgName;
 
@@ -311,7 +311,7 @@ document.getElementById('shell').innerHTML = `
 
     const row = {
       employer_id:   userId,
-      org_name:      orgName,
+      organisation_name: orgName,
       title,
       description:   desc,
       location:      loc,

@@ -261,12 +261,10 @@ document.getElementById('signOutBtn').onclick = async () => {
 };
 
 // ─── Load employer record ─────────────────────────────────────────────────────
-const { data: employer } = await sb.from('employers').select('*').eq('id', userId).single();
-if (employer) {
-  const name = employer.org_name || employer.contact_name || 'Employer';
-  document.getElementById('topName').textContent = name;
-  document.getElementById('welcomeMsg').textContent = `Welcome back, ${name}`;
-}
+const { data: employer } = await sb.from('employers').select('id, organisation_name, contact_name, email, county, verified').eq('id', userId).single();
+const empName = employer?.organisation_name || employer?.contact_name || session.user.email?.split('@')[0] || 'Employer';
+document.getElementById('topName').textContent = empName;
+document.getElementById('welcomeMsg').textContent = `Welcome back, ${empName}`;
 
 // ─── Years to 2030 ───────────────────────────────────────────────────────────
 const years = 2030 - new Date().getFullYear();
