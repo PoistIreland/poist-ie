@@ -52,7 +52,6 @@ select.form-input{cursor:pointer;}
 .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin 0.7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* County coordinates for map pins */
 /* NAV */
 .nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:.5rem 2rem}
 .nav-logo{display:block}
@@ -137,7 +136,8 @@ const toast = (msg, type='success') => {
 
 const sidebar = () => `
   <aside style="width:220px;min-height:100vh;background:#0D3B2E;display:flex;flex-direction:column;flex-shrink:0;">
-    <div style="padding:1.4rem 1.2rem 1rem;border-bottom:1px solid rgba(255,255,255,0.1);">${logo(true)}</div>    <nav style="padding:0.8rem 0;flex:1;">
+    <div style="padding:1.4rem 1.2rem 1rem;border-bottom:1px solid rgba(255,255,255,0.1);">${logo(true)}</div>
+    <nav style="padding:0.8rem 0;flex:1;">
       ${[
         {href:'employer-dashboard.html',icon:'⊞',label:'Dashboard'},
         {href:'employer-search.html',icon:'🔍',label:'Find Candidates',active:true},
@@ -154,8 +154,8 @@ const sidebar = () => `
   </aside>`;
 
 // ── State ──────────────────────────────────────────────
-let allCandidates = [];   // full set from Supabase
-let filtered = [];        // currently shown
+let allCandidates = [];
+let filtered = [];
 let activeId = null;
 let markers = {};
 let map = null;
@@ -171,10 +171,11 @@ const iconActive = L.divIcon({
 
 // ── Filter + render ────────────────────────────────────
 function applyFilters() {
-  const q    = document.getElementById('sQ').value.toLowerCase();
-  const cefr = document.getElementById('sCefr').value;
-  const avail = document.getElementById('sAvail').value;
+  const q     = document.getElementById('sQ').value.toLowerCase();
+  const cefr  = document.getElementById('sCefr').value;
+  const county= document.getElementById('sCounty').value;
   const verif = document.getElementById('sVerif').value;
+  const assessed = document.getElementById('sAssessed').value;
 
   filtered = allCandidates.filter(c => {
     const skills = c.skills || [];
@@ -184,9 +185,10 @@ function applyFilters() {
       skills.some(s => s.toLowerCase().includes(q));
     const matchCefr = !cefr ||
       LEVELS.indexOf(c.cefr_level) >= LEVELS.indexOf(cefr);
-    const matchAvail = !avail || c.profile_type === avail;
+    const matchCounty = !county || c.county === county;
     const matchVerif = !verif || (verif === 'true' && c.verified);
-    return matchQ && matchCefr && matchAvail && matchVerif;
+    const matchAssessed = !assessed || (assessed === 'true' && c.assessment_completed);
+    return matchQ && matchCefr && matchCounty && matchVerif && matchAssessed;
   });
 
   document.getElementById('rCnt').textContent =
@@ -224,7 +226,6 @@ function renderList(candidates) {
       </div>
     </div>`).join('');
 
-  // Bind click handlers
   document.querySelectorAll('.cand-card[data-id]').forEach(card => {
     card.addEventListener('click', () => {
       const c = allCandidates.find(x => x.id === card.dataset.id);
@@ -234,14 +235,12 @@ function renderList(candidates) {
 }
 
 function updateMapPins(candidates) {
-  // Remove all existing markers
   Object.values(markers).forEach(m => map.removeLayer(m));
   markers = {};
 
   candidates.forEach(c => {
     const coords = COUNTY_COORDS[c.county];
     if (!coords) return;
-    // Add small jitter so pins in same county don't stack
     const lat = coords[0] + (Math.random() - 0.5) * 0.08;
     const lng = coords[1] + (Math.random() - 0.5) * 0.08;
     const m = L.marker([lat, lng], { icon: activeId === c.id ? iconActive : iconDefault }).addTo(map);
@@ -253,17 +252,14 @@ function updateMapPins(candidates) {
 function showCandidate(c) {
   activeId = c.id;
 
-  // Update map
   Object.values(markers).forEach(({ marker }) => marker.setIcon(iconDefault));
   if (markers[c.id]) {
     markers[c.id].marker.setIcon(iconActive);
     map.setView([markers[c.id].lat, markers[c.id].lng], 10);
   }
 
-  // Re-render list to update active state
   renderList(filtered);
 
-  // Show detail panel
   const panel = document.getElementById('cDetail');
   panel.style.display = 'block';
   document.getElementById('cDContent').innerHTML = `
@@ -281,7 +277,6 @@ function showCandidate(c) {
       ${c.verified ? '<span class="badge" style="background:#F5F7F5;color:var(--teal);">✓ Verified</span>' : ''}
     </div>
 
-    <!-- Language Passport mini -->
     <div style="background:linear-gradient(145deg,var(--teal-dark),var(--teal));border-radius:8px;padding:.8rem;margin-bottom:.8rem;color:#fff;">
       <div style="font-size:.68rem;opacity:.6;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;">Language Passport</div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem;font-size:.82rem;font-weight:600;">
@@ -327,10 +322,10 @@ async function init() {
   const { data: { session } } = await sb.auth.getSession();
   if (!session) { window.location.href = 'login.html'; return; }
 
-  // 2. Verify employer profile exists
+  // 2. Verify employer profile exists — use organisation_name (correct column name)
   const { data: employer } = await sb
     .from('employers')
-    .select('org_name, county')
+    .select('organisation_name, county')
     .eq('id', session.user.id)
     .single();
 
@@ -362,7 +357,7 @@ async function init() {
         <h1 style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;">Find Candidates</h1>
         <div style="display:flex;align-items:center;gap:0.8rem;">
           <div style="width:32px;height:32px;border-radius:50%;background:#F5F7F5;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🏛️</div>
-          <span style="font-size:0.88rem;font-weight:500;color:#374151;">${employer.org_name}</span>
+          <span style="font-size:0.88rem;font-weight:500;color:#374151;">${employer.organisation_name}</span>
         </div>
       </div>
 
@@ -449,9 +444,6 @@ async function init() {
   // 8. Initial render
   applyFilters();
 }
-
-// Make applyFilters available inside event listeners after init
-window._applyFilters = applyFilters;
 
 init().catch(err => {
   console.error(err);
