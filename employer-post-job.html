@@ -1,315 +1,532 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>poist.ie — Post a Job</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>/* poist.ie base styles — shared across all pages */
-:root {
-  --teal:#1A6B3C;--teal-dark:#0D3B2E;--teal-light:#F5F7F5;--teal-mid:#2D8653;
-  --gold:#F5C518;--gold-dark:#C9921A;
-  --dark:#0F1A13;--gray:#6B7F72;--cream:#FFFFFF;--border:#E5E7EB;--white:#ffffff;
-  --red:#dc2626;--green:#16a34a;
-  --sidebar-w:220px;
-  --forest:#0D3B2E;
-  --green2:#2D8653;
-  --gold2:#C9921A;
-  --ink:#0F1A13;
-  --body:#2E3C34;
-  --muted:#6B7F72;
-  --gray-faint:#C4D4CB;
-  --off:#F5F7F5;
-  --radius:14px;
-  --mono:'JetBrains Mono',monospace;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;background:#FFFFFF;color:var(--dark);overflow-x:hidden;}
-input,select,textarea{font-family:'DM Sans',sans-serif;}
-.logo{text-decoration:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.65rem;letter-spacing:-0.03em;background:linear-gradient(90deg,#0D3B2E,#2D8653);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #1A6B3C;
+    --teal-dark: #0D3B2E;
+    --teal-light: #E8F5EE;
+    --gold: #F5C518;
+    --gold-dark: #C89D00;
+    --dark: #0F1A13;
+    --gray: #6B7280;
+    --gray-light: #F9FAFB;
+    --border: #E5E7EB;
+    --white: #FFFFFF;
+    --radius: 12px;
+    --radius-lg: 20px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #F4F6F4; color: var(--dark); display: flex; min-height: 100vh; }
 
-/* Layout */
-.app-shell{display:flex;min-height:100vh;}
-.main-area{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
-.page-content{flex:1;overflow-y:auto;padding:1.5rem;}
+  /* Sidebar */
+  .sidebar { width: 220px; min-height: 100vh; background: var(--teal-dark); display: flex; flex-direction: column; flex-shrink: 0; position: sticky; top: 0; }
+  .sidebar-logo { padding: 1.4rem 1.2rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .sidebar-logo a { text-decoration: none; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.5rem; background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .sidebar nav { padding: 0.8rem 0; flex: 1; }
+  .sidebar nav a { display: flex; align-items: center; gap: 0.7rem; padding: 0.7rem 1.2rem; text-decoration: none; font-size: 0.92rem; font-weight: 500; color: rgba(255,255,255,0.65); transition: background 0.15s; }
+  .sidebar nav a:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  .sidebar nav a.active { background: rgba(255,255,255,0.15); color: #fff; }
+  .sidebar-footer { padding: 1rem 1.2rem; border-top: 1px solid rgba(255,255,255,0.1); }
+  .sidebar-footer button { background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.7); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif; }
 
-/* Cards */
-.card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.4rem;}
-.card-sm{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1rem;}
+  /* Main area */
+  .main-area { flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+  .topbar { height: 60px; background: #fff; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; flex-shrink: 0; position: sticky; top: 0; z-index: 10; }
+  .topbar h1 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; }
+  .topbar-user { display: flex; align-items: center; gap: 0.8rem; font-size: 0.88rem; font-weight: 500; color: #374151; }
+  .topbar-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--gray-light); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
 
-/* Buttons */
-.btn{display:inline-flex;align-items:center;gap:0.4rem;padding:0.6rem 1.2rem;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;border:none;transition:all 0.18s;text-decoration:none;}
-.btn-primary{background:var(--gold);color:var(--dark);}
-.btn-primary:hover{background:var(--gold-dark);transform:translateY(-1px);}
-.btn-teal{background:var(--teal);color:#fff;}
-.btn-teal:hover{background:var(--teal-dark);}
-.btn-outline{background:transparent;border:1.5px solid var(--teal);color:var(--teal);}
-.btn-outline:hover{background:var(--teal-light);}
-.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--gray);}
-.btn-ghost:hover{border-color:var(--dark);color:var(--dark);}
-.btn-danger{background:#fef2f2;border:1.5px solid #fecaca;color:var(--red);}
-.btn-danger:hover{background:#fee2e2;}
-.btn-lg{padding:0.8rem 1.8rem;font-size:1rem;border-radius:10px;}
+  .page-content { padding: 1.5rem; flex: 1; }
+  .page-inner { max-width: 880px; margin: 0 auto; }
 
-/* Form elements */
-.form-group{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:1rem;}
-.form-label{font-size:0.85rem;font-weight:600;color:var(--dark);}
-.form-input{padding:0.65rem 0.9rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.9rem;color:var(--dark);background:var(--white);transition:border-color 0.18s;outline:none;}
-.form-input:focus{border-color:var(--teal);}
-.form-input.error{border-color:var(--red);}
-.form-hint{font-size:0.78rem;color:var(--gray);}
-.form-error{font-size:0.78rem;color:var(--red);}
-select.form-input{cursor:pointer;}
+  /* Cards */
+  .card { background: #fff; border-radius: var(--radius-lg); padding: 1.4rem; box-shadow: var(--shadow); }
+  .card + .card { margin-top: 1rem; }
+  .card h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 1rem; }
 
-/* Badges */
-.badge{display:inline-flex;align-items:center;padding:0.18rem 0.55rem;border-radius:4px;font-size:0.72rem;font-weight:700;}
-.badge-gold{background:var(--gold);color:var(--dark);}
-.badge-teal{background:var(--teal-light);color:var(--teal);}
-.badge-gray{background:#F3F4F6;color:var(--gray);}
-.badge-green{background:#dcfce7;color:var(--green);}
-.badge-red{background:#fef2f2;color:var(--red);}
+  /* Form */
+  .form-group { margin-bottom: 1rem; }
+  .form-group:last-child { margin-bottom: 0; }
+  .form-label { display: block; font-size: 0.83rem; font-weight: 600; color: #374151; margin-bottom: 0.35rem; }
+  .form-input { width: 100%; padding: 0.62rem 0.85rem; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.9rem; font-family: 'DM Sans', sans-serif; background: #fff; color: var(--dark); transition: border-color 0.15s, box-shadow 0.15s; outline: none; }
+  .form-input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(26,107,60,0.1); }
+  textarea.form-input { resize: vertical; min-height: 110px; }
+  select.form-input { cursor: pointer; }
 
-/* Stats grid */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem;}
-.stat-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.2rem;}
-.stat-num{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--teal);}
-.stat-label{font-size:0.78rem;color:var(--gray);margin-top:0.15rem;}
+  /* Location group */
+  .location-group { position: relative; }
+  .location-search-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: var(--teal); color: #fff; border: none; border-radius: 6px; padding: 0.28rem 0.65rem; font-size: 0.75rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; transition: background 0.15s; }
+  .location-search-btn:hover { background: var(--teal-dark); }
+  .location-search-btn:disabled { background: var(--gray); cursor: not-allowed; }
+  #jLoc { padding-right: 110px; }
 
-/* CEFR scale */
-.cefr-scale{display:flex;gap:3px;}
-.cefr-pip{flex:1;height:6px;border-radius:3px;background:#E5E7EB;}
-.cefr-pip.on{background:var(--gold);}
+  /* Autocomplete dropdown */
+  .autocomplete-dropdown { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1.5px solid var(--border); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 100; max-height: 220px; overflow-y: auto; display: none; }
+  .autocomplete-dropdown.open { display: block; }
+  .autocomplete-item { padding: 0.65rem 0.9rem; font-size: 0.88rem; cursor: pointer; display: flex; flex-direction: column; gap: 0.1rem; border-bottom: 1px solid #f3f4f6; }
+  .autocomplete-item:last-child { border-bottom: none; }
+  .autocomplete-item:hover { background: var(--teal-light); }
+  .autocomplete-item .place-name { font-weight: 600; color: var(--dark); }
+  .autocomplete-item .place-sub { font-size: 0.77rem; color: var(--gray); }
+  .autocomplete-loading { padding: 0.8rem; text-align: center; font-size: 0.85rem; color: var(--gray); }
+  .autocomplete-none { padding: 0.8rem; text-align: center; font-size: 0.85rem; color: var(--gray); }
 
-/* Section header */
-.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
-.section-hdr h2{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;}
+  /* Location confirmed */
+  .location-confirmed { margin-top: 0.4rem; display: none; align-items: center; gap: 0.5rem; font-size: 0.82rem; color: var(--teal); font-weight: 500; }
+  .location-confirmed.show { display: flex; }
+  .location-confirmed .pin-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
 
-/* Verified badge */
-.verified{display:inline-flex;align-items:center;gap:0.3rem;background:#F5F7F5;color:var(--teal);font-size:0.72rem;font-weight:600;padding:0.18rem 0.55rem;border-radius:4px;}
+  /* CEFR grid */
+  .cefr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 0.7rem; }
+  .cefr-option { padding: 0.6rem 0.4rem; border: 1.5px solid var(--border); border-radius: 10px; background: #fff; cursor: pointer; font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; text-align: center; transition: all 0.15s; color: var(--dark); line-height: 1.3; }
+  .cefr-option:hover { border-color: var(--teal); background: var(--teal-light); }
+  .cefr-option.sel { background: var(--teal); color: #fff; border-color: var(--teal); }
 
-/* Animations */
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-@keyframes slideIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
-.fade-in{animation:fadeIn 0.3s ease both;}
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1.4rem; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+  .btn-teal { background: var(--teal); color: #fff; }
+  .btn-teal:hover { background: var(--teal-dark); }
+  .btn-teal:disabled { background: var(--gray); cursor: not-allowed; }
+  .btn-lg { padding: 0.85rem 2rem; font-size: 1rem; width: 100%; justify-content: center; }
 
-/* Public nav */
-.pub-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;height:66px;display:flex;align-items:center;justify-content:space-between;}
-.pub-nav-links{display:flex;align-items:center;gap:1.8rem;}
-.pub-nav-links a{text-decoration:none;color:var(--gray);font-weight:500;font-size:0.93rem;transition:color 0.2s;}
-.pub-nav-links a:hover{color:var(--teal);}
-.pub-nav-cta{background:var(--gold);color:var(--dark)!important;padding:0.5rem 1.2rem;border-radius:7px;font-weight:600;font-size:0.88rem;}
-.pub-nav-cta:hover{background:var(--gold-dark)!important;}
+  /* Preview card */
+  .preview-label { font-size: 0.78rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.6rem; }
+  .match-box { margin-top: 0.8rem; background: var(--teal-light); border-radius: 10px; padding: 0.9rem; font-size: 0.82rem; color: var(--teal); }
 
-/* Responsive */
-@media(max-width:768px){
-  .sidebar{display:none;}
-  .stats-grid{grid-template-columns:1fr 1fr;}
-  .pub-nav-links{display:none;}
-}
+  /* Hint box */
+  .cefr-hint { background: var(--teal-light); border-radius: 8px; padding: 0.7rem; font-size: 0.82rem; color: var(--teal); }
 
-.cefr-option{border:1.5px solid var(--border);border-radius:8px;padding:.7rem 1rem;cursor:pointer;font-weight:700;font-size:.85rem;color:var(--gray);transition:all .15s;text-align:center;}.cefr-option.sel{border-color:var(--teal);background:var(--teal-light);color:var(--teal);}/* NAV */
-.nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:.5rem 2rem}
-.nav-logo{display:block}
-.nav-links{display:flex;align-items:center;gap:1.8rem;font-size:.9rem;font-weight:500}
-.nav-links a{color:var(--body);transition:color .15s}
-.nav-links a:hover{color:var(--green)}
-.ga-sm{font-size:.75rem;color:var(--muted);margin-left:.25rem}
-.nav-links a.ghost{border:1.5px solid var(--border);border-radius:8px;padding:.4rem .9rem;color:var(--body)}
-.nav-links a.ghost:hover{border-color:var(--green);color:var(--green)}
-.nav-links a.cta{background:var(--gold);color:var(--forest);border-radius:8px;padding:.45rem 1.1rem;font-weight:700;transition:background .15s}
-.nav-links a.cta:hover{background:#f7ce3a}
-/* FOOTER */
-footer{background:var(--ink);color:rgba(255,255,255,.6);padding:4rem 2rem 2rem}
-.foot-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
-.foot-logo{margin-bottom:.9rem}
-.foot-brand p{font-size:.85rem;line-height:1.7;max-width:260px;margin-bottom:.6rem}
-.foot-brand .ga{font-size:.78rem;color:rgba(255,255,255,.3)}
-footer h5{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);font-family:var(--mono);margin-bottom:1.1rem}
-footer h5 .ga-sm{display:block;font-size:.65rem;text-transform:none;letter-spacing:0;margin-top:.2rem;color:rgba(255,255,255,.2)}
-footer ul{list-style:none;display:flex;flex-direction:column;gap:.6rem}
-footer ul a{font-size:.88rem;color:rgba(255,255,255,.55);transition:color .15s}
-footer ul a:hover{color:var(--white)}
-.foot-bottom{max-width:1200px;margin:0 auto;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem}
-.foot-bottom span{font-size:.8rem;color:rgba(255,255,255,.25)}
-.foot-bottom .tag{font-size:.75rem;font-style:italic}
-@media(max-width:1024px){.foot-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:640px){.nav{padding:.75rem 1rem}.nav-links{gap:1rem;font-size:.82rem}.foot-grid{grid-template-columns:1fr}}
+  /* Error banner */
+  #errorBanner { display: none; background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; padding: 0.75rem 1rem; border-radius: 10px; font-size: 0.88rem; margin-bottom: 1rem; }
+
+  /* Success screen */
+  #successScreen { display: none; text-align: center; padding: 3rem 1rem; }
+  #successScreen .success-icon { font-size: 3rem; margin-bottom: 1rem; }
+  #successScreen h2 { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+  #successScreen p { color: var(--gray); margin-bottom: 1.5rem; }
+
+  /* Grid layouts */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+  .form-stack { display: flex; flex-direction: column; gap: 1rem; }
+  .layout-main { display: grid; grid-template-columns: 1fr 360px; gap: 1.5rem; align-items: start; }
+  @media (max-width: 900px) { .layout-main { grid-template-columns: 1fr; } .two-col { grid-template-columns: 1fr; } }
+
+  /* Launch badge */
+  .launch-banner { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.5rem; }
+  .badge-green { background: #dcfce7; color: #16a34a; padding: 0.3rem 0.8rem; border-radius: 100px; font-size: 0.8rem; font-weight: 600; }
 </style>
 </head>
 <body>
-<div class="app-shell" id="shell"></div>
 
-<script>
+<aside class="sidebar">
+  <div class="sidebar-logo"><a href="index.html">poist.ie</a></div>
+  <nav>
+    <a href="employer-dashboard.html"><span>⊞</span> Dashboard</a>
+    <a href="employer-search.html"><span>🔍</span> Find Candidates</a>
+    <a href="employer-post-job.html" class="active"><span>＋</span> Post a Job</a>
+  </nav>
+  <div class="sidebar-footer">
+    <button id="signOutBtn">← Sign out</button>
+  </div>
+</aside>
 
-// poist.ie shared utilities
-// Replace localStorage calls with Supabase auth/db calls when going live
+<div class="main-area">
+  <div class="topbar">
+    <h1>Post a Job</h1>
+    <div class="topbar-user">
+      <div class="topbar-avatar" id="topAvatar">🏛️</div>
+      <span id="topName">Loading…</span>
+    </div>
+  </div>
 
-const POIST = {
-  // ── Brand ──────────────────────────────────────────
-  logo: (dark = false) => `
-    <a href="index.html" style="text-decoration:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.65rem;letter-spacing:-0.03em;background:linear-gradient(90deg,${dark?'rgba(255,255,255,0.9),rgba(255,255,255,0.6)':'#0D3B2E,#2D8653'});-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">poist.ie</a>`,
+  <div class="page-content">
+    <div class="page-inner">
 
-  // ── Auth helpers (swap for Supabase auth) ──────────
-  getUser: () => JSON.parse(localStorage.getItem('poist_user') || 'null'),
-  setUser: (u) => localStorage.setItem('poist_user', JSON.stringify(u)),
-  logout: () => { localStorage.removeItem('poist_user'); window.location.href = 'login.html'; },
-  requireAuth: (role) => {
-    const u = POIST.getUser();
-    if (!u) { window.location.href = 'login.html'; return null; }
-    if (role && u.role !== role) { window.location.href = 'index.html'; return null; }
-    return u;
-  },
+      <div id="errorBanner"></div>
 
-  // ── CEFR helpers ───────────────────────────────────
-  cefrLevels: ['A1','A2','B1','B2','C1','C2'],
-  cefrLabel: { A1:'Beginner',A2:'Elementary',B1:'Intermediate',B2:'Upper-Intermediate',C1:'Advanced',C2:'Proficient/Native' },
-
-  // ── Demo seed data (replace with Supabase queries) ─
-  demoJobs: [
-    { id:1, title:'Irish Language Officer', org:'Department of Education', location:'Dublin', county:'Dublin', type:'Full-time', cefr:'B2', sector:'Government', posted:'2 days ago', lat:53.349, lng:-6.260, desc:'Lead Irish language strategy across the department, supporting the 2030 Official Languages Act targets.' },
-    { id:2, title:'Bainisteoir Tionscadail', org:'Údarás na Gaeltachta', location:'Galway', county:'Galway', type:'Full-time', cefr:'C1', sector:'Semi-state', posted:'1 day ago', lat:53.270, lng:-9.056, desc:'Manage capital projects across Gaeltacht regions. Full Irish essential.' },
-    { id:3, title:'Irish Language Teacher', org:'Coláiste Íde', location:'Dingle, Kerry', county:'Kerry', type:'Full-time', cefr:'C2', sector:'Education', posted:'3 days ago', lat:52.141, lng:-10.267, desc:'Teach Irish at secondary level at a leading Irish-medium college.' },
-    { id:4, title:'Communications Officer (Irish)', org:'HSE', location:'Cork', county:'Cork', type:'Full-time', cefr:'B2', sector:'Healthcare', posted:'Today', lat:51.898, lng:-8.475, desc:'Produce Irish-language health communications for HSE Cork region.' },
-    { id:5, title:'Tech Lead Gaeilge', org:'GlobalTech Ireland', location:'Cork', county:'Cork', type:'Full-time', cefr:'B1', sector:'Technology', posted:'5 days ago', lat:51.903, lng:-8.468, desc:'Lead a bilingual engineering team. Irish language skills valued but not essential at native level.' },
-    { id:6, title:'Content Creator', org:'TG4', location:'Galway', county:'Galway', type:'Contract', cefr:'C1', sector:'Media', posted:'Today', lat:53.274, lng:-9.049, desc:'Create engaging Irish-language video content for TG4 digital platforms.' },
-    { id:7, title:'Irish Language Coordinator', org:'Limerick City Council', location:'Limerick', county:'Limerick', type:'Part-time', cefr:'B1', sector:'Government', posted:'1 week ago', lat:52.664, lng:-8.630, desc:'Coordinate Irish language services for Limerick City Council.' },
-    { id:8, title:'Community Manager', org:'Conradh na Gaeilge', location:'Dublin', county:'Dublin', type:'Full-time', cefr:'C2', sector:'Non-profit', posted:'4 days ago', lat:53.342, lng:-6.268, desc:'Manage community programmes and events promoting the Irish language.' },
-  ],
-
-  demoCandidates: [
-    { id:1, name:'Síle Ní Bhriain', title:'Content Creator', location:'Galway', cefr:'B2', englishCefr:'C2', skills:['Content Writing','Public Speaking','Media Production'], available:'Passive', verified:true, avatar:'👩‍💼' },
-    { id:2, name:'Ciarán Mac Giolla', title:'Software Developer', location:'Dublin', cefr:'C1', englishCefr:'C2', skills:['React','Node.js','Irish Language Tech'], available:'Active', verified:true, avatar:'👨‍💻' },
-    { id:3, name:'Aoife Ní Fhaoláin', title:'Irish Language Officer', location:'Galway', cefr:'C2', englishCefr:'C2', skills:['Policy','Training','Communications'], available:'Passive', verified:true, avatar:'👩‍🏫' },
-    { id:4, name:'Seán Ó Briain', title:'Communications Manager', location:'Cork', cefr:'B2', englishCefr:'C1', skills:['PR','Social Media','Copywriting'], available:'Active', verified:false, avatar:'👨‍💼' },
-  ],
-
-  // ── Sidebar nav renderer ────────────────────────────
-  renderSidebar: (role, activePage) => {
-    const candidateLinks = [
-      { href:'candidate-dashboard.html', icon:'⊞', label:'Dashboard' },
-      { href:'candidate-jobs.html', icon:'🔍', label:'Find Jobs' },
-      { href:'candidate-passport.html', icon:'📋', label:'My Passport' },
-    ];
-    const employerLinks = [
-      { href:'employer-dashboard.html', icon:'⊞', label:'Dashboard' },
-      { href:'employer-search.html', icon:'🔍', label:'Find Candidates' },
-      { href:'employer-post-job.html', icon:'＋', label:'Post a Job' },
-    ];
-    const adminLinks = [
-      { href:'admin-dashboard.html', icon:'⊞', label:'Overview' },
-      { href:'admin-dashboard.html#jobs', icon:'📋', label:'Job Approvals' },
-      { href:'admin-dashboard.html#users', icon:'👥', label:'Users' },
-    ];
-    const links = role==='employer' ? employerLinks : role==='admin' ? adminLinks : candidateLinks;
-    return `
-      <aside style="width:220px;min-height:100vh;background:#0D3B2E;display:flex;flex-direction:column;flex-shrink:0;">
-        <div style="padding:1.4rem 1.2rem 1rem;border-bottom:1px solid rgba(255,255,255,0.1);">
-          ${POIST.logo(true)}
-        </div>
-        <nav style="padding:0.8rem 0;flex:1;">
-          ${links.map(l=>`
-            <a href="${l.href}" style="display:flex;align-items:center;gap:0.7rem;padding:0.7rem 1.2rem;text-decoration:none;font-size:0.92rem;font-weight:500;border-radius:0;transition:background 0.15s;${activePage===l.href?'background:rgba(255,255,255,0.15);color:#fff;':'color:rgba(255,255,255,0.7);'}"
-               onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='${activePage===l.href?'rgba(255,255,255,0.15)':'transparent'}'" >
-              <span style="font-size:1rem;width:20px;text-align:center;">${l.icon}</span>${l.label}
-            </a>`).join('')}
-        </nav>
-        <div style="padding:1rem 1.2rem;border-top:1px solid rgba(255,255,255,0.1);">
-          <button onclick="POIST.logout()" style="background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.7);padding:0.5rem 1rem;border-radius:6px;cursor:pointer;font-size:0.85rem;width:100%;text-align:left;">← Sign out</button>
-        </div>
-      </aside>`;
-  },
-
-  // ── Top bar for dashboards ──────────────────────────
-  renderTopBar: (title, user) => `
-    <div style="height:60px;background:#fff;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;flex-shrink:0;">
-      <h1 style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#0F1A13;">${title}</h1>
-      <div style="display:flex;align-items:center;gap:0.8rem;">
-        <div style="width:32px;height:32px;border-radius:50%;background:#F5F7F5;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">${user?.avatar||'👤'}</div>
-        <span style="font-size:0.88rem;font-weight:500;color:#374151;">${user?.name||'User'}</span>
+      <!-- Success screen -->
+      <div id="successScreen" class="card">
+        <div class="success-icon">✅</div>
+        <h2>Job submitted!</h2>
+        <p>Your listing will be live within 24 hours after review. We'll email you when it's approved.</p>
+        <a href="employer-dashboard.html" class="btn btn-teal" style="display:inline-flex;">Back to Dashboard →</a>
       </div>
-    </div>`,
 
-  // ── CEFR badge ─────────────────────────────────────
-  cefrBadge: (level) => `<span style="background:#F5C518;color:#0F1A13;font-size:0.7rem;font-weight:700;padding:0.18rem 0.5rem;border-radius:4px;">${level}</span>`,
-
-  // ── Toast notification ──────────────────────────────
-  toast: (msg, type='success') => {
-    const t = document.createElement('div');
-    const bg = type==='success'?'#1A6B3C':type==='error'?'#dc2626':'#0F1A13';
-    t.style.cssText=`position:fixed;bottom:1.5rem;right:1.5rem;background:${bg};color:#fff;padding:0.8rem 1.3rem;border-radius:10px;font-size:0.9rem;font-weight:500;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.2);animation:slideIn 0.3s ease;`;
-    t.textContent=msg;
-    document.body.appendChild(t);
-    setTimeout(()=>t.remove(),3000);
-  },
-};
-
-// Demo login shortcut — remove when Supabase auth is live
-window.POIST = POIST;
-
-const _demo={candidate:{role:'candidate',name:'Síle Ní Bhriain',email:'sile@poist.ie',avatar:'👩\u200d💼',irishCefr:'B2',englishCefr:'C2',county:'Galway',jobTitle:'Content Creator',profileType:'active',skills:['Content Writing','Public Speaking','Media Production']},employer:{role:'employer',name:'Galway County Council',email:'hr@galway.ie',avatar:'🏛️',orgType:'Local authority',county:'Galway'},admin:{role:'admin',name:'Admin User',email:'admin@poist.ie',avatar:'⚙️'}};
-function getUser(role){let u=POIST.getUser();if(!u||(role&&u.role!==role)){u=_demo[role||'candidate'];POIST.setUser(u);}return u;}
-
-
-const user=getUser('employer');
-let cefrReq='B2';
-document.getElementById('shell').innerHTML=`
-  ${POIST.renderSidebar('employer','employer-post-job.html')}
-  <div class="main-area">
-    ${POIST.renderTopBar('Post a Job',user)}
-    <div class="page-content">
-      <div style="max-width:860px;margin:0 auto;">
-        <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:1.5rem;">
-          <div style="background:#dcfce7;color:#16a34a;padding:.3rem .8rem;border-radius:100px;font-size:.8rem;font-weight:600;">✓ Free to post during launch</div>
+      <!-- Main form -->
+      <div id="mainForm">
+        <div class="launch-banner">
+          <span class="badge-green">✓ Free to post during launch</span>
           <span style="color:var(--gray);font-size:.85rem;">Live within 24 hours after review</span>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 360px;gap:1.5rem;align-items:start;">
-          <div style="display:flex;flex-direction:column;gap:1rem;">
+
+        <div class="layout-main">
+
+          <!-- Left: form -->
+          <div class="form-stack">
+
             <div class="card">
-              <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1rem;">Job details</h3>
-              <div class="form-group"><label class="form-label">Job title *</label><input type="text" id="jTitle" class="form-input" placeholder="e.g. Irish Language Officer" oninput="upPrev()"></div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;">
-                <div class="form-group"><label class="form-label">Type *</label><select id="jType" class="form-input" onchange="upPrev()"><option>Full-time</option><option>Part-time</option><option>Contract</option><option>Temporary</option></select></div>
-                <div class="form-group"><label class="form-label">Sector</label><select id="jSector" class="form-input" onchange="upPrev()"><option>Government</option><option>Local authority</option><option>Education</option><option>Healthcare</option><option>Semi-state</option><option>Technology</option><option>Media</option><option>Non-profit</option></select></div>
+              <h3>Job details</h3>
+              <div class="form-group">
+                <label class="form-label">Job title *</label>
+                <input type="text" id="jTitle" class="form-input" placeholder="e.g. Irish Language Officer" oninput="upPrev()">
               </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;">
-                <div class="form-group"><label class="form-label">Location</label><input type="text" id="jLoc" class="form-input" placeholder="e.g. Dublin, Galway" oninput="upPrev()"></div>
-                <div class="form-group"><label class="form-label">County</label><select id="jCounty" class="form-input" onchange="upPrev()"><option value="">Select…</option>${county_opts}</select></div>
+              <div class="two-col">
+                <div class="form-group">
+                  <label class="form-label">Type *</label>
+                  <select id="jType" class="form-input" onchange="upPrev()">
+                    <option value="full_time">Full-time</option>
+                    <option value="part_time">Part-time</option>
+                    <option value="contract">Contract</option>
+                    <option value="temporary">Temporary</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Sector</label>
+                  <select id="jSector" class="form-input">
+                    <option>Government</option>
+                    <option>Local authority</option>
+                    <option>Education</option>
+                    <option>Healthcare</option>
+                    <option>Semi-state</option>
+                    <option>Technology</option>
+                    <option>Media</option>
+                    <option>Non-profit</option>
+                    <option>Other</option>
+                  </select>
+                </div>
               </div>
-              <div class="form-group"><label class="form-label">Salary range (optional)</label><input type="text" id="jSalary" class="form-input" placeholder="e.g. €35,000–€45,000 or Negotiable" oninput="upPrev()"></div>
+
+              <!-- Location with Nominatim autocomplete -->
+              <div class="form-group">
+                <label class="form-label">Location *</label>
+                <div class="location-group" id="locationGroup">
+                  <input type="text" id="jLoc" class="form-input" placeholder="Type a place — e.g. Carraroe, Galway…" autocomplete="off" oninput="onLocInput(this.value)">
+                  <button class="location-search-btn" id="locSearchBtn" onclick="triggerSearch()" title="Search address">
+                    📍 Find address
+                  </button>
+                  <div class="autocomplete-dropdown" id="acDropdown"></div>
+                </div>
+                <div class="location-confirmed" id="locConfirmed">
+                  <span class="pin-dot"></span>
+                  <span id="locConfirmedText">Pin set on map</span>
+                </div>
+              </div>
+
+              <!-- County auto-fills from geocoding but user can override -->
+              <div class="form-group">
+                <label class="form-label">County *</label>
+                <select id="jCounty" class="form-input">
+                  <option value="">Select county…</option>
+                  <option>Antrim</option><option>Armagh</option><option>Carlow</option><option>Cavan</option>
+                  <option>Clare</option><option>Cork</option><option>Derry</option><option>Donegal</option>
+                  <option>Down</option><option>Dublin</option><option>Fermanagh</option><option>Galway</option>
+                  <option>Kerry</option><option>Kildare</option><option>Kilkenny</option><option>Laois</option>
+                  <option>Leitrim</option><option>Limerick</option><option>Longford</option><option>Louth</option>
+                  <option>Mayo</option><option>Meath</option><option>Monaghan</option><option>Offaly</option>
+                  <option>Roscommon</option><option>Sligo</option><option>Tipperary</option><option>Tyrone</option>
+                  <option>Waterford</option><option>Westmeath</option><option>Wexford</option><option>Wicklow</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Salary range (optional)</label>
+                <input type="text" id="jSalary" class="form-input" placeholder="e.g. €35,000–€45,000 or Negotiable">
+              </div>
             </div>
+
             <div class="card">
-              <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:.5rem;">Irish language requirement *</h3>
+              <h3>Irish language requirement *</h3>
               <p style="font-size:.82rem;color:var(--gray);margin-bottom:.9rem;">Set the minimum CEFR level. Candidates at or above this level will be matched.</p>
-              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:.7rem;" id="cefrGrid">
-                ${POIST.cefrLevels.map(l=>`<button class="cefr-option ${l==='B2'?'sel':''}" onclick="setCefr('${l}',this)">${l}<br><span style="font-size:.7rem;font-weight:400;">${POIST.cefrLabel[l]}</span></button>`).join('')}
+              <div class="cefr-grid" id="cefrGrid">
+                <button class="cefr-option" onclick="setCefr('A1',this)">A1<br><span style="font-size:.7rem;font-weight:400;">Beginner</span></button>
+                <button class="cefr-option" onclick="setCefr('A2',this)">A2<br><span style="font-size:.7rem;font-weight:400;">Elementary</span></button>
+                <button class="cefr-option" onclick="setCefr('B1',this)">B1<br><span style="font-size:.7rem;font-weight:400;">Intermediate</span></button>
+                <button class="cefr-option sel" onclick="setCefr('B2',this)">B2<br><span style="font-size:.7rem;font-weight:400;">Upper-Intermediate</span></button>
+                <button class="cefr-option" onclick="setCefr('C1',this)">C1<br><span style="font-size:.7rem;font-weight:400;">Advanced</span></button>
+                <button class="cefr-option" onclick="setCefr('C2',this)">C2<br><span style="font-size:.7rem;font-weight:400;">Proficient/Native</span></button>
               </div>
-              <div id="cefrHint" style="background:var(--teal-light);border-radius:8px;padding:.7rem;font-size:.82rem;color:var(--teal);">B2 — Candidates can handle complex Irish tasks independently. Good for most public sector roles.</div>
+              <div class="cefr-hint" id="cefrHint">B2 — Candidates can handle complex Irish tasks independently. Good for most public sector roles.</div>
             </div>
+
             <div class="card">
-              <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1rem;">Description *</h3>
-              <div class="form-group"><label class="form-label">Job description</label><textarea id="jDesc" class="form-input" rows="5" placeholder="Describe the role and responsibilities…" oninput="upPrev()"></textarea></div>
-              <div class="form-group"><label class="form-label">Closing date</label><input type="date" id="jClose" class="form-input"></div>
+              <h3>Description *</h3>
+              <div class="form-group">
+                <label class="form-label">Job description</label>
+                <textarea id="jDesc" class="form-input" rows="6" placeholder="Describe the role, responsibilities, and what Irish language skills are required for…" oninput="upPrev()"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Closing date (optional)</label>
+                <input type="date" id="jClose" class="form-input">
+              </div>
             </div>
-            <button class="btn btn-teal btn-lg" style="justify-content:center;" onclick="submitJob()">Submit for Review →</button>
+
+            <button class="btn btn-teal btn-lg" id="submitBtn" onclick="submitJob()">Submit for Review →</button>
+
           </div>
+
+          <!-- Right: preview -->
           <div style="position:sticky;top:1rem;">
-            <div style="font-size:.78rem;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.6rem;">Live preview</div>
+            <div class="preview-label">Live preview</div>
             <div class="card">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem;"><div id="pvT" style="font-weight:700;font-size:1rem;color:var(--teal);flex:1;">Your job title</div><span id="pvC" style="background:var(--gold);color:var(--dark);font-size:.7rem;font-weight:700;padding:.15rem .45rem;border-radius:4px;margin-left:.5rem;">B2</span></div>
-              <div style="font-size:.85rem;font-weight:600;margin-bottom:.2rem;">${user.name}</div>
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem;">
+                <div id="pvT" style="font-weight:700;font-size:1rem;color:var(--teal);flex:1;">Your job title</div>
+                <span id="pvC" style="background:var(--gold);color:var(--dark);font-size:.7rem;font-weight:700;padding:.15rem .45rem;border-radius:4px;margin-left:.5rem;">B2</span>
+              </div>
+              <div style="font-size:.85rem;font-weight:600;margin-bottom:.2rem;" id="pvOrg">Your organisation</div>
               <div id="pvM" style="font-size:.8rem;color:var(--gray);margin-bottom:.8rem;">📍 Location · Full-time</div>
               <p id="pvD" style="font-size:.82rem;color:var(--gray);line-height:1.6;">Your description…</p>
             </div>
-            <div style="margin-top:.8rem;background:var(--teal-light);border-radius:10px;padding:.9rem;font-size:.82rem;color:var(--teal);">
-              <strong>Match estimate</strong><br>Candidates with <span id="pvCC">B2+</span> Irish: ~<strong>180 candidates</strong> in your area.
+            <div class="match-box">
+              <strong>Match estimate</strong><br>
+              Candidates with <span id="pvCC">B2+</span> Irish: ~<strong>180 candidates</strong> in your area.
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </div>`;
-window.setCefr=(v,el)=>{cefrReq=v;document.getElementById('cefrGrid').querySelectorAll('.cefr-option').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');document.getElementById('pvC').textContent=v;document.getElementById('pvCC').textContent=v+'+';document.getElementById('cefrHint').textContent=`${v} — ${POIST.cefrLabel[v]}`;};
-window.upPrev=()=>{document.getElementById('pvT').textContent=document.getElementById('jTitle').value||'Your job title';document.getElementById('pvM').textContent=`📍 ${document.getElementById('jLoc').value||'Location'} · ${document.getElementById('jType').value}`;document.getElementById('pvD').textContent=document.getElementById('jDesc').value||'Your description…';};
-window.submitJob=()=>{if(!document.getElementById('jTitle').value){POIST.toast('Please add a job title','error');return;}if(!document.getElementById('jDesc').value){POIST.toast('Please add a description','error');return;}POIST.toast('Job submitted! Live within 24 hours.');setTimeout(()=>window.location.href='employer-dashboard.html',1800);};
 
+        </div>
+      </div><!-- /mainForm -->
+
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+const SUPABASE_URL = 'https://kpfshjarepmazrgzffot.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwZnNoamFyZXBtYXpyZ3pmZm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNzQ0MjIsImV4cCI6MjA5MDY1MDQyMn0.yU-6ASii1duNXgGMs0ZWTkgTYXonVfqVOnEQr0J8FhU';
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ─── Auth guard ───────────────────────────────────────────────────────────────
+const { data: { session } } = await sb.auth.getSession();
+if (!session) { window.location.href = 'login.html'; }
+
+const userId = session.user.id;
+const { data: employer } = await sb.from('employers').select('*').eq('id', userId).single();
+if (employer) {
+  document.getElementById('topName').textContent = employer.org_name || employer.contact_name || 'Employer';
+  document.getElementById('pvOrg').textContent = employer.org_name || 'Your organisation';
+}
+document.getElementById('signOutBtn').onclick = async () => {
+  await sb.auth.signOut();
+  window.location.href = 'login.html';
+};
+
+// ─── CEFR state ───────────────────────────────────────────────────────────────
+let cefrReq = 'B2';
+const cefrHints = {
+  A1: 'A1 — Basic greetings and simple phrases. Entry-level familiarity with Irish.',
+  A2: 'A2 — Can understand common expressions relevant to everyday tasks.',
+  B1: 'B1 — Can handle routine matters in Irish. Good for administrative roles.',
+  B2: 'B2 — Candidates can handle complex Irish tasks independently. Good for most public sector roles.',
+  C1: 'C1 — Can express themselves fluently and spontaneously in Irish.',
+  C2: 'C2 — Near-native or native fluency. Irish-medium roles.',
+};
+
+window.setCefr = (v, el) => {
+  cefrReq = v;
+  document.querySelectorAll('.cefr-option').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('pvC').textContent = v;
+  document.getElementById('pvCC').textContent = v + '+';
+  document.getElementById('cefrHint').textContent = cefrHints[v] || '';
+};
+
+// ─── Preview updater ──────────────────────────────────────────────────────────
+window.upPrev = () => {
+  document.getElementById('pvT').textContent = document.getElementById('jTitle').value || 'Your job title';
+  const loc = document.getElementById('jLoc').value || 'Location';
+  const typeMap = { full_time: 'Full-time', part_time: 'Part-time', contract: 'Contract', temporary: 'Temporary' };
+  const type = typeMap[document.getElementById('jType').value] || document.getElementById('jType').value;
+  document.getElementById('pvM').textContent = `📍 ${loc} · ${type}`;
+  document.getElementById('pvD').textContent = document.getElementById('jDesc').value || 'Your description…';
+};
+
+// ─── Nominatim address autocomplete ──────────────────────────────────────────
+let _locLat = null, _locLng = null, _debounceTimer = null;
+
+// Irish county mapping from Nominatim county/state fields
+const irishCountyMap = {
+  'county galway': 'Galway', 'county dublin': 'Dublin', 'county cork': 'Cork',
+  'county kerry': 'Kerry', 'county mayo': 'Mayo', 'county donegal': 'Donegal',
+  'county limerick': 'Limerick', 'county tipperary': 'Tipperary', 'county waterford': 'Waterford',
+  'county kilkenny': 'Kilkenny', 'county wexford': 'Wexford', 'county wicklow': 'Wicklow',
+  'county meath': 'Meath', 'county louth': 'Louth', 'county kildare': 'Kildare',
+  'county laois': 'Laois', 'county carlow': 'Carlow', 'county offaly': 'Offaly',
+  'county westmeath': 'Westmeath', 'county longford': 'Longford', 'county roscommon': 'Roscommon',
+  'county sligo': 'Sligo', 'county leitrim': 'Leitrim', 'county cavan': 'Cavan',
+  'county monaghan': 'Monaghan', 'county fermanagh': 'Fermanagh', 'county tyrone': 'Tyrone',
+  'county armagh': 'Armagh', 'county down': 'Down', 'county antrim': 'Antrim', 'county derry': 'Derry',
+  // Irish-language county names
+  'contae na gaillimhe': 'Galway', 'contae átha cliath': 'Dublin', 'contae chorcaí': 'Cork',
+  'contae chiarraí': 'Kerry', 'contae mhaigh eo': 'Mayo', 'contae dhún na ngall': 'Donegal',
+  'contae luimnigh': 'Limerick',
+  // Galway shorthand (common)
+  'galway': 'Galway', 'dublin': 'Dublin', 'cork': 'Cork', 'kerry': 'Kerry',
+};
+
+function extractCounty(address) {
+  if (!address) return null;
+  // Try county field first
+  const fields = ['county', 'state', 'state_district', 'province'];
+  for (const f of fields) {
+    if (address[f]) {
+      const norm = address[f].toLowerCase().trim();
+      const mapped = irishCountyMap[norm] || irishCountyMap['county ' + norm.replace(/^county\s*/, '')];
+      if (mapped) return mapped;
+      // Try plain name match
+      const plain = norm.replace(/^county\s*/, '').replace(/^contae\s*/, '');
+      for (const [k, v] of Object.entries(irishCountyMap)) {
+        if (k.endsWith(plain) || k === plain) return v;
+      }
+    }
+  }
+  return null;
+}
+
+function buildDisplayName(item) {
+  const a = item.address || {};
+  // Prefer specific place names
+  const primary = a.village || a.town || a.hamlet || a.suburb || a.neighbourhood
+    || a.city_district || a.quarter || a.city || item.name || item.display_name.split(',')[0];
+  const county = extractCounty(a);
+  return county ? `${primary}, Co. ${county}` : item.display_name.split(',').slice(0, 2).join(',').trim();
+}
+
+async function searchNominatim(query) {
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query + ', Ireland')}&format=json&addressdetails=1&limit=6&countrycodes=ie`;
+  const resp = await fetch(url, {
+    headers: { 'User-Agent': 'poist.ie/1.0 (hello@poist.ie)' }
+  });
+  return resp.json();
+}
+
+const dropdown = document.getElementById('acDropdown');
+const locInput = document.getElementById('jLoc');
+
+function closeDropdown() { dropdown.classList.remove('open'); dropdown.innerHTML = ''; }
+
+function selectPlace(item) {
+  _locLat = parseFloat(item.lat);
+  _locLng = parseFloat(item.lon);
+  const displayName = buildDisplayName(item);
+  locInput.value = displayName;
+  const county = extractCounty(item.address || {});
+  if (county) {
+    const sel = document.getElementById('jCounty');
+    for (let i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].text === county) { sel.selectedIndex = i; break; }
+    }
+  }
+  document.getElementById('locConfirmedText').textContent = `📍 Pin set at ${_locLat.toFixed(4)}, ${_locLng.toFixed(4)}`;
+  document.getElementById('locConfirmed').classList.add('show');
+  closeDropdown();
+  upPrev();
+}
+
+async function runSearch(query) {
+  if (query.length < 2) { closeDropdown(); return; }
+  dropdown.innerHTML = '<div class="autocomplete-loading">Searching…</div>';
+  dropdown.classList.add('open');
+  try {
+    const results = await searchNominatim(query);
+    if (!results.length) {
+      dropdown.innerHTML = '<div class="autocomplete-none">No results found. Try a different spelling.</div>';
+      return;
+    }
+    dropdown.innerHTML = results.map((item, i) => {
+      const name = buildDisplayName(item);
+      const sub = item.display_name.split(',').slice(1, 3).join(',').trim();
+      return `<div class="autocomplete-item" data-i="${i}">${
+        '<span class="place-name">' + name + '</span>' +
+        (sub ? '<span class="place-sub">' + sub + '</span>' : '')
+      }</div>`;
+    }).join('');
+    dropdown.querySelectorAll('.autocomplete-item').forEach((el, i) => {
+      el.addEventListener('click', () => selectPlace(results[i]));
+    });
+  } catch (e) {
+    dropdown.innerHTML = '<div class="autocomplete-none">Search failed. Please try again.</div>';
+  }
+}
+
+window.onLocInput = (val) => {
+  _locLat = null; _locLng = null;
+  document.getElementById('locConfirmed').classList.remove('show');
+  clearTimeout(_debounceTimer);
+  _debounceTimer = setTimeout(() => runSearch(val), 420); // debounce 420ms
+  upPrev();
+};
+
+window.triggerSearch = () => {
+  const val = locInput.value.trim();
+  if (val) runSearch(val);
+};
+
+// Close dropdown on outside click
+document.addEventListener('click', (e) => {
+  if (!document.getElementById('locationGroup').contains(e.target)) closeDropdown();
+});
+
+// ─── Submit to Supabase ───────────────────────────────────────────────────────
+window.submitJob = async () => {
+  const title = document.getElementById('jTitle').value.trim();
+  const desc = document.getElementById('jDesc').value.trim();
+  const loc = document.getElementById('jLoc').value.trim();
+  const county = document.getElementById('jCounty').value;
+
+  if (!title) { showError('Please add a job title.'); return; }
+  if (!desc) { showError('Please add a description.'); return; }
+  if (!loc) { showError('Please add a location.'); return; }
+  if (!county) { showError('Please select a county.'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = 'Submitting…'; btn.disabled = true;
+
+  const typeVal = document.getElementById('jType').value;
+  const closingRaw = document.getElementById('jClose').value;
+
+  const jobRow = {
+    employer_id: userId,
+    org_name: employer?.org_name || null,
+    title,
+    description: desc,
+    location: loc,
+    county,
+    cefr_required: cefrReq,
+    job_type: typeVal,
+    sector: document.getElementById('jSector').value,
+    salary: document.getElementById('jSalary').value.trim() || null,
+    closing_date: closingRaw || null,
+    lat: _locLat,
+    lng: _locLng,
+    status: 'pending',
+    is_aggregated: false,
+    source_name: 'poist.ie',
+  };
+
+  const { error } = await sb.from('jobs').insert([jobRow]);
+  if (error) {
+    showError('Submission failed: ' + error.message);
+    btn.textContent = 'Submit for Review →'; btn.disabled = false;
+    return;
+  }
+
+  document.getElementById('mainForm').style.display = 'none';
+  document.getElementById('successScreen').style.display = 'block';
+};
+
+function showError(msg) {
+  const b = document.getElementById('errorBanner');
+  b.textContent = msg;
+  b.style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 </script>
 </body>
 </html>

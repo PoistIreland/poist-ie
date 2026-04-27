@@ -1,598 +1,589 @@
 """
-poist.ie — Irish Language Job Scraper v9
-Custom per-site scrapers + job type inference + geocoding prep.
+poist.ie — Nightly Irish Language Job Scraper
+Enhanced v2: granular Irish location extraction (Carraroe, Spiddal, etc.)
+Runs via GitHub Actions at 23:00 UTC daily.
 """
 
-import os
-import re
+import os, re, time, logging
 import requests
 from bs4 import BeautifulSoup
-from datetime import date
-import time
+from supabase import create_client, Client
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+log = logging.getLogger(__name__)
 
 SUPABASE_URL = os.environ["SUPABASE_URL"]
 SUPABASE_KEY = os.environ["SUPABASE_KEY"]
+ADZUNA_APP_ID = os.environ.get("ADZUNA_APP_ID", "")
+ADZUNA_APP_KEY = os.environ.get("ADZUNA_APP_KEY", "")
 
-HEADERS_SB = {
-    "apikey": SUPABASE_KEY,
-    "Authorization": f"Bearer {SUPABASE_KEY}",
-    "Content-Type": "application/json",
-    "Prefer": "return=minimal",
+sb: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+HEADERS = {
+    "User-Agent": "poist.ie/2.0 Job Aggregator (hello@poist.ie) — Irish language jobs platform"
 }
 
-SCRAPE_HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": "en-IE,en;q=0.9,ga;q=0.8",
+# ─────────────────────────────────────────────────────────────────────────────
+# GRANULAR IRISH LOCATION DATABASE
+# Maps specific towns/villages/townlands → (display_name, county, lat, lng)
+# Prioritises Gaeltacht areas and Irish-language place names.
+# ─────────────────────────────────────────────────────────────────────────────
+IRISH_PLACES = {
+    # ── Galway / Connemara Gaeltacht ──────────────────────────────────────────
+    "carraroe":         ("Carraroe, Co. Galway",      "Galway",   53.2690, -9.5930),
+    "an cheathrú rua":  ("Carraroe, Co. Galway",      "Galway",   53.2690, -9.5930),
+    "an cheathrú":      ("Carraroe, Co. Galway",      "Galway",   53.2690, -9.5930),
+    "spiddal":          ("Spiddal, Co. Galway",        "Galway",   53.2440, -9.3090),
+    "an spidéal":       ("Spiddal, Co. Galway",        "Galway",   53.2440, -9.3090),
+    "salthill":         ("Salthill, Co. Galway",       "Galway",   53.2590, -9.0780),
+    "connemara":        ("Connemara, Co. Galway",      "Galway",   53.4500, -9.9000),
+    "conamara":         ("Connemara, Co. Galway",      "Galway",   53.4500, -9.9000),
+    "clifden":          ("Clifden, Co. Galway",        "Galway",   53.4880, -10.0200),
+    "an clochán":       ("Clifden, Co. Galway",        "Galway",   53.4880, -10.0200),
+    "oughterard":       ("Oughterard, Co. Galway",     "Galway",   53.4270, -9.3220),
+    "uachtar ard":      ("Oughterard, Co. Galway",     "Galway",   53.4270, -9.3220),
+    "tuam":             ("Tuam, Co. Galway",            "Galway",   53.5150, -8.8560),
+    "loughrea":         ("Loughrea, Co. Galway",       "Galway",   53.1970, -8.5650),
+    "ballinasloe":      ("Ballinasloe, Co. Galway",    "Galway",   53.3310, -8.2200),
+    "gort":             ("Gort, Co. Galway",            "Galway",   53.0670, -8.8200),
+    "rosmuc":           ("Rosmuc, Co. Galway",         "Galway",   53.3910, -9.5430),
+    "ros muc":          ("Rosmuc, Co. Galway",         "Galway",   53.3910, -9.5430),
+    "lettermore":       ("Lettermore, Co. Galway",     "Galway",   53.3140, -9.5900),
+    "leitir mór":       ("Lettermore, Co. Galway",     "Galway",   53.3140, -9.5900),
+    "carna":            ("Carna, Co. Galway",           "Galway",   53.3260, -9.8560),
+    "kilronan":         ("Kilronan, Inis Mór",          "Galway",   53.1240, -9.6590),
+    "cill rónáin":      ("Kilronan, Inis Mór",          "Galway",   53.1240, -9.6590),
+    "inis mór":         ("Inis Mór, Co. Galway",       "Galway",   53.1240, -9.6590),
+    "inis oírr":        ("Inis Oírr, Co. Galway",      "Galway",   53.0660, -9.5070),
+    "inis meáin":       ("Inis Meáin, Co. Galway",     "Galway",   53.0940, -9.5730),
+    "galway":           ("Galway City",                 "Galway",   53.2707, -9.0568),
+    "gaillimh":         ("Galway City",                 "Galway",   53.2707, -9.0568),
+
+    # ── Donegal Gaeltacht ────────────────────────────────────────────────────
+    "gaoth dobhair":    ("Gaoth Dobhair, Co. Donegal",  "Donegal",  55.0560, -8.2550),
+    "gweedore":         ("Gaoth Dobhair, Co. Donegal",  "Donegal",  55.0560, -8.2550),
+    "falcarragh":       ("Falcarragh, Co. Donegal",     "Donegal",  55.1350, -8.1050),
+    "an fál carrach":   ("Falcarragh, Co. Donegal",     "Donegal",  55.1350, -8.1050),
+    "dungloe":          ("Dungloe, Co. Donegal",        "Donegal",  54.9470, -8.3620),
+    "an clochán liath": ("Dungloe, Co. Donegal",        "Donegal",  54.9470, -8.3620),
+    "glenties":         ("Glenties, Co. Donegal",       "Donegal",  54.7940, -8.2760),
+    "na gleannta":      ("Glenties, Co. Donegal",       "Donegal",  54.7940, -8.2760),
+    "ardara":           ("Ardara, Co. Donegal",         "Donegal",  54.7640, -8.4090),
+    "killybegs":        ("Killybegs, Co. Donegal",      "Donegal",  54.6380, -8.4490),
+    "na cealla beaga":  ("Killybegs, Co. Donegal",      "Donegal",  54.6380, -8.4490),
+    "letterkenny":      ("Letterkenny, Co. Donegal",    "Donegal",  54.9500, -7.7330),
+    "leitir ceanainn":  ("Letterkenny, Co. Donegal",    "Donegal",  54.9500, -7.7330),
+    "donegal":          ("Donegal Town",                "Donegal",  54.6540, -8.1100),
+    "na doirí beaga":   ("Doirí Beaga, Co. Donegal",   "Donegal",  55.0200, -8.1200),
+    "derrybeg":         ("Derrybeg, Co. Donegal",       "Donegal",  55.0200, -8.1200),
+    "bunbeg":           ("Bunbeg, Co. Donegal",         "Donegal",  55.0600, -8.2900),
+    "bun beag":         ("Bunbeg, Co. Donegal",         "Donegal",  55.0600, -8.2900),
+    "gortahork":        ("Gortahork, Co. Donegal",      "Donegal",  55.1200, -8.1500),
+    "gort an choirce":  ("Gortahork, Co. Donegal",      "Donegal",  55.1200, -8.1500),
+
+    # ── Kerry Gaeltacht ──────────────────────────────────────────────────────
+    "dingle":           ("Dingle, Co. Kerry",           "Kerry",    52.1409, -10.2680),
+    "an daingean":      ("Dingle, Co. Kerry",           "Kerry",    52.1409, -10.2680),
+    "daingean uí chúis":("Dingle, Co. Kerry",           "Kerry",    52.1409, -10.2680),
+    "tralee":           ("Tralee, Co. Kerry",           "Kerry",    52.2715, -9.7006),
+    "trá lí":           ("Tralee, Co. Kerry",           "Kerry",    52.2715, -9.7006),
+    "killarney":        ("Killarney, Co. Kerry",        "Kerry",    52.0600, -9.5000),
+    "cill airne":       ("Killarney, Co. Kerry",        "Kerry",    52.0600, -9.5000),
+    "ventry":           ("Ventry, Co. Kerry",           "Kerry",    52.1170, -10.3440),
+    "ceann trá":        ("Ventry, Co. Kerry",           "Kerry",    52.1170, -10.3440),
+    "ballyferriter":    ("Ballyferriter, Co. Kerry",    "Kerry",    52.1650, -10.4060),
+    "baile an fheirtéaraigh": ("Ballyferriter, Co. Kerry", "Kerry", 52.1650, -10.4060),
+    "dunquin":          ("Dunquin, Co. Kerry",          "Kerry",    52.1250, -10.4630),
+    "dún chaoin":       ("Dunquin, Co. Kerry",          "Kerry",    52.1250, -10.4630),
+
+    # ── Mayo Gaeltacht ───────────────────────────────────────────────────────
+    "achill":           ("Achill, Co. Mayo",            "Mayo",     53.9400, -10.0500),
+    "acaill":           ("Achill, Co. Mayo",            "Mayo",     53.9400, -10.0500),
+    "westport":         ("Westport, Co. Mayo",          "Mayo",     53.8000, -9.5200),
+    "cathair na mart":  ("Westport, Co. Mayo",          "Mayo",     53.8000, -9.5200),
+    "castlebar":        ("Castlebar, Co. Mayo",         "Mayo",     53.8600, -9.3000),
+    "caisleán an bharraigh": ("Castlebar, Co. Mayo",   "Mayo",     53.8600, -9.3000),
+    "belmullet":        ("Belmullet, Co. Mayo",         "Mayo",     54.2240, -9.9890),
+    "béal an mhuirthead":("Belmullet, Co. Mayo",        "Mayo",     54.2240, -9.9890),
+    "tourmakeady":      ("Tourmakeady, Co. Mayo",       "Mayo",     53.6220, -9.4220),
+    "tuar mhic éadaigh":("Tourmakeady, Co. Mayo",       "Mayo",     53.6220, -9.4220),
+
+    # ── Meath / Ráth Cairn ──────────────────────────────────────────────────
+    "ráth cairn":       ("Ráth Cairn, Co. Meath",      "Meath",    53.5680, -6.9610),
+    "rathcairn":        ("Ráth Cairn, Co. Meath",      "Meath",    53.5680, -6.9610),
+    "baile ghib":       ("Baile Ghib, Co. Meath",      "Meath",    53.5600, -6.9800),
+
+    # ── Major cities ─────────────────────────────────────────────────────────
+    "dublin":           ("Dublin",                      "Dublin",   53.3498, -6.2603),
+    "baile átha cliath":("Dublin",                      "Dublin",   53.3498, -6.2603),
+    "cork":             ("Cork City",                   "Cork",     51.8985, -8.4756),
+    "corcaigh":         ("Cork City",                   "Cork",     51.8985, -8.4756),
+    "limerick":         ("Limerick City",               "Limerick", 52.6638, -8.6267),
+    "luimneach":        ("Limerick City",               "Limerick", 52.6638, -8.6267),
+    "waterford":        ("Waterford City",              "Waterford",52.2566, -7.1221),
+    "port láirge":      ("Waterford City",              "Waterford",52.2566, -7.1221),
+    "kilkenny":         ("Kilkenny City",               "Kilkenny", 52.6541, -7.2448),
+    "cill chainnigh":   ("Kilkenny City",               "Kilkenny", 52.6541, -7.2448),
+    "sligo":            ("Sligo Town",                  "Sligo",    54.2766, -8.4761),
+    "sligeach":         ("Sligo Town",                  "Sligo",    54.2766, -8.4761),
+    "wexford":          ("Wexford Town",                "Wexford",  52.3369, -6.4633),
+    "loch garman":      ("Wexford Town",                "Wexford",  52.3369, -6.4633),
+    "drogheda":         ("Drogheda, Co. Louth",        "Louth",    53.7182, -6.3563),
+    "dundalk":          ("Dundalk, Co. Louth",          "Louth",    54.0042, -6.4074),
+    "athlone":          ("Athlone, Co. Westmeath",     "Westmeath",53.4235, -7.9401),
+    "áth luain":        ("Athlone, Co. Westmeath",     "Westmeath",53.4235, -7.9401),
+    "ennis":            ("Ennis, Co. Clare",            "Clare",    52.8433, -8.9820),
+    "inis":             ("Ennis, Co. Clare",            "Clare",    52.8433, -8.9820),
 }
 
-IRISH_COUNTIES = [
-    "Antrim","Armagh","Carlow","Cavan","Clare","Cork","Derry","Donegal",
-    "Down","Dublin","Fermanagh","Galway","Kerry","Kildare","Kilkenny",
-    "Laois","Leitrim","Limerick","Longford","Louth","Mayo","Meath",
-    "Monaghan","Offaly","Roscommon","Sligo","Tipperary","Tyrone",
-    "Waterford","Westmeath","Wexford","Wicklow",
-]
-
-IRISH_PLACE_TO_COUNTY = {
-    "corcaigh": "Cork", "luimneach": "Limerick", "gaillimh": "Galway",
-    "baile atha cliath": "Dublin", "baile átha cliath": "Dublin",
-    "port láirge": "Waterford", "cill áirne": "Kerry", "loch an iúir": "Donegal",
-    "an daingean": "Kerry", "conamara": "Galway", "connemara": "Galway",
-    "an cheathrú rua": "Galway", "an spidéal": "Galway", "ros muc": "Galway",
-    "carna": "Galway", "an clochán": "Galway", "gaoth dobhair": "Donegal",
-    "leitir ceanainn": "Donegal", "falcarragh": "Donegal", "gweedore": "Donegal",
-    "belmullet": "Mayo", "maigh eo": "Mayo", "sligeach": "Sligo",
-    "liatroim": "Leitrim", "an clár": "Clare", "laois": "Laois",
-    "ceatharlach": "Carlow", "an cabhán": "Cavan", "loch garman": "Wexford",
-    "muineachán": "Monaghan", "an longfort": "Longford", "an iarmhí": "Westmeath",
-    "tiobraid árann": "Tipperary", "ros comáin": "Roscommon",
-    "cill dara": "Kildare", "cill chainnigh": "Kilkenny", "an mhi": "Meath",
-    "uíbh fhailí": "Offaly",
+# County-level fallback coordinates
+COUNTY_COORDS = {
+    "Dublin": (53.3498, -6.2603), "Cork": (51.8985, -8.4756),
+    "Galway": (53.2707, -9.0568), "Kerry": (52.1545, -9.5669),
+    "Limerick": (52.6638, -8.6267), "Tipperary": (52.4735, -8.1619),
+    "Waterford": (52.2566, -7.1221), "Kilkenny": (52.6541, -7.2448),
+    "Wexford": (52.3369, -6.4633), "Wicklow": (52.9808, -6.0440),
+    "Meath": (53.6055, -6.6564), "Louth": (53.9235, -6.4887),
+    "Kildare": (53.1561, -6.9096), "Laois": (52.9943, -7.3320),
+    "Carlow": (52.8369, -6.9315), "Offaly": (53.2357, -7.7122),
+    "Westmeath": (53.5345, -7.4653), "Longford": (53.7272, -7.7940),
+    "Roscommon": (53.6279, -8.1918), "Sligo": (54.2766, -8.4761),
+    "Mayo": (53.8496, -9.3004), "Leitrim": (54.1244, -8.0001),
+    "Cavan": (53.9897, -7.3633), "Monaghan": (54.2491, -6.9688),
+    "Donegal": (54.9558, -7.7342),
+    "Antrim": (54.7178, -6.2072), "Armagh": (54.3503, -6.6528),
+    "Down": (54.3281, -5.9386), "Fermanagh": (54.3440, -7.6307),
+    "Tyrone": (54.5991, -7.2989), "Derry": (54.9966, -7.3086),
 }
 
-NEVER_JOB = [
-    "tuilleadh eolais", "read more", "níos mó", "click here",
-    "folúntais", "foluntais", "vacancies", "careers", "jobs",
-    "home", "about", "contact", "search", "privacy", "cookies",
-    "meet the team", "work experience", "how we recruit", "why work with us",
-    "next page", "previous page", "older entries",
-    "register vacancy", "cláraigh folúntais",
-]
+# ─────────────────────────────────────────────────────────────────────────────
+# LOCATION EXTRACTION — granular Irish places first, Nominatim fallback
+# ─────────────────────────────────────────────────────────────────────────────
 
-JOB_INDICATORS = [
-    "oifigeach", "officer", "manager", "bainisteoir", "múinteoir", "teacher",
-    "oibrí", "worker", "riarthóir", "administrator", "cléireach", "clerk",
-    "comhairleoir", "advisor", "analyst", "anailísí", "innealtóir", "engineer",
-    "stiúrthóir", "director", "cúntóir", "assistant", "speisialtóir", "specialist",
-    "ceannaire", "leader", "coordinator", "comhordaitheoir", "planner", "pleanálaí",
-    "editor", "eagarthóir", "journalist", "iriseoir", "producer", "léiritheoir",
-    "translator", "aistritheoir", "interpreter", "ateangaire",
-    "researcher", "taighdeoir", "developer", "forbróir",
-    "technician", "teicneoir", "nurse", "altra", "therapist", "teiripeoir",
-    "príomh", "head of", "ceann", "láithreoir", "presenter", "craoltóir",
-    "tuairisceoir", "reporter", "post i", "post in", "folúntas", "foluntas",
-    "vacancy", "ceapachán", "appointment", "intéirneacht", "internship",
-    "comórtas", "competition", "clerical", "executive", "feidhmiúchán",
-    "naíonra", "naíolann", "cúramóir", "caretaker", "glantóir", "cleaner",
-    "ionadaí", "representative", "tacaíocht", "support",
-]
+def normalize_text(text: str) -> str:
+    """Lowercase, remove punctuation noise, normalise whitespace."""
+    if not text:
+        return ""
+    text = text.lower()
+    text = re.sub(r"[,;|•–—·]", " ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
 
 
-def is_job_title(title: str) -> bool:
-    t = title.strip().lower()
-    if len(t) < 8 or len(t) > 200:
-        return False
-    if any(bad.lower() == t for bad in NEVER_JOB):
-        return False
-    if any(bad in t for bad in ["@", "http", "www.", ".ie", ".com"]):
-        return False
-    if any(ind.lower() in t for ind in JOB_INDICATORS):
-        return True
-    return False
-
-
-def extract_county(text: str) -> str:
-    t = text.lower()
-    for place, county in IRISH_PLACE_TO_COUNTY.items():
-        if place in t:
-            return county
-    for county in IRISH_COUNTIES:
-        if county.lower() in t:
-            return county
-    return ""
-
-
-def infer_job_type(title: str, description: str = "") -> str:
-    """Infer job_type from Irish and English keywords."""
-    text = (title + " " + description).lower()
-
-    part_time_kw  = ["páirtaimseartha", "part-time", "part time", "leath-aimseartha"]
-    temporary_kw  = ["sealadach", "temporary", "clúdach", "cover", "maternity cover",
-                     "saoire mháithreachais", "ionadaíocht", "ionadaí"]
-    contract_kw   = ["conradh", "fixed term", "fixed-term", "ar conradh", "téarma seasta"]
-    full_time_kw  = ["lánaimseartha", "full-time", "full time", "lán-aimseartha",
-                     "buan", "permanent"]
-
-    for kw in part_time_kw:
-        if kw in text: return "part_time"
-    for kw in temporary_kw:
-        if kw in text: return "temporary"
-    for kw in contract_kw:
-        if kw in text: return "contract"
-    for kw in full_time_kw:
-        if kw in text: return "full_time"
-    return ""
-
-
-def geocode(location: str, county: str = "") -> tuple:
+def extract_location_from_text(text: str) -> dict | None:
     """
-    Use Nominatim (OpenStreetMap) to get lat/lng for a location string.
-    Returns (lat, lng) or (None, None).
-    Free, no API key needed. Rate limit: 1 request/second.
+    Scan text for known Irish place names (longest match wins).
+    Returns dict with location, county, lat, lng — or None.
     """
-    if not location and not county:
-        return None, None
-    query = location if location else county
-    if county and county not in query:
-        query = query + ", " + county + ", Ireland"
-    else:
-        query = query + ", Ireland"
-    try:
-        resp = requests.get(
-            "https://nominatim.openstreetmap.org/search",
-            params={"q": query, "format": "json", "limit": 1, "countrycodes": "ie"},
-            headers={"User-Agent": "poist.ie-bot/1.0 (hello@poist.ie)"},
-            timeout=10,
-        )
-        results = resp.json()
-        if results:
-            return float(results[0]["lat"]), float(results[0]["lon"])
-    except Exception:
-        pass
-    # Fallback to county centroid
-    if county:
-        COUNTY_COORDS = {
-            "Antrim":[54.72,-6.21],"Armagh":[54.35,-6.65],"Carlow":[52.84,-6.93],
-            "Cavan":[53.99,-7.36],"Clare":[52.89,-9.0],"Cork":[51.9,-8.47],
-            "Derry":[55.0,-7.31],"Donegal":[54.65,-8.12],"Down":[54.32,-5.95],
-            "Dublin":[53.35,-6.26],"Fermanagh":[54.35,-7.63],"Galway":[53.27,-9.06],
-            "Kerry":[52.16,-9.57],"Kildare":[53.16,-6.91],"Kilkenny":[52.65,-7.25],
-            "Laois":[52.99,-7.33],"Leitrim":[54.0,-8.0],"Limerick":[52.66,-8.63],
-            "Longford":[53.73,-7.79],"Louth":[53.92,-6.49],"Mayo":[53.85,-9.3],
-            "Meath":[53.61,-6.66],"Monaghan":[54.25,-6.97],"Offaly":[53.27,-7.49],
-            "Roscommon":[53.63,-8.19],"Sligo":[54.27,-8.47],"Tipperary":[52.47,-8.16],
-            "Tyrone":[54.6,-7.2],"Waterford":[52.26,-7.12],"Westmeath":[53.53,-7.46],
-            "Wexford":[52.34,-6.46],"Wicklow":[52.98,-6.44],
-        }
-        coords = COUNTY_COORDS.get(county)
-        if coords:
-            return coords[0], coords[1]
-    return None, None
+    norm = normalize_text(text)
+    # Sort by length descending so "an cheathrú rua" matches before "rua"
+    for key in sorted(IRISH_PLACES.keys(), key=len, reverse=True):
+        if key in norm:
+            display, county, lat, lng = IRISH_PLACES[key]
+            return {"location": display, "county": county, "lat": lat, "lng": lng}
+    return None
 
 
-def url_already_exists(source_url: str) -> bool:
-    try:
-        resp = requests.get(
-            f"{SUPABASE_URL}/rest/v1/jobs",
-            headers=HEADERS_SB,
-            params={"source_url": f"eq.{source_url}", "select": "id"},
-            timeout=10,
-        )
-        return resp.status_code == 200 and len(resp.json()) > 0
-    except Exception:
-        return False
+def geocode_nominatim(location_text: str, retry: int = 3) -> tuple[float | None, float | None, str | None]:
+    """
+    Geocode a free-text location string using Nominatim (OpenStreetMap).
+    Returns (lat, lng, county) or (None, None, None).
+    """
+    if not location_text:
+        return None, None, None
 
+    # First try our local database (zero network cost, instant)
+    result = extract_location_from_text(location_text)
+    if result:
+        return result["lat"], result["lng"], result["county"]
 
-def insert_job(job: dict) -> bool:
-    payload = {
-        "title":         job["title"],
-        "description":   job.get("description", ""),
-        "county":        job.get("county", ""),
-        "location":      job.get("location", ""),
-        "sector":        job.get("sector", ""),
-        "org_name":      job.get("org_name", ""),
-        "salary":        job.get("salary", "POA"),
-        "job_type":      job.get("job_type") or None,
-        "lat":           job.get("lat"),
-        "lng":           job.get("lng"),
-        "status":        "approved",
-        "is_aggregated": True,
-        "source_url":    job["source_url"],
-        "source_name":   job["source_name"],
-    }
-    payload = {k: v for k, v in payload.items() if v is not None}
-    resp = requests.post(
-        f"{SUPABASE_URL}/rest/v1/jobs",
-        headers=HEADERS_SB,
-        json=payload,
-        timeout=10,
-    )
-    if resp.status_code in (200, 201):
-        print(f"  INSERTED: {job['title']} [{job['source_name']}]")
-        return True
-    else:
-        print(f"  FAILED ({resp.status_code}): {job['title']} -- {resp.text[:120]}")
-        return False
-
-
-def get_soup(url: str, source_name: str):
-    try:
-        resp = requests.get(url, headers=SCRAPE_HEADERS, timeout=15, allow_redirects=True)
-        print(f"  {source_name}: status {resp.status_code}")
-        if resp.status_code != 200:
-            return None
-        return BeautifulSoup(resp.text, "html.parser")
-    except Exception as e:
-        print(f"  {source_name} error: {e}")
-        return None
-
-
-def extract_jobs_from_headings(soup, source_name: str, sector: str,
-                                base_url: str, org_name: str,
-                                require_job_indicator: bool = True) -> list:
-    jobs = []
-    seen = set()
-    for tag in soup.find_all(["h2", "h3", "h4"]):
-        link = tag.find("a", href=True)
-        if not link:
-            continue
-        title = tag.get_text(strip=True)
-        href  = link.get("href", "")
-        if not href or href.startswith("#") or "javascript:" in href or "@" in href:
-            continue
-        full_url = href if href.startswith("http") else f"{base_url.rstrip('/')}{href if href.startswith('/') else '/' + href}"
-        if full_url in seen:
-            continue
-        seen.add(full_url)
-        if require_job_indicator and not is_job_title(title):
-            continue
-        county = extract_county(title)
-        parent = tag.find_parent(["article", "li", "div", "section"])
-        if parent and not county:
-            county = extract_county(parent.get_text())
-        salary = ""
-        if parent:
-            m = re.search(r'€[\d,]+(?:\s*[-–]\s*€[\d,]+)?', parent.get_text())
-            if m:
-                salary = m.group(0)
-        job_type = infer_job_type(title)
-        lat, lng = geocode(county, county)
-        time.sleep(1)  # Nominatim rate limit: 1 req/sec
-        jobs.append({
-            "title":       title,
-            "description": f"Role advertised on {source_name}. Visit the original listing for full details.",
-            "county":      county,
-            "location":    county,
-            "sector":      sector,
-            "org_name":    org_name,
-            "salary":      salary or "POA",
-            "job_type":    job_type or None,
-            "lat":         lat,
-            "lng":         lng,
-            "source_url":  full_url,
-            "source_name": source_name,
-        })
-    return jobs
-
-
-# ── SCRAPERS ──────────────────────────────────────────────────────────────────
-
-def scrape_sceal():
-    soup = get_soup("https://sceal.ie/foluntais/", "sceal.ie")
-    if not soup: return []
-    jobs = extract_jobs_from_headings(soup, "sceal.ie", "Irish Language Community",
-                                       "https://sceal.ie", "Scéal")
-    print(f"  sceal.ie: {len(jobs)} jobs")
-    return jobs
-
-def scrape_tuairisc():
-    soup = get_soup("https://tuairisc.ie/foluntais/", "tuairisc.ie")
-    if not soup: return []
-    jobs = []
-    seen = set()
-    for tag in soup.find_all(["h2", "h3", "h4"]):
-        link = tag.find("a", href=True)
-        if not link: continue
-        title = tag.get_text(strip=True)
-        href  = link.get("href", "")
-        if "/foluntais/" not in href and "job" not in href.lower():
-            continue
-        if not is_job_title(title): continue
-        full_url = href if href.startswith("http") else f"https://tuairisc.ie{href}"
-        if full_url in seen: continue
-        seen.add(full_url)
-        county = extract_county(title)
-        lat, lng = geocode(county, county)
-        time.sleep(1)
-        jobs.append({
-            "title": title, "description": "Role advertised on Tuairisc.ie.",
-            "county": county, "location": county, "sector": "Media",
-            "org_name": "Tuairisc.ie", "salary": "POA",
-            "job_type": infer_job_type(title),
-            "lat": lat, "lng": lng,
-            "source_url": full_url, "source_name": "tuairisc.ie",
-        })
-    print(f"  tuairisc.ie: {len(jobs)} jobs")
-    return jobs
-
-def scrape_tg4():
-    soup = get_soup("https://www.tg4.ie/en/corporate/vacancies/", "tg4.ie")
-    if not soup: return []
-    jobs = extract_jobs_from_headings(soup, "tg4.ie", "Media", "https://www.tg4.ie", "TG4")
-    print(f"  tg4.ie: {len(jobs)} jobs")
-    return jobs
-
-def scrape_foras():
-    soup = get_soup("https://www.forasnagaeilge.ie/about-foras-na-gaeilge/vacancies/?lang=en", "forasnagaeilge.ie")
-    if not soup: return []
-    jobs = extract_jobs_from_headings(soup, "forasnagaeilge.ie", "Irish Language",
-                                       "https://www.forasnagaeilge.ie", "Foras na Gaeilge")
-    print(f"  forasnagaeilge.ie: {len(jobs)} jobs")
-    return jobs
-
-def scrape_udaras():
-    jobs = []
-    for url in [
-        "https://udaras.ie/en/training-employment/vacancies/cliantchomhlachtai-an-udarais-sa-ghaeltacht/",
-        "https://udaras.ie/en/training-employment/vacancies/poist-udaras-na-gaeltachta/",
-    ]:
-        soup = get_soup(url, "udaras.ie")
-        if not soup: continue
-        found = extract_jobs_from_headings(soup, "udaras.ie", "Gaeltacht Development",
-                                            "https://udaras.ie", "Údarás na Gaeltachta")
-        seen_urls = {j["source_url"] for j in found}
-        for a in soup.find_all("a", href=True):
-            href = a.get("href", "")
-            text = a.get_text(strip=True)
-            if ".pdf" in href.lower() and len(text) > 8 and href not in seen_urls:
-                full_url = href if href.startswith("http") else f"https://udaras.ie{href}"
-                if is_job_title(text):
-                    lat, lng = geocode("Galway", "Galway")
-                    time.sleep(1)
-                    found.append({
-                        "title": text, "description": "Role by Údarás na Gaeltachta. PDF listing.",
-                        "county": "Galway", "location": "Galway", "sector": "Gaeltacht Development",
-                        "org_name": "Údarás na Gaeltachta", "salary": "POA",
-                        "job_type": infer_job_type(text),
-                        "lat": lat, "lng": lng,
-                        "source_url": full_url, "source_name": "udaras.ie",
-                    })
-                    seen_urls.add(href)
-        jobs += found
-    print(f"  udaras.ie: {len(jobs)} jobs")
-    return jobs
-
-def scrape_gaeloideachas():
-    soup = get_soup("https://gaeloideachas.ie/foluntais/", "gaeloideachas.ie")
-    if not soup: return []
-    jobs = extract_jobs_from_headings(soup, "gaeloideachas.ie", "Education",
-                                       "https://gaeloideachas.ie", "Gaeloideachas")
-    print(f"  gaeloideachas.ie: {len(jobs)} jobs")
-    return jobs
-
-def scrape_comharnaionrai():
-    soup = get_soup("https://www.comharnaionrai.ie/foluntais/", "comharnaionrai.ie")
-    if not soup: return []
-    jobs = extract_jobs_from_headings(soup, "comharnaionrai.ie", "Irish Language Education",
-                                       "https://www.comharnaionrai.ie", "Comhar Naíonraí na Gaeltachta")
-    print(f"  comharnaionrai.ie: {len(jobs)} jobs")
-    return jobs
-
-def scrape_cnag():
-    soup = get_soup("https://cnag.ie/en/info/conradh-na-gaeilge/facts-and-figures.html?view=article&id=1463:vacancy&catid=13", "cnag.ie")
-    if not soup: return []
-    jobs = extract_jobs_from_headings(soup, "cnag.ie", "Irish Language Promotion",
-                                       "https://cnag.ie", "Conradh na Gaeilge")
-    print(f"  cnag.ie: {len(jobs)} jobs")
-    return jobs
-
-def scrape_coimisineir():
-    soup = get_soup("https://www.coimisineir.ie/index.cfm?page=vacancies", "coimisineir.ie")
-    if not soup: return []
-    jobs = extract_jobs_from_headings(soup, "coimisineir.ie", "Irish Language",
-                                       "https://www.coimisineir.ie", "Oifig an Choimisinéara Teanga")
-    print(f"  coimisineir.ie: {len(jobs)} jobs")
-    return jobs
-
-def scrape_comhar():
-    soup = get_soup("https://comhar.ie/eolas/foluntas/", "comhar.ie")
-    if not soup: return []
-    jobs = extract_jobs_from_headings(soup, "comhar.ie", "Irish Language Publishing",
-                                       "https://comhar.ie", "Comhar")
-    print(f"  comhar.ie: {len(jobs)} jobs")
-    return jobs
-
-def scrape_rte():
-    soup = get_soup("https://about.rte.ie/working-with-rte/vacancies/", "rte.ie")
-    if not soup: return []
-    all_jobs = extract_jobs_from_headings(soup, "rte.ie", "Media", "https://about.rte.ie", "RTÉ")
-    IRISH_KW = ["gaeilge", "irish", "gaeltacht", "nuacht"]
-    jobs = [j for j in all_jobs if any(kw in j["title"].lower() for kw in IRISH_KW)]
-    print(f"  rte.ie: {len(jobs)} Irish language jobs")
-    return jobs
-
-def scrape_raidionalife():
-    soup = get_soup("https://www.raidionalife.ie/en/vacancies/", "raidionalife.ie")
-    if not soup: return []
-    jobs = extract_jobs_from_headings(soup, "raidionalife.ie", "Media",
-                                       "https://www.raidionalife.ie", "Raidió na Life")
-    print(f"  raidionalife.ie: {len(jobs)} jobs")
-    return jobs
-
-def scrape_oireachtas():
-    soup = get_soup("https://www.oireachtas.ie/en/how-parliament-is-run/houses-of-the-oireachtas-service/careers/", "oireachtas.ie")
-    if not soup: return []
-    jobs = []
-    seen = set()
-    for tag in soup.find_all(["h2", "h3", "h4"]):
-        link = tag.find("a", href=True)
-        if not link: continue
-        title = tag.get_text(strip=True)
-        href  = link.get("href", "")
-        if not any(w in href.lower() for w in ["vacanc", "recruit", "job", "compet"]):
-            continue
-        if not is_job_title(title): continue
-        full_url = href if href.startswith("http") else f"https://www.oireachtas.ie{href}"
-        if full_url in seen: continue
-        seen.add(full_url)
-        lat, lng = geocode("Dublin", "Dublin")
-        time.sleep(1)
-        jobs.append({
-            "title": title, "description": "Role with Houses of the Oireachtas.",
-            "county": "Dublin", "location": "Dublin", "sector": "Government",
-            "org_name": "Houses of the Oireachtas", "salary": "POA",
-            "job_type": infer_job_type(title),
-            "lat": lat, "lng": lng,
-            "source_url": full_url, "source_name": "oireachtas.ie",
-        })
-    print(f"  oireachtas.ie: {len(jobs)} jobs")
-    return jobs
-
-def scrape_localgovt():
-    jobs = []
-    for term in ["gaeilge", "irish+language"]:
-        soup = get_soup(f"https://www.localgovernmentjobs.ie/Search/Vacancies?keyword={term}", "localgovernmentjobs.ie")
-        if not soup: continue
-        IRISH_KW = ["gaeilge", "irish language", "oifigeach gaeilge", "irish officer"]
-        all_jobs = extract_jobs_from_headings(soup, "localgovernmentjobs.ie", "Local Government",
-                                               "https://www.localgovernmentjobs.ie", "")
-        jobs += [j for j in all_jobs if any(kw in j["title"].lower() for kw in IRISH_KW)]
-        time.sleep(1)
-    print(f"  localgovernmentjobs.ie: {len(jobs)} jobs")
-    return jobs
-
-def scrape_hse():
-    soup = get_soup("https://careerhub.hse.ie/current-vacancies/", "careerhub.hse.ie")
-    if not soup: return []
-    IRISH_KW = ["gaeilge", "irish", "gaeltacht", "bilingual"]
-    all_jobs = extract_jobs_from_headings(soup, "careerhub.hse.ie", "Health",
-                                           "https://careerhub.hse.ie", "HSE")
-    jobs = [j for j in all_jobs if any(kw in j["title"].lower() for kw in IRISH_KW)]
-    print(f"  careerhub.hse.ie: {len(jobs)} jobs")
-    return jobs
-
-def scrape_publicjobs():
-    soup = get_soup("https://publicjobs.ie/en/", "publicjobs.ie")
-    if not soup: return []
-    IRISH_KW = ["gaeilge", "irish language", "irish stream", "gaeltacht"]
-    all_jobs = extract_jobs_from_headings(soup, "publicjobs.ie", "Public Sector",
-                                           "https://publicjobs.ie", "Public Appointments Service")
-    jobs = [j for j in all_jobs if any(kw in j["title"].lower() for kw in IRISH_KW)]
-    print(f"  publicjobs.ie: {len(jobs)} jobs")
-    return jobs
-
-def scrape_adzuna() -> list:
-    app_id  = os.environ.get("ADZUNA_APP_ID", "").strip()
-    app_key = os.environ.get("ADZUNA_APP_KEY", "").strip()
-    if not app_id or not app_key:
-        print("  Adzuna: no keys — skipping")
-        return []
-    jobs = []
-    for term in ["gaeilge", "irish language officer"]:
+    # Fallback to Nominatim API
+    for attempt in range(retry):
         try:
+            query = location_text if "ireland" in location_text.lower() else location_text + ", Ireland"
             resp = requests.get(
-                "https://api.adzuna.com/v1/api/jobs/ie/search/1",
-                params={"app_id": app_id, "app_key": app_key,
-                        "what": term, "results_per_page": 20},
-                timeout=15,
+                "https://nominatim.openstreetmap.org/search",
+                params={"q": query, "format": "json", "addressdetails": 1,
+                        "limit": 1, "countrycodes": "ie"},
+                headers=HEADERS,
+                timeout=10,
             )
-            results = resp.json().get("results", [])
-            print(f"  Adzuna ({term}): {len(results)} results")
-            for item in results:
-                title        = item.get("title", "")
-                redirect_url = item.get("redirect_url", "")
-                if not redirect_url or not title: continue
-                loc    = item.get("location", {}).get("display_name", "")
-                county = extract_county(loc)
-                lat, lng = geocode(loc, county)
-                time.sleep(1)
-                salary_min = item.get("salary_min")
-                salary_max = item.get("salary_max")
-                if salary_min and salary_max:
-                    salary = f"€{int(salary_min):,} – €{int(salary_max):,}"
-                elif salary_min:
-                    salary = f"From €{int(salary_min):,}"
-                else:
-                    salary = "POA"
-                jobs.append({
-                    "title":       title,
-                    "description": item.get("description", "")[:300],
-                    "county":      county,
-                    "location":    loc,
-                    "sector":      item.get("category", {}).get("label", ""),
-                    "org_name":    item.get("company", {}).get("display_name", ""),
-                    "salary":      salary,
-                    "job_type":    infer_job_type(title),
-                    "lat":         lat,
-                    "lng":         lng,
-                    "source_url":  redirect_url,
-                    "source_name": "adzuna.ie",
-                })
-            time.sleep(1)
+            results = resp.json()
+            if not results:
+                return None, None, None
+            r = results[0]
+            addr = r.get("address", {})
+            county_raw = addr.get("county", addr.get("state", ""))
+            # Strip "County " prefix and normalise
+            county = re.sub(r"^county\s+", "", county_raw, flags=re.IGNORECASE).strip().title()
+            return float(r["lat"]), float(r["lon"]), county or None
         except Exception as e:
-            print(f"  Adzuna error: {e}")
-    return jobs
+            log.warning(f"Nominatim error (attempt {attempt+1}): {e}")
+            time.sleep(1)
+
+    return None, None, None
 
 
-def cleanup_expired_jobs():
-    today = date.today().isoformat()
+def parse_location_field(raw_location: str) -> dict:
+    """
+    Given a raw location string from a job listing, return a dict with:
+    location (human-readable), county, lat, lng.
+    Tries local database first, then Nominatim.
+    Rate-limiting: 1 request/second to Nominatim (their ToS requirement).
+    """
+    if not raw_location:
+        return {"location": None, "county": None, "lat": None, "lng": None}
+
+    # 1. Try local database
+    result = extract_location_from_text(raw_location)
+    if result:
+        log.info(f"  ✅ Local match: '{raw_location}' → {result['location']}")
+        return result
+
+    # 2. Nominatim (with 1-second rate limit)
+    time.sleep(1)
+    lat, lng, county = geocode_nominatim(raw_location)
+
+    # 3. County-level coord fallback
+    if county and not lat and county in COUNTY_COORDS:
+        lat, lng = COUNTY_COORDS[county]
+
+    # Build a clean display name
+    location_display = raw_location.strip().title() if raw_location else None
+
+    log.info(f"  📍 Nominatim: '{raw_location}' → county={county}, lat={lat}, lng={lng}")
+    return {"location": location_display, "county": county, "lat": lat, "lng": lng}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# JOB TYPE INFERENCE
+# ─────────────────────────────────────────────────────────────────────────────
+
+def infer_job_type(text: str) -> str:
+    t = (text or "").lower()
+    if any(w in t for w in ["lánaimseartha", "full-time", "full time", "permanent"]):
+        return "full_time"
+    if any(w in t for w in ["páirtaimseartha", "part-time", "part time"]):
+        return "part_time"
+    if any(w in t for w in ["conradh", "contract", "fixed term", "fixed-term"]):
+        return "contract"
+    if any(w in t for w in ["sealadach", "temporary", "temp "]):
+        return "temporary"
+    return "full_time"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# DEDUPLICATION & INSERTION
+# ─────────────────────────────────────────────────────────────────────────────
+
+def get_existing_urls() -> set:
     try:
-        requests.delete(
-            f"{SUPABASE_URL}/rest/v1/jobs",
-            headers=HEADERS_SB,
-            params={"is_aggregated": "eq.true", "closing_date": f"lt.{today}"},
-            timeout=10,
-        )
-        print("Cleanup done")
+        result = sb.from_("jobs").select("source_url").execute()
+        return {r["source_url"] for r in (result.data or []) if r.get("source_url")}
     except Exception as e:
-        print(f"Cleanup error: {e}")
+        log.error(f"Failed to fetch existing URLs: {e}")
+        return set()
 
+
+def insert_job(job: dict, existing_urls: set) -> bool:
+    """Insert a job if not already present. Returns True if inserted."""
+    url = job.get("source_url")
+    if url and url in existing_urls:
+        return False
+
+    # Resolve location
+    raw_loc = job.pop("_raw_location", None) or job.get("location") or job.get("county") or ""
+    loc_data = parse_location_field(raw_loc)
+
+    job.setdefault("location", loc_data["location"])
+    job.setdefault("county", loc_data["county"])
+    job.setdefault("lat", loc_data["lat"])
+    job.setdefault("lng", loc_data["lng"])
+    job.setdefault("status", "pending")
+    job.setdefault("is_aggregated", True)
+
+    try:
+        sb.from_("jobs").insert(job).execute()
+        log.info(f"  ✅ Inserted: {job.get('title')} @ {job.get('location') or job.get('county')}")
+        if url:
+            existing_urls.add(url)
+        return True
+    except Exception as e:
+        log.error(f"  ❌ Insert failed for {job.get('title')}: {e}")
+        return False
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SCRAPER FUNCTIONS — each site
+# ─────────────────────────────────────────────────────────────────────────────
+
+IRISH_JOB_KEYWORDS = re.compile(
+    r"irish|gaeilge|gaeltacht|teanga|oifigeach|gaelic|language officer|irish language",
+    re.IGNORECASE,
+)
+
+
+def is_irish_job(title: str, desc: str = "") -> bool:
+    return bool(IRISH_JOB_KEYWORDS.search(title or "") or IRISH_JOB_KEYWORDS.search(desc or ""))
+
+
+def scrape_generic(url: str, source_name: str, existing_urls: set) -> int:
+    """Generic heading-based scraper for simple job listing pages."""
+    inserted = 0
+    try:
+        resp = requests.get(url, headers=HEADERS, timeout=15)
+        soup = BeautifulSoup(resp.text, "html.parser")
+        links = soup.find_all("a", href=True)
+        for link in links:
+            title = link.get_text(strip=True)
+            if len(title) < 10 or not is_irish_job(title):
+                continue
+            href = link["href"]
+            if not href.startswith("http"):
+                from urllib.parse import urljoin
+                href = urljoin(url, href)
+
+            # Try to get location from surrounding text
+            parent_text = link.parent.get_text(" ", strip=True) if link.parent else ""
+            loc_result = extract_location_from_text(parent_text) or {}
+
+            job = {
+                "title": title,
+                "source_url": href,
+                "source_name": source_name,
+                "job_type": infer_job_type(title + " " + parent_text),
+                "_raw_location": loc_result.get("location") or "",
+                "location": loc_result.get("location"),
+                "county": loc_result.get("county"),
+                "lat": loc_result.get("lat"),
+                "lng": loc_result.get("lng"),
+            }
+            inserted += insert_job(job, existing_urls)
+    except Exception as e:
+        log.error(f"Error scraping {source_name}: {e}")
+    return inserted
+
+
+def scrape_publicjobs(existing_urls: set) -> int:
+    """publicjobs.ie — Irish language roles."""
+    inserted = 0
+    try:
+        resp = requests.get(
+            "https://www.publicjobs.ie/en/search?keyword=irish+language&pageNumber=1",
+            headers=HEADERS, timeout=15
+        )
+        soup = BeautifulSoup(resp.text, "html.parser")
+        for item in soup.select(".job-title a, h3 a, h2 a"):
+            title = item.get_text(strip=True)
+            if not title or not is_irish_job(title):
+                continue
+            href = item.get("href", "")
+            if not href.startswith("http"):
+                href = "https://www.publicjobs.ie" + href
+
+            parent = item.find_parent(class_=re.compile(r"job|listing|result"))
+            parent_text = parent.get_text(" ", strip=True) if parent else ""
+            loc_result = extract_location_from_text(parent_text) or {}
+
+            job = {
+                "title": title,
+                "source_url": href,
+                "source_name": "publicjobs.ie",
+                "job_type": infer_job_type(parent_text),
+                "_raw_location": parent_text,
+                "location": loc_result.get("location"),
+                "county": loc_result.get("county"),
+                "lat": loc_result.get("lat"),
+                "lng": loc_result.get("lng"),
+            }
+            inserted += insert_job(job, existing_urls)
+    except Exception as e:
+        log.error(f"publicjobs.ie error: {e}")
+    return inserted
+
+
+def scrape_udaras(existing_urls: set) -> int:
+    """Údarás na Gaeltachta — main Gaeltacht employer."""
+    return scrape_generic("https://www.udaras.ie/fostaíocht/", "Údarás na Gaeltachta", existing_urls)
+
+
+def scrape_tg4(existing_urls: set) -> int:
+    return scrape_generic("https://www.tg4.ie/ga/about/jobs/", "TG4", existing_urls)
+
+
+def scrape_foras(existing_urls: set) -> int:
+    return scrape_generic("https://www.forasnagaeilge.ie/eolas/foluntais/", "Foras na Gaeilge", existing_urls)
+
+
+def scrape_sceal(existing_urls: set) -> int:
+    return scrape_generic("https://sceal.ie/jobs", "Scéal", existing_urls)
+
+
+def scrape_tuairisc(existing_urls: set) -> int:
+    return scrape_generic("https://tuairisc.ie/foluntais/", "Tuairisc.ie", existing_urls)
+
+
+def scrape_gaeloideachas(existing_urls: set) -> int:
+    return scrape_generic("https://www.gaeloideachas.ie/i-am/a-job-seeker/", "Gaeloideachas", existing_urls)
+
+
+def scrape_comhar_naionrai(existing_urls: set) -> int:
+    return scrape_generic("https://www.comharnaionrai.ie/eolas/foluntais/", "Comhar Naíonraí na Gaeltachta", existing_urls)
+
+
+def scrape_cnag(existing_urls: set) -> int:
+    return scrape_generic("https://www.cnag.ie/ga/foilseachain/foluntais.html", "CNAG", existing_urls)
+
+
+def scrape_coimisineir(existing_urls: set) -> int:
+    return scrape_generic("https://www.coimisineir.ie/", "Coimisinéir na Gaeilge", existing_urls)
+
+
+def scrape_comhar(existing_urls: set) -> int:
+    return scrape_generic("https://comhar.ie/foluntais/", "Comhar", existing_urls)
+
+
+def scrape_rte(existing_urls: set) -> int:
+    return scrape_generic("https://www.rte.ie/about/en/jobs/", "RTÉ", existing_urls)
+
+
+def scrape_raidio_na_life(existing_urls: set) -> int:
+    return scrape_generic("https://raidionalife.ie/foluntais/", "Raidió na Life", existing_urls)
+
+
+def scrape_oireachtas(existing_urls: set) -> int:
+    return scrape_generic("https://www.oireachtas.ie/en/about/recruitment-hr/vacancies/", "Oireachtas", existing_urls)
+
+
+def scrape_local_gov(existing_urls: set) -> int:
+    return scrape_generic(
+        "https://www.localgovernmentjobs.ie/Jobs/Index?keyword=irish+language",
+        "localgovernmentjobs.ie", existing_urls
+    )
+
+
+def scrape_hse(existing_urls: set) -> int:
+    return scrape_generic(
+        "https://careerhub.hse.ie/candidates/jobs/search/?keyword=irish",
+        "HSE Career Hub", existing_urls
+    )
+
+
+def scrape_adzuna(existing_urls: set) -> int:
+    """Adzuna API — free tier, 1,000 calls/day."""
+    if not ADZUNA_APP_ID or not ADZUNA_APP_KEY:
+        log.info("Adzuna: credentials not set, skipping.")
+        return 0
+    inserted = 0
+    try:
+        resp = requests.get(
+            f"https://api.adzuna.com/v1/api/jobs/ie/search/1",
+            params={
+                "app_id": ADZUNA_APP_ID,
+                "app_key": ADZUNA_APP_KEY,
+                "what": "irish language",
+                "results_per_page": 50,
+            },
+            headers=HEADERS,
+            timeout=15,
+        )
+        data = resp.json()
+        for item in data.get("results", []):
+            title = item.get("title", "")
+            if not is_irish_job(title, item.get("description", "")):
+                continue
+            raw_loc = item.get("location", {}).get("display_name", "")
+            loc_result = extract_location_from_text(raw_loc) or {}
+            job = {
+                "title": title,
+                "source_url": item.get("redirect_url", ""),
+                "source_name": "Adzuna",
+                "org_name": item.get("company", {}).get("display_name"),
+                "salary": _adzuna_salary(item),
+                "job_type": infer_job_type(title),
+                "_raw_location": raw_loc,
+                "location": loc_result.get("location") or raw_loc or None,
+                "county": loc_result.get("county"),
+                "lat": loc_result.get("lat"),
+                "lng": loc_result.get("lng"),
+            }
+            inserted += insert_job(job, existing_urls)
+    except Exception as e:
+        log.error(f"Adzuna error: {e}")
+    return inserted
+
+
+def _adzuna_salary(item: dict) -> str | None:
+    mn = item.get("salary_min")
+    mx = item.get("salary_max")
+    if mn and mx:
+        return f"€{int(mn):,}–€{int(mx):,}"
+    if mn:
+        return f"€{int(mn):,}+"
+    return None
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# EXPIRED JOB CLEANUP
+# ─────────────────────────────────────────────────────────────────────────────
+
+def cleanup_expired() -> int:
+    """Mark aggregated jobs older than 60 days as closed."""
+    from datetime import datetime, timedelta, timezone
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=60)).isoformat()
+    try:
+        result = sb.from_("jobs").update({"status": "closed"}).eq("is_aggregated", True).eq("status", "approved").lt("created_at", cutoff).execute()
+        count = len(result.data or [])
+        log.info(f"Closed {count} expired aggregated jobs.")
+        return count
+    except Exception as e:
+        log.error(f"Cleanup error: {e}")
+        return 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MAIN
+# ─────────────────────────────────────────────────────────────────────────────
 
 def main():
-    print("poist.ie job scraper v9 — job type inference + geocoding\n")
+    log.info("═══ poist.ie Job Scraper v2 — starting ═══")
+    existing_urls = get_existing_urls()
+    log.info(f"Found {len(existing_urls)} existing job URLs in database.")
 
     scrapers = [
-        ("sceal.ie",               scrape_sceal),
-        ("tuairisc.ie",            scrape_tuairisc),
-        ("tg4.ie",                 scrape_tg4),
-        ("foras na gaeilge",       scrape_foras),
-        ("udaras.ie",              scrape_udaras),
-        ("gaeloideachas.ie",       scrape_gaeloideachas),
-        ("comhar naionrai",        scrape_comharnaionrai),
-        ("cnag.ie",                scrape_cnag),
-        ("coimisineir.ie",         scrape_coimisineir),
-        ("comhar.ie",              scrape_comhar),
-        ("rte.ie",                 scrape_rte),
-        ("raidionalife.ie",        scrape_raidionalife),
-        ("oireachtas.ie",          scrape_oireachtas),
-        ("localgovernmentjobs.ie", scrape_localgovt),
-        ("careerhub.hse.ie",       scrape_hse),
-        ("publicjobs.ie",          scrape_publicjobs),
-        ("adzuna",                 scrape_adzuna),
+        ("sceal.ie",                scrape_sceal),
+        ("tuairisc.ie",             scrape_tuairisc),
+        ("TG4",                     scrape_tg4),
+        ("Foras na Gaeilge",        scrape_foras),
+        ("Údarás na Gaeltachta",    scrape_udaras),
+        ("Gaeloideachas",           scrape_gaeloideachas),
+        ("Comhar Naíonraí",         scrape_comhar_naionrai),
+        ("CNAG",                    scrape_cnag),
+        ("Coimisinéir",             scrape_coimisineir),
+        ("Comhar",                  scrape_comhar),
+        ("RTÉ",                     scrape_rte),
+        ("Raidió na Life",          scrape_raidio_na_life),
+        ("Oireachtas",              scrape_oireachtas),
+        ("localgovernmentjobs.ie",  scrape_local_gov),
+        ("HSE Career Hub",          scrape_hse),
+        ("publicjobs.ie",           scrape_publicjobs),
+        ("Adzuna",                  scrape_adzuna),
     ]
 
-    all_jobs = []
+    total = 0
     for name, fn in scrapers:
-        print(f"Checking {name}...")
-        all_jobs += fn()
-        time.sleep(1)
+        log.info(f"── Scraping {name}…")
+        try:
+            n = fn(existing_urls)
+            log.info(f"   → {n} new jobs inserted from {name}")
+            total += n
+        except Exception as e:
+            log.error(f"   ✗ {name} failed: {e}")
 
-    print(f"\nFound {len(all_jobs)} genuine job listings\n")
+    log.info(f"── Cleanup expired jobs…")
+    cleanup_expired()
 
-    inserted = skipped = 0
-    for job in all_jobs:
-        if not job.get("source_url") or not job.get("title"):
-            continue
-        if url_already_exists(job["source_url"]):
-            skipped += 1
-            continue
-        if insert_job(job):
-            inserted += 1
-        time.sleep(0.3)
-
-    print(f"\nFinal: {inserted} inserted, {skipped} skipped")
-    cleanup_expired_jobs()
+    log.info(f"═══ Done. {total} new jobs inserted total. ═══")
 
 
 if __name__ == "__main__":
