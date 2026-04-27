@@ -4,6 +4,7 @@ Enhanced v2: granular Irish location extraction (Carraroe, Spiddal, etc.)
 Runs via GitHub Actions at 23:00 UTC daily.
 """
 
+from __future__ import annotations
 import os, re, time, logging
 from urllib.parse import urljoin
 import requests
