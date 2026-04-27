@@ -1,531 +1,600 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>poist.ie — Post a Job</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --teal: #1A6B3C;
-    --teal-dark: #0D3B2E;
-    --teal-light: #E8F5EE;
-    --gold: #F5C518;
-    --gold-dark: #C89D00;
-    --dark: #0F1A13;
-    --gray: #6B7280;
-    --gray-light: #F9FAFB;
-    --border: #E5E7EB;
-    --white: #FFFFFF;
-    --radius: 12px;
-    --radius-lg: 20px;
-    --shadow: 0 2px 12px rgba(0,0,0,0.07);
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', sans-serif; background: #F4F6F4; color: var(--dark); display: flex; min-height: 100vh; }
+/* poist.ie base styles — shared across all pages */
+:root {
+  --teal:#1A6B3C;--teal-dark:#0D3B2E;--teal-light:#F5F7F5;--teal-mid:#2D8653;
+  --gold:#F5C518;--gold-dark:#C9921A;
+  --dark:#0F1A13;--gray:#6B7F72;--cream:#FFFFFF;--border:#E5E7EB;--white:#ffffff;
+  --red:#dc2626;--green:#16a34a;
+  --sidebar-w:220px;
+  --forest:#0D3B2E;--green2:#2D8653;--gold2:#C9921A;--ink:#0F1A13;
+  --body:#2E3C34;--muted:#6B7F72;--gray-faint:#C4D4CB;--off:#F5F7F5;
+  --radius:14px;--mono:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:#FFFFFF;color:var(--dark);overflow-x:hidden;}
+input,select,textarea{font-family:'DM Sans',sans-serif;}
+.logo{text-decoration:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.65rem;letter-spacing:-0.03em;background:linear-gradient(90deg,#0D3B2E,#2D8653);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.app-shell{display:flex;min-height:100vh;}
+.main-area{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
+.page-content{flex:1;overflow-y:auto;padding:1.5rem;}
+.card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.4rem;}
+.btn{display:inline-flex;align-items:center;gap:0.4rem;padding:0.6rem 1.2rem;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;border:none;transition:all 0.18s;text-decoration:none;}
+.btn-teal{background:var(--teal);color:#fff;}
+.btn-teal:hover{background:var(--teal-dark);}
+.btn-lg{padding:0.8rem 1.8rem;font-size:1rem;border-radius:10px;}
+.form-group{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:1rem;}
+.form-label{font-size:0.85rem;font-weight:600;color:var(--dark);}
+.form-input{padding:0.65rem 0.9rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.9rem;color:var(--dark);background:var(--white);transition:border-color 0.18s;outline:none;}
+.form-input:focus{border-color:var(--teal);}
+select.form-input{cursor:pointer;}
+.cefr-option{border:1.5px solid var(--border);border-radius:8px;padding:.7rem 1rem;cursor:pointer;font-weight:700;font-size:.85rem;color:var(--gray);transition:all .15s;text-align:center;}
+.cefr-option.sel{border-color:var(--teal);background:var(--teal-light);color:var(--teal);}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
 
-  /* Sidebar */
-  .sidebar { width: 220px; min-height: 100vh; background: var(--teal-dark); display: flex; flex-direction: column; flex-shrink: 0; position: sticky; top: 0; }
-  .sidebar-logo { padding: 1.4rem 1.2rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
-  .sidebar-logo a { text-decoration: none; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.5rem; background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-  .sidebar nav { padding: 0.8rem 0; flex: 1; }
-  .sidebar nav a { display: flex; align-items: center; gap: 0.7rem; padding: 0.7rem 1.2rem; text-decoration: none; font-size: 0.92rem; font-weight: 500; color: rgba(255,255,255,0.65); transition: background 0.15s; }
-  .sidebar nav a:hover { background: rgba(255,255,255,0.1); color: #fff; }
-  .sidebar nav a.active { background: rgba(255,255,255,0.15); color: #fff; }
-  .sidebar-footer { padding: 1rem 1.2rem; border-top: 1px solid rgba(255,255,255,0.1); }
-  .sidebar-footer button { background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.7); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif; }
+/* ── Nominatim autocomplete ─────────────────────────── */
+.loc-wrap{position:relative;}
+.loc-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--teal);color:#fff;border:none;border-radius:6px;padding:.28rem .7rem;font-size:.75rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:background .15s;z-index:2;}
+.loc-btn:hover{background:var(--teal-dark);}
+#jLoc{padding-right:115px;}
+.ac-drop{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1.5px solid var(--border);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.11);z-index:200;max-height:230px;overflow-y:auto;display:none;}
+.ac-drop.open{display:block;}
+.ac-item{padding:.62rem .9rem;font-size:.88rem;cursor:pointer;border-bottom:1px solid #f3f4f6;display:flex;flex-direction:column;gap:.08rem;}
+.ac-item:last-child{border-bottom:none;}
+.ac-item:hover,.ac-item:focus{background:var(--teal-light);outline:none;}
+.ac-name{font-weight:600;color:var(--dark);}
+.ac-sub{font-size:.76rem;color:var(--gray);}
+.ac-msg{padding:.8rem;text-align:center;font-size:.85rem;color:var(--gray);}
+.loc-confirm{margin-top:.35rem;display:none;align-items:center;gap:.45rem;font-size:.8rem;color:var(--teal);font-weight:500;}
+.loc-confirm.show{display:flex;}
+.loc-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);flex-shrink:0;}
 
-  /* Main area */
-  .main-area { flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
-  .topbar { height: 60px; background: #fff; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; flex-shrink: 0; position: sticky; top: 0; z-index: 10; }
-  .topbar h1 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; }
-  .topbar-user { display: flex; align-items: center; gap: 0.8rem; font-size: 0.88rem; font-weight: 500; color: #374151; }
-  .topbar-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--gray-light); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+/* ── Error banner ────────────────────────────────────── */
+#errBanner{display:none;background:#fef2f2;color:var(--red);border:1px solid #fecaca;padding:.7rem 1rem;border-radius:8px;font-size:.87rem;margin-bottom:1rem;}
 
-  .page-content { padding: 1.5rem; flex: 1; }
-  .page-inner { max-width: 880px; margin: 0 auto; }
+/* ── Success screen ──────────────────────────────────── */
+#successBox{display:none;text-align:center;padding:3rem 1rem;}
+#successBox .si{font-size:3rem;margin-bottom:1rem;}
+#successBox h2{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:.5rem;}
+#successBox p{color:var(--gray);margin-bottom:1.5rem;line-height:1.6;}
 
-  /* Cards */
-  .card { background: #fff; border-radius: var(--radius-lg); padding: 1.4rem; box-shadow: var(--shadow); }
-  .card + .card { margin-top: 1rem; }
-  .card h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 1rem; }
-
-  /* Form */
-  .form-group { margin-bottom: 1rem; }
-  .form-group:last-child { margin-bottom: 0; }
-  .form-label { display: block; font-size: 0.83rem; font-weight: 600; color: #374151; margin-bottom: 0.35rem; }
-  .form-input { width: 100%; padding: 0.62rem 0.85rem; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.9rem; font-family: 'DM Sans', sans-serif; background: #fff; color: var(--dark); transition: border-color 0.15s, box-shadow 0.15s; outline: none; }
-  .form-input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(26,107,60,0.1); }
-  textarea.form-input { resize: vertical; min-height: 110px; }
-  select.form-input { cursor: pointer; }
-
-  /* Location group */
-  .location-group { position: relative; }
-  .location-search-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: var(--teal); color: #fff; border: none; border-radius: 6px; padding: 0.28rem 0.65rem; font-size: 0.75rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; transition: background 0.15s; }
-  .location-search-btn:hover { background: var(--teal-dark); }
-  .location-search-btn:disabled { background: var(--gray); cursor: not-allowed; }
-  #jLoc { padding-right: 110px; }
-
-  /* Autocomplete dropdown */
-  .autocomplete-dropdown { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1.5px solid var(--border); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 100; max-height: 220px; overflow-y: auto; display: none; }
-  .autocomplete-dropdown.open { display: block; }
-  .autocomplete-item { padding: 0.65rem 0.9rem; font-size: 0.88rem; cursor: pointer; display: flex; flex-direction: column; gap: 0.1rem; border-bottom: 1px solid #f3f4f6; }
-  .autocomplete-item:last-child { border-bottom: none; }
-  .autocomplete-item:hover { background: var(--teal-light); }
-  .autocomplete-item .place-name { font-weight: 600; color: var(--dark); }
-  .autocomplete-item .place-sub { font-size: 0.77rem; color: var(--gray); }
-  .autocomplete-loading { padding: 0.8rem; text-align: center; font-size: 0.85rem; color: var(--gray); }
-  .autocomplete-none { padding: 0.8rem; text-align: center; font-size: 0.85rem; color: var(--gray); }
-
-  /* Location confirmed */
-  .location-confirmed { margin-top: 0.4rem; display: none; align-items: center; gap: 0.5rem; font-size: 0.82rem; color: var(--teal); font-weight: 500; }
-  .location-confirmed.show { display: flex; }
-  .location-confirmed .pin-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
-
-  /* CEFR grid */
-  .cefr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 0.7rem; }
-  .cefr-option { padding: 0.6rem 0.4rem; border: 1.5px solid var(--border); border-radius: 10px; background: #fff; cursor: pointer; font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; text-align: center; transition: all 0.15s; color: var(--dark); line-height: 1.3; }
-  .cefr-option:hover { border-color: var(--teal); background: var(--teal-light); }
-  .cefr-option.sel { background: var(--teal); color: #fff; border-color: var(--teal); }
-
-  /* Buttons */
-  .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1.4rem; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
-  .btn-teal { background: var(--teal); color: #fff; }
-  .btn-teal:hover { background: var(--teal-dark); }
-  .btn-teal:disabled { background: var(--gray); cursor: not-allowed; }
-  .btn-lg { padding: 0.85rem 2rem; font-size: 1rem; width: 100%; justify-content: center; }
-
-  /* Preview card */
-  .preview-label { font-size: 0.78rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.6rem; }
-  .match-box { margin-top: 0.8rem; background: var(--teal-light); border-radius: 10px; padding: 0.9rem; font-size: 0.82rem; color: var(--teal); }
-
-  /* Hint box */
-  .cefr-hint { background: var(--teal-light); border-radius: 8px; padding: 0.7rem; font-size: 0.82rem; color: var(--teal); }
-
-  /* Error banner */
-  #errorBanner { display: none; background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; padding: 0.75rem 1rem; border-radius: 10px; font-size: 0.88rem; margin-bottom: 1rem; }
-
-  /* Success screen */
-  #successScreen { display: none; text-align: center; padding: 3rem 1rem; }
-  #successScreen .success-icon { font-size: 3rem; margin-bottom: 1rem; }
-  #successScreen h2 { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
-  #successScreen p { color: var(--gray); margin-bottom: 1.5rem; }
-
-  /* Grid layouts */
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
-  .form-stack { display: flex; flex-direction: column; gap: 1rem; }
-  .layout-main { display: grid; grid-template-columns: 1fr 360px; gap: 1.5rem; align-items: start; }
-  @media (max-width: 900px) { .layout-main { grid-template-columns: 1fr; } .two-col { grid-template-columns: 1fr; } }
-
-  /* Launch badge */
-  .launch-banner { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.5rem; }
-  .badge-green { background: #dcfce7; color: #16a34a; padding: 0.3rem 0.8rem; border-radius: 100px; font-size: 0.8rem; font-weight: 600; }
+@media(max-width:768px){.sidebar-aside{display:none;}}
 </style>
 </head>
 <body>
+<div class="app-shell" id="shell"></div>
 
-<aside class="sidebar">
-  <div class="sidebar-logo"><a href="index.html">poist.ie</a></div>
-  <nav>
-    <a href="employer-dashboard.html"><span>⊞</span> Dashboard</a>
-    <a href="employer-search.html"><span>🔍</span> Find Candidates</a>
-    <a href="employer-post-job.html" class="active"><span>＋</span> Post a Job</a>
-  </nav>
-  <div class="sidebar-footer">
-    <button id="signOutBtn">← Sign out</button>
-  </div>
-</aside>
-
-<div class="main-area">
-  <div class="topbar">
-    <h1>Post a Job</h1>
-    <div class="topbar-user">
-      <div class="topbar-avatar" id="topAvatar">🏛️</div>
-      <span id="topName">Loading…</span>
-    </div>
-  </div>
-
-  <div class="page-content">
-    <div class="page-inner">
-
-      <div id="errorBanner"></div>
-
-      <!-- Success screen -->
-      <div id="successScreen" class="card">
-        <div class="success-icon">✅</div>
-        <h2>Job submitted!</h2>
-        <p>Your listing will be live within 24 hours after review. We'll email you when it's approved.</p>
-        <a href="employer-dashboard.html" class="btn btn-teal" style="display:inline-flex;">Back to Dashboard →</a>
+<script>
+/* ── POIST shared utilities (exact match to existing codebase) ── */
+const POIST = {
+  logo: (dark=false) => `<a href="index.html" style="text-decoration:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.65rem;letter-spacing:-0.03em;background:linear-gradient(90deg,${dark?'rgba(255,255,255,0.9),rgba(255,255,255,0.6)':'#0D3B2E,#2D8653'});-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">poist.ie</a>`,
+  cefrLevels: ['A1','A2','B1','B2','C1','C2'],
+  cefrLabel: {A1:'Beginner',A2:'Elementary',B1:'Intermediate',B2:'Upper-Intermediate',C1:'Advanced',C2:'Proficient/Native'},
+  renderSidebar: (role, activePage) => {
+    const links = [
+      {href:'employer-dashboard.html',icon:'⊞',label:'Dashboard'},
+      {href:'employer-search.html',icon:'🔍',label:'Find Candidates'},
+      {href:'employer-post-job.html',icon:'＋',label:'Post a Job'},
+    ];
+    return `<aside class="sidebar-aside" style="width:220px;min-height:100vh;background:#0D3B2E;display:flex;flex-direction:column;flex-shrink:0;">
+      <div style="padding:1.4rem 1.2rem 1rem;border-bottom:1px solid rgba(255,255,255,0.1);">${POIST.logo(true)}</div>
+      <nav style="padding:0.8rem 0;flex:1;">
+        ${links.map(l=>`<a href="${l.href}" style="display:flex;align-items:center;gap:0.7rem;padding:0.7rem 1.2rem;text-decoration:none;font-size:0.92rem;font-weight:500;border-radius:0;transition:background 0.15s;${activePage===l.href?'background:rgba(255,255,255,0.15);color:#fff;':'color:rgba(255,255,255,0.7);'}" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='${activePage===l.href?'rgba(255,255,255,0.15)':'transparent'}'"><span style="font-size:1rem;width:20px;text-align:center;">${l.icon}</span>${l.label}</a>`).join('')}
+      </nav>
+      <div style="padding:1rem 1.2rem;border-top:1px solid rgba(255,255,255,0.1);">
+        <button id="signOutBtn" style="background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.7);padding:0.5rem 1rem;border-radius:6px;cursor:pointer;font-size:0.85rem;width:100%;text-align:left;font-family:'DM Sans',sans-serif;">← Sign out</button>
       </div>
+    </aside>`;
+  },
+  renderTopBar: (title, user) => `
+    <div style="height:60px;background:#fff;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;flex-shrink:0;position:sticky;top:0;z-index:10;">
+      <h1 style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#0F1A13;">${title}</h1>
+      <div style="display:flex;align-items:center;gap:0.8rem;">
+        <div style="width:32px;height:32px;border-radius:50%;background:#F5F7F5;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">${user?.avatar||'🏛️'}</div>
+        <span id="topName" style="font-size:0.88rem;font-weight:500;color:#374151;">${user?.name||'Loading…'}</span>
+      </div>
+    </div>`,
+  toast: (msg, type='success') => {
+    const t=document.createElement('div');
+    t.style.cssText=`position:fixed;bottom:1.5rem;right:1.5rem;background:${type==='error'?'#dc2626':'#1A6B3C'};color:#fff;padding:0.8rem 1.3rem;border-radius:10px;font-size:0.9rem;font-weight:500;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:slideIn 0.3s ease;`;
+    t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);
+  },
+};
+window.POIST = POIST;
 
-      <!-- Main form -->
-      <div id="mainForm">
-        <div class="launch-banner">
-          <span class="badge-green">✓ Free to post during launch</span>
-          <span style="color:var(--gray);font-size:.85rem;">Live within 24 hours after review</span>
-        </div>
+/* ── County list ────────────────────────────────────────── */
+const COUNTIES = ['Antrim','Armagh','Carlow','Cavan','Clare','Cork','Derry','Donegal','Down','Dublin','Fermanagh','Galway','Kerry','Kildare','Kilkenny','Laois','Leitrim','Limerick','Longford','Louth','Mayo','Meath','Monaghan','Offaly','Roscommon','Sligo','Tipperary','Tyrone','Waterford','Westmeath','Wexford','Wicklow'];
+const county_opts = COUNTIES.map(c=>`<option value="${c}">${c}</option>`).join('');
 
-        <div class="layout-main">
-
-          <!-- Left: form -->
-          <div class="form-stack">
-
-            <div class="card">
-              <h3>Job details</h3>
-              <div class="form-group">
-                <label class="form-label">Job title *</label>
-                <input type="text" id="jTitle" class="form-input" placeholder="e.g. Irish Language Officer" oninput="upPrev()">
-              </div>
-              <div class="two-col">
-                <div class="form-group">
-                  <label class="form-label">Type *</label>
-                  <select id="jType" class="form-input" onchange="upPrev()">
-                    <option value="full_time">Full-time</option>
-                    <option value="part_time">Part-time</option>
-                    <option value="contract">Contract</option>
-                    <option value="temporary">Temporary</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Sector</label>
-                  <select id="jSector" class="form-input">
-                    <option>Government</option>
-                    <option>Local authority</option>
-                    <option>Education</option>
-                    <option>Healthcare</option>
-                    <option>Semi-state</option>
-                    <option>Technology</option>
-                    <option>Media</option>
-                    <option>Non-profit</option>
-                    <option>Other</option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- Location with Nominatim autocomplete -->
-              <div class="form-group">
-                <label class="form-label">Location *</label>
-                <div class="location-group" id="locationGroup">
-                  <input type="text" id="jLoc" class="form-input" placeholder="Type a place — e.g. Carraroe, Galway…" autocomplete="off" oninput="onLocInput(this.value)">
-                  <button class="location-search-btn" id="locSearchBtn" onclick="triggerSearch()" title="Search address">
-                    📍 Find address
-                  </button>
-                  <div class="autocomplete-dropdown" id="acDropdown"></div>
-                </div>
-                <div class="location-confirmed" id="locConfirmed">
-                  <span class="pin-dot"></span>
-                  <span id="locConfirmedText">Pin set on map</span>
-                </div>
-              </div>
-
-              <!-- County auto-fills from geocoding but user can override -->
-              <div class="form-group">
-                <label class="form-label">County *</label>
-                <select id="jCounty" class="form-input">
-                  <option value="">Select county…</option>
-                  <option>Antrim</option><option>Armagh</option><option>Carlow</option><option>Cavan</option>
-                  <option>Clare</option><option>Cork</option><option>Derry</option><option>Donegal</option>
-                  <option>Down</option><option>Dublin</option><option>Fermanagh</option><option>Galway</option>
-                  <option>Kerry</option><option>Kildare</option><option>Kilkenny</option><option>Laois</option>
-                  <option>Leitrim</option><option>Limerick</option><option>Longford</option><option>Louth</option>
-                  <option>Mayo</option><option>Meath</option><option>Monaghan</option><option>Offaly</option>
-                  <option>Roscommon</option><option>Sligo</option><option>Tipperary</option><option>Tyrone</option>
-                  <option>Waterford</option><option>Westmeath</option><option>Wexford</option><option>Wicklow</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Salary range (optional)</label>
-                <input type="text" id="jSalary" class="form-input" placeholder="e.g. €35,000–€45,000 or Negotiable">
-              </div>
-            </div>
-
-            <div class="card">
-              <h3>Irish language requirement *</h3>
-              <p style="font-size:.82rem;color:var(--gray);margin-bottom:.9rem;">Set the minimum CEFR level. Candidates at or above this level will be matched.</p>
-              <div class="cefr-grid" id="cefrGrid">
-                <button class="cefr-option" onclick="setCefr('A1',this)">A1<br><span style="font-size:.7rem;font-weight:400;">Beginner</span></button>
-                <button class="cefr-option" onclick="setCefr('A2',this)">A2<br><span style="font-size:.7rem;font-weight:400;">Elementary</span></button>
-                <button class="cefr-option" onclick="setCefr('B1',this)">B1<br><span style="font-size:.7rem;font-weight:400;">Intermediate</span></button>
-                <button class="cefr-option sel" onclick="setCefr('B2',this)">B2<br><span style="font-size:.7rem;font-weight:400;">Upper-Intermediate</span></button>
-                <button class="cefr-option" onclick="setCefr('C1',this)">C1<br><span style="font-size:.7rem;font-weight:400;">Advanced</span></button>
-                <button class="cefr-option" onclick="setCefr('C2',this)">C2<br><span style="font-size:.7rem;font-weight:400;">Proficient/Native</span></button>
-              </div>
-              <div class="cefr-hint" id="cefrHint">B2 — Candidates can handle complex Irish tasks independently. Good for most public sector roles.</div>
-            </div>
-
-            <div class="card">
-              <h3>Description *</h3>
-              <div class="form-group">
-                <label class="form-label">Job description</label>
-                <textarea id="jDesc" class="form-input" rows="6" placeholder="Describe the role, responsibilities, and what Irish language skills are required for…" oninput="upPrev()"></textarea>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Closing date (optional)</label>
-                <input type="date" id="jClose" class="form-input">
-              </div>
-            </div>
-
-            <button class="btn btn-teal btn-lg" id="submitBtn" onclick="submitJob()">Submit for Review →</button>
-
-          </div>
-
-          <!-- Right: preview -->
-          <div style="position:sticky;top:1rem;">
-            <div class="preview-label">Live preview</div>
-            <div class="card">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem;">
-                <div id="pvT" style="font-weight:700;font-size:1rem;color:var(--teal);flex:1;">Your job title</div>
-                <span id="pvC" style="background:var(--gold);color:var(--dark);font-size:.7rem;font-weight:700;padding:.15rem .45rem;border-radius:4px;margin-left:.5rem;">B2</span>
-              </div>
-              <div style="font-size:.85rem;font-weight:600;margin-bottom:.2rem;" id="pvOrg">Your organisation</div>
-              <div id="pvM" style="font-size:.8rem;color:var(--gray);margin-bottom:.8rem;">📍 Location · Full-time</div>
-              <p id="pvD" style="font-size:.82rem;color:var(--gray);line-height:1.6;">Your description…</p>
-            </div>
-            <div class="match-box">
-              <strong>Match estimate</strong><br>
-              Candidates with <span id="pvCC">B2+</span> Irish: ~<strong>180 candidates</strong> in your area.
-            </div>
-          </div>
-
-        </div>
-      </div><!-- /mainForm -->
-
-    </div>
-  </div>
-</div>
-
-<script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
-const SUPABASE_URL = 'https://kpfshjarepmazrgzffot.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwZnNoamFyZXBtYXpyZ3pmZm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNzQ0MjIsImV4cCI6MjA5MDY1MDQyMn0.yU-6ASii1duNXgGMs0ZWTkgTYXonVfqVOnEQr0J8FhU';
-const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
-
-// ─── Auth guard ───────────────────────────────────────────────────────────────
-const { data: { session } } = await sb.auth.getSession();
-if (!session) { window.location.href = 'login.html'; }
-
-const userId = session.user.id;
-const { data: employer } = await sb.from('employers').select('*').eq('id', userId).single();
-if (employer) {
-  document.getElementById('topName').textContent = employer.org_name || employer.contact_name || 'Employer';
-  document.getElementById('pvOrg').textContent = employer.org_name || 'Your organisation';
-}
-document.getElementById('signOutBtn').onclick = async () => {
-  await sb.auth.signOut();
-  window.location.href = 'login.html';
+/* ── CEFR hints ─────────────────────────────────────────── */
+const CEFR_HINTS = {
+  A1:'A1 — Basic greetings and simple phrases. Entry-level familiarity with Irish.',
+  A2:'A2 — Can understand common everyday expressions. Suitable for admin support roles.',
+  B1:'B1 — Can handle routine matters in Irish. Good for general public-facing roles.',
+  B2:'B2 — Candidates can handle complex Irish tasks independently. Good for most public sector roles.',
+  C1:'C1 — Can express themselves fluently and spontaneously in Irish.',
+  C2:'C2 — Near-native or native fluency. Required for Irish-medium roles.',
 };
 
-// ─── CEFR state ───────────────────────────────────────────────────────────────
+/* ── Render shell ────────────────────────────────────────── */
 let cefrReq = 'B2';
-const cefrHints = {
-  A1: 'A1 — Basic greetings and simple phrases. Entry-level familiarity with Irish.',
-  A2: 'A2 — Can understand common expressions relevant to everyday tasks.',
-  B1: 'B1 — Can handle routine matters in Irish. Good for administrative roles.',
-  B2: 'B2 — Candidates can handle complex Irish tasks independently. Good for most public sector roles.',
-  C1: 'C1 — Can express themselves fluently and spontaneously in Irish.',
-  C2: 'C2 — Near-native or native fluency. Irish-medium roles.',
+
+document.getElementById('shell').innerHTML = `
+  ${POIST.renderSidebar('employer','employer-post-job.html')}
+  <div class="main-area">
+    ${POIST.renderTopBar('Post a Job', {avatar:'🏛️', name:'Loading…'})}
+    <div class="page-content">
+      <div style="max-width:860px;margin:0 auto;">
+
+        <div id="errBanner"></div>
+
+        <!-- ── Success screen ───────────────────────────── -->
+        <div id="successBox" class="card">
+          <div class="si">✅</div>
+          <h2>Job submitted!</h2>
+          <p>Your listing will go live within 24 hours after review.<br>We'll email you when it's approved.</p>
+          <a href="employer-dashboard.html" class="btn btn-teal">Back to Dashboard →</a>
+        </div>
+
+        <!-- ── Main form ─────────────────────────────────── -->
+        <div id="mainForm">
+          <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:1.5rem;">
+            <div style="background:#dcfce7;color:#16a34a;padding:.3rem .8rem;border-radius:100px;font-size:.8rem;font-weight:600;">✓ Free to post during launch</div>
+            <span style="color:var(--gray);font-size:.85rem;">Live within 24 hours after review</span>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 360px;gap:1.5rem;align-items:start;">
+
+            <!-- Left: form cards -->
+            <div style="display:flex;flex-direction:column;gap:1rem;">
+
+              <div class="card">
+                <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1rem;">Job details</h3>
+
+                <div class="form-group">
+                  <label class="form-label">Job title *</label>
+                  <input type="text" id="jTitle" class="form-input" placeholder="e.g. Irish Language Officer" oninput="upPrev()">
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;">
+                  <div class="form-group">
+                    <label class="form-label">Type *</label>
+                    <select id="jType" class="form-input" onchange="upPrev()">
+                      <option value="full_time">Full-time</option>
+                      <option value="part_time">Part-time</option>
+                      <option value="contract">Contract</option>
+                      <option value="temporary">Temporary</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Sector</label>
+                    <select id="jSector" class="form-input">
+                      <option>Government</option><option>Local authority</option><option>Education</option>
+                      <option>Healthcare</option><option>Semi-state</option><option>Technology</option>
+                      <option>Media</option><option>Non-profit</option><option>Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Location with Nominatim autocomplete -->
+                <div class="form-group">
+                  <label class="form-label">Location *
+                    <span style="font-size:.75rem;font-weight:400;color:var(--gray);margin-left:.35rem;">e.g. Carraroe, Spiddal, Gaoth Dobhair…</span>
+                  </label>
+                  <div class="loc-wrap" id="locWrap">
+                    <input type="text" id="jLoc" class="form-input"
+                      placeholder="Start typing any town, village or area…"
+                      autocomplete="off"
+                      oninput="onLocInput(this.value)">
+                    <button class="loc-btn" onclick="triggerLocSearch()" title="Search for this location">📍 Find address</button>
+                    <div class="ac-drop" id="acDrop"></div>
+                  </div>
+                  <div class="loc-confirm" id="locConfirm">
+                    <span class="loc-dot"></span>
+                    <span id="locConfirmTxt">Pin placed on map</span>
+                  </div>
+                </div>
+
+                <!-- County — auto-filled from geocoder, user can override -->
+                <div class="form-group">
+                  <label class="form-label">County *</label>
+                  <select id="jCounty" class="form-input">
+                    <option value="">Select county…</option>${county_opts}
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Salary range (optional)</label>
+                  <input type="text" id="jSalary" class="form-input" placeholder="e.g. €35,000–€45,000 or Negotiable">
+                </div>
+              </div>
+
+              <div class="card">
+                <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:.5rem;">Irish language requirement *</h3>
+                <p style="font-size:.82rem;color:var(--gray);margin-bottom:.9rem;">Set the minimum CEFR level. Candidates at or above this level will be matched.</p>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:.7rem;" id="cefrGrid">
+                  ${POIST.cefrLevels.map(l=>`<button class="cefr-option ${l==='B2'?'sel':''}" onclick="setCefr('${l}',this)">${l}<br><span style="font-size:.7rem;font-weight:400;">${POIST.cefrLabel[l]}</span></button>`).join('')}
+                </div>
+                <div id="cefrHint" style="background:var(--teal-light);border-radius:8px;padding:.7rem;font-size:.82rem;color:var(--teal);">${CEFR_HINTS.B2}</div>
+              </div>
+
+              <div class="card">
+                <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1rem;">Description *</h3>
+                <div class="form-group">
+                  <label class="form-label">Job description</label>
+                  <textarea id="jDesc" class="form-input" rows="5" placeholder="Describe the role, responsibilities, and what Irish language skills are needed for…" oninput="upPrev()"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label">Closing date (optional)</label>
+                  <input type="date" id="jClose" class="form-input">
+                </div>
+              </div>
+
+              <button class="btn btn-teal btn-lg" id="submitBtn" style="justify-content:center;" onclick="submitJob()">Submit for Review →</button>
+            </div>
+
+            <!-- Right: sticky live preview -->
+            <div style="position:sticky;top:1rem;">
+              <div style="font-size:.78rem;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.6rem;">Live preview</div>
+              <div class="card">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem;">
+                  <div id="pvT" style="font-weight:700;font-size:1rem;color:var(--teal);flex:1;">Your job title</div>
+                  <span id="pvC" style="background:var(--gold);color:var(--dark);font-size:.7rem;font-weight:700;padding:.15rem .45rem;border-radius:4px;margin-left:.5rem;">B2</span>
+                </div>
+                <div style="font-size:.85rem;font-weight:600;margin-bottom:.2rem;" id="pvOrg">Your organisation</div>
+                <div id="pvM" style="font-size:.8rem;color:var(--gray);margin-bottom:.8rem;">📍 Location · Full-time</div>
+                <p id="pvD" style="font-size:.82rem;color:var(--gray);line-height:1.6;">Your description…</p>
+              </div>
+              <div style="margin-top:.8rem;background:var(--teal-light);border-radius:10px;padding:.9rem;font-size:.82rem;color:var(--teal);">
+                <strong>Match estimate</strong><br>
+                Candidates with <span id="pvCC">B2+</span> Irish: ~<strong>180 candidates</strong> in your area.
+              </div>
+            </div>
+
+          </div>
+        </div><!-- /mainForm -->
+      </div>
+    </div>
+  </div>`;
+
+/* ═══════════════════════════════════════════════════════
+   SUPABASE — loads async, wires auth + submit
+═══════════════════════════════════════════════════════ */
+(async () => {
+  const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
+  const sb = createClient(
+    'https://kpfshjarepmazrgzffot.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwZnNoamFyZXBtYXpyZ3pmZm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNzQ0MjIsImV4cCI6MjA5MDY1MDQyMn0.yU-6ASii1duNXgGMs0ZWTkgTYXonVfqVOnEQr0J8FhU'
+  );
+
+  // Auth guard
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'login.html'; return; }
+  const userId = session.user.id;
+
+  // Load employer name
+  const { data: emp } = await sb.from('employers').select('org_name,contact_name').eq('id', userId).single();
+  const orgName = emp?.org_name || emp?.contact_name || 'Your organisation';
+  document.getElementById('topName').textContent = orgName;
+  document.getElementById('pvOrg').textContent = orgName;
+
+  // Sign out
+  document.getElementById('signOutBtn').onclick = async () => {
+    await sb.auth.signOut();
+    window.location.href = 'login.html';
+  };
+
+  // Expose to submitJob()
+  window._submitWithSupa = async () => {
+    const title   = document.getElementById('jTitle').value.trim();
+    const desc    = document.getElementById('jDesc').value.trim();
+    const loc     = document.getElementById('jLoc').value.trim();
+    const county  = document.getElementById('jCounty').value;
+    const typeVal = document.getElementById('jType').value;
+    const sector  = document.getElementById('jSector').value;
+    const salary  = document.getElementById('jSalary').value.trim() || null;
+    const closing = document.getElementById('jClose').value || null;
+
+    if (!title)  { showErr('Please add a job title.');  return; }
+    if (!desc)   { showErr('Please add a job description.'); return; }
+    if (!loc)    { showErr('Please add a location — type a place and select from the suggestions.'); return; }
+    if (!county) { showErr('Please select a county.'); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.textContent = 'Submitting…'; btn.disabled = true;
+
+    const row = {
+      employer_id:   userId,
+      org_name:      orgName,
+      title,
+      description:   desc,
+      location:      loc,
+      county,
+      cefr_required: cefrReq,
+      job_type:      typeVal,
+      sector,
+      salary,
+      closing_date:  closing,
+      lat:           window._locLat || null,
+      lng:           window._locLng || null,
+      status:        'pending',
+      is_aggregated: false,
+      source_name:   'poist.ie',
+    };
+
+    const { error } = await sb.from('jobs').insert([row]);
+    if (error) {
+      showErr('Submission failed: ' + error.message);
+      btn.textContent = 'Submit for Review →'; btn.disabled = false;
+      return;
+    }
+
+    document.getElementById('mainForm').style.display = 'none';
+    document.getElementById('successBox').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+})();
+
+/* ═══════════════════════════════════════════════════════
+   LOCATION — local database + Nominatim autocomplete
+═══════════════════════════════════════════════════════ */
+window._locLat = null;
+window._locLng = null;
+
+// Quick-lookup table: all major Gaeltacht areas + towns
+// [display, county, lat, lng]
+const IRISH_PLACES = {
+  'carraroe':              ['Carraroe, Co. Galway',       'Galway',    53.2690, -9.5930],
+  'an cheathrú rua':       ['Carraroe, Co. Galway',       'Galway',    53.2690, -9.5930],
+  'spiddal':               ['Spiddal, Co. Galway',        'Galway',    53.2440, -9.3090],
+  'an spidéal':            ['Spiddal, Co. Galway',        'Galway',    53.2440, -9.3090],
+  'connemara':             ['Connemara, Co. Galway',      'Galway',    53.4500, -9.9000],
+  'conamara':              ['Connemara, Co. Galway',      'Galway',    53.4500, -9.9000],
+  'clifden':               ['Clifden, Co. Galway',        'Galway',    53.4880,-10.0200],
+  'an clochán':            ['Clifden, Co. Galway',        'Galway',    53.4880,-10.0200],
+  'rosmuc':                ['Rosmuc, Co. Galway',         'Galway',    53.3910, -9.5430],
+  'ros muc':               ['Rosmuc, Co. Galway',         'Galway',    53.3910, -9.5430],
+  'carna':                 ['Carna, Co. Galway',          'Galway',    53.3260, -9.8560],
+  'inis mór':              ['Inis Mór, Co. Galway',       'Galway',    53.1240, -9.6590],
+  'inis oírr':             ['Inis Oírr, Co. Galway',      'Galway',    53.0660, -9.5070],
+  'inis meáin':            ['Inis Meáin, Co. Galway',     'Galway',    53.0940, -9.5730],
+  'salthill':              ['Salthill, Co. Galway',       'Galway',    53.2590, -9.0780],
+  'oughterard':            ['Oughterard, Co. Galway',     'Galway',    53.4270, -9.3220],
+  'uachtar ard':           ['Oughterard, Co. Galway',     'Galway',    53.4270, -9.3220],
+  'galway':                ['Galway City',                'Galway',    53.2707, -9.0568],
+  'gaillimh':              ['Galway City',                'Galway',    53.2707, -9.0568],
+  // Donegal Gaeltacht
+  'gaoth dobhair':         ['Gaoth Dobhair, Co. Donegal', 'Donegal',   55.0560, -8.2550],
+  'gweedore':              ['Gaoth Dobhair, Co. Donegal', 'Donegal',   55.0560, -8.2550],
+  'falcarragh':            ['Falcarragh, Co. Donegal',    'Donegal',   55.1350, -8.1050],
+  'an fál carrach':        ['Falcarragh, Co. Donegal',    'Donegal',   55.1350, -8.1050],
+  'dungloe':               ['Dungloe, Co. Donegal',       'Donegal',   54.9470, -8.3620],
+  'an clochán liath':      ['Dungloe, Co. Donegal',       'Donegal',   54.9470, -8.3620],
+  'glenties':              ['Glenties, Co. Donegal',      'Donegal',   54.7940, -8.2760],
+  'na gleannta':           ['Glenties, Co. Donegal',      'Donegal',   54.7940, -8.2760],
+  'letterkenny':           ['Letterkenny, Co. Donegal',   'Donegal',   54.9500, -7.7330],
+  'leitir ceanainn':       ['Letterkenny, Co. Donegal',   'Donegal',   54.9500, -7.7330],
+  'bunbeg':                ['Bunbeg, Co. Donegal',        'Donegal',   55.0600, -8.2900],
+  'bun beag':              ['Bunbeg, Co. Donegal',        'Donegal',   55.0600, -8.2900],
+  'derrybeg':              ['Derrybeg, Co. Donegal',      'Donegal',   55.0200, -8.1200],
+  'na doirí beaga':        ['Derrybeg, Co. Donegal',      'Donegal',   55.0200, -8.1200],
+  'gortahork':             ['Gortahork, Co. Donegal',     'Donegal',   55.1200, -8.1500],
+  'gort an choirce':       ['Gortahork, Co. Donegal',     'Donegal',   55.1200, -8.1500],
+  'killybegs':             ['Killybegs, Co. Donegal',     'Donegal',   54.6380, -8.4490],
+  'na cealla beaga':       ['Killybegs, Co. Donegal',     'Donegal',   54.6380, -8.4490],
+  'ardara':                ['Ardara, Co. Donegal',        'Donegal',   54.7640, -8.4090],
+  'donegal':               ['Donegal Town',               'Donegal',   54.6540, -8.1100],
+  // Kerry Gaeltacht
+  'dingle':                ['Dingle, Co. Kerry',          'Kerry',     52.1409,-10.2680],
+  'an daingean':           ['Dingle, Co. Kerry',          'Kerry',     52.1409,-10.2680],
+  'daingean uí chúis':     ['Dingle, Co. Kerry',          'Kerry',     52.1409,-10.2680],
+  'ventry':                ['Ventry, Co. Kerry',          'Kerry',     52.1170,-10.3440],
+  'ceann trá':             ['Ventry, Co. Kerry',          'Kerry',     52.1170,-10.3440],
+  'ballyferriter':         ['Ballyferriter, Co. Kerry',   'Kerry',     52.1650,-10.4060],
+  'baile an fheirtéaraigh':['Ballyferriter, Co. Kerry',   'Kerry',     52.1650,-10.4060],
+  'dunquin':               ['Dunquin, Co. Kerry',         'Kerry',     52.1250,-10.4630],
+  'dún chaoin':            ['Dunquin, Co. Kerry',         'Kerry',     52.1250,-10.4630],
+  'tralee':                ['Tralee, Co. Kerry',          'Kerry',     52.2715, -9.7006],
+  'trá lí':                ['Tralee, Co. Kerry',          'Kerry',     52.2715, -9.7006],
+  'killarney':             ['Killarney, Co. Kerry',       'Kerry',     52.0600, -9.5000],
+  'cill airne':            ['Killarney, Co. Kerry',       'Kerry',     52.0600, -9.5000],
+  // Mayo Gaeltacht
+  'achill':                ['Achill, Co. Mayo',           'Mayo',      53.9400,-10.0500],
+  'acaill':                ['Achill, Co. Mayo',           'Mayo',      53.9400,-10.0500],
+  'belmullet':             ['Belmullet, Co. Mayo',        'Mayo',      54.2240, -9.9890],
+  'béal an mhuirthead':    ['Belmullet, Co. Mayo',        'Mayo',      54.2240, -9.9890],
+  'westport':              ['Westport, Co. Mayo',         'Mayo',      53.8000, -9.5200],
+  'castlebar':             ['Castlebar, Co. Mayo',        'Mayo',      53.8600, -9.3000],
+  'tourmakeady':           ['Tourmakeady, Co. Mayo',      'Mayo',      53.6220, -9.4220],
+  'tuar mhic éadaigh':     ['Tourmakeady, Co. Mayo',      'Mayo',      53.6220, -9.4220],
+  // Meath Gaeltacht
+  'ráth cairn':            ['Ráth Cairn, Co. Meath',      'Meath',     53.5680, -6.9610],
+  'rathcairn':             ['Ráth Cairn, Co. Meath',      'Meath',     53.5680, -6.9610],
+  // Major cities & towns
+  'dublin':                ['Dublin',                     'Dublin',    53.3498, -6.2603],
+  'baile átha cliath':     ['Dublin',                     'Dublin',    53.3498, -6.2603],
+  'cork':                  ['Cork City',                  'Cork',      51.8985, -8.4756],
+  'corcaigh':              ['Cork City',                  'Cork',      51.8985, -8.4756],
+  'limerick':              ['Limerick City',              'Limerick',  52.6638, -8.6267],
+  'luimneach':             ['Limerick City',              'Limerick',  52.6638, -8.6267],
+  'waterford':             ['Waterford City',             'Waterford', 52.2566, -7.1221],
+  'port láirge':           ['Waterford City',             'Waterford', 52.2566, -7.1221],
+  'kilkenny':              ['Kilkenny City',              'Kilkenny',  52.6541, -7.2448],
+  'sligo':                 ['Sligo Town',                 'Sligo',     54.2766, -8.4761],
+  'sligeach':              ['Sligo Town',                 'Sligo',     54.2766, -8.4761],
+  'wexford':               ['Wexford Town',               'Wexford',   52.3369, -6.4633],
+  'loch garman':           ['Wexford Town',               'Wexford',   52.3369, -6.4633],
+  'drogheda':              ['Drogheda, Co. Louth',        'Louth',     53.7182, -6.3563],
+  'dundalk':               ['Dundalk, Co. Louth',         'Louth',     54.0042, -6.4074'],
+  'athlone':               ['Athlone, Co. Westmeath',    'Westmeath',  53.4235, -7.9401],
+  'áth luain':             ['Athlone, Co. Westmeath',    'Westmeath',  53.4235, -7.9401],
+  'ennis':                 ['Ennis, Co. Clare',           'Clare',     52.8433, -8.9820],
 };
 
+function localLookup(text) {
+  const norm = text.toLowerCase().replace(/[,;.]/g,' ').replace(/\s+/g,' ').trim();
+  const keys = Object.keys(IRISH_PLACES).sort((a,b) => b.length - a.length);
+  for (const k of keys) {
+    if (norm === k || norm.startsWith(k+' ') || norm.includes(' '+k) || norm.includes(k)) {
+      const [display, county, lat, lng] = IRISH_PLACES[k];
+      return { display, county, lat, lng };
+    }
+  }
+  return null;
+}
+
+/* ── Nominatim API search ────────────────────────────────── */
+let _debounce = null;
+const acDrop = document.getElementById('acDrop');
+
+function closeAc() { acDrop.classList.remove('open'); acDrop.innerHTML = ''; }
+
+function extractCounty(addr) {
+  if (!addr) return '';
+  const raw = addr.county || addr.state_district || addr.state || '';
+  return raw.replace(/^county\s+/i,'').trim();
+}
+
+function buildDisplayName(item) {
+  const a = item.address || {};
+  const primary = a.village || a.town || a.hamlet || a.suburb || a.neighbourhood
+    || a.city_district || a.city || item.display_name.split(',')[0];
+  const county = extractCounty(a);
+  return county ? `${primary}, Co. ${county}` : item.display_name.split(',').slice(0,2).join(', ').trim();
+}
+
+async function nominatimSearch(q) {
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', Ireland')}&format=json&addressdetails=1&limit=7&countrycodes=ie`;
+  const r = await fetch(url, { headers: { 'User-Agent': 'poist.ie/2.0 (hello@poist.ie)' } });
+  return r.json();
+}
+
+async function runSearch(q) {
+  if (!q || q.length < 2) { closeAc(); return; }
+
+  // 1. Instant local match
+  const local = localLookup(q);
+  if (local) {
+    acDrop.innerHTML = `
+      <div class="ac-item" id="acLocal">
+        <span class="ac-name">📍 ${local.display}</span>
+        <span class="ac-sub">Quick match · click to confirm</span>
+      </div>
+      <div class="ac-msg" style="font-size:.75rem;padding:.3rem .9rem;color:#9ca3af;">Loading more results…</div>`;
+    acDrop.classList.add('open');
+    document.getElementById('acLocal').onclick = () => applyPlace(local.display, local.county, local.lat, local.lng);
+  } else {
+    acDrop.innerHTML = '<div class="ac-msg">Searching…</div>';
+    acDrop.classList.add('open');
+  }
+
+  // 2. Nominatim results
+  try {
+    const results = await nominatimSearch(q);
+    if (!results.length && !local) { acDrop.innerHTML = '<div class="ac-msg">No results found. Try a different spelling.</div>'; return; }
+
+    const rows = results.map((item, i) => {
+      const name = buildDisplayName(item);
+      const sub  = item.display_name.split(',').slice(1,3).join(', ').trim();
+      return `<div class="ac-item" data-i="${i}">
+        <span class="ac-name">${name}</span>
+        ${sub ? `<span class="ac-sub">${sub}</span>` : ''}
+      </div>`;
+    });
+
+    acDrop.innerHTML = (local
+      ? `<div class="ac-item" id="acLocal2"><span class="ac-name">📍 ${local.display}</span><span class="ac-sub">Quick match</span></div>
+         <div style="border-top:1px solid #f3f4f6;margin:0;"></div>`
+      : '') + rows.join('');
+
+    if (local) document.getElementById('acLocal2')?.addEventListener('click', () => applyPlace(local.display, local.county, local.lat, local.lng));
+
+    acDrop.querySelectorAll('.ac-item[data-i]').forEach(el => {
+      const i = parseInt(el.dataset.i);
+      el.addEventListener('click', () => {
+        const r    = results[i];
+        const name = buildDisplayName(r);
+        const addr = r.address || {};
+        applyPlace(name, extractCounty(addr), parseFloat(r.lat), parseFloat(r.lon));
+      });
+    });
+  } catch(e) {
+    if (!local) acDrop.innerHTML = '<div class="ac-msg">Search failed. Please try again.</div>';
+    else { const m = acDrop.querySelector('.ac-msg'); if (m) m.remove(); }
+  }
+}
+
+function applyPlace(display, county, lat, lng) {
+  document.getElementById('jLoc').value = display;
+  window._locLat = lat;
+  window._locLng = lng;
+  if (county) {
+    const sel = document.getElementById('jCounty');
+    for (let i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].value.toLowerCase() === county.toLowerCase() ||
+          sel.options[i].text.toLowerCase() === county.toLowerCase()) {
+        sel.selectedIndex = i; break;
+      }
+    }
+  }
+  document.getElementById('locConfirmTxt').textContent = `📍 Pinned — ${display}`;
+  document.getElementById('locConfirm').classList.add('show');
+  closeAc();
+  upPrev();
+}
+
+window.onLocInput = val => {
+  window._locLat = null; window._locLng = null;
+  document.getElementById('locConfirm').classList.remove('show');
+  clearTimeout(_debounce);
+  _debounce = setTimeout(() => runSearch(val), 420);
+  upPrev();
+};
+
+window.triggerLocSearch = () => {
+  const v = document.getElementById('jLoc').value.trim();
+  if (v) runSearch(v);
+};
+
+document.addEventListener('click', e => {
+  if (!document.getElementById('locWrap').contains(e.target)) closeAc();
+});
+
+/* ── Preview updater ─────────────────────────────────────── */
+const TYPE_LABELS = {full_time:'Full-time',part_time:'Part-time',contract:'Contract',temporary:'Temporary'};
+window.upPrev = () => {
+  document.getElementById('pvT').textContent = document.getElementById('jTitle').value || 'Your job title';
+  document.getElementById('pvM').textContent = `📍 ${document.getElementById('jLoc').value||'Location'} · ${TYPE_LABELS[document.getElementById('jType').value]||document.getElementById('jType').value}`;
+  document.getElementById('pvD').textContent = document.getElementById('jDesc').value || 'Your description…';
+};
+
+/* ── CEFR selector ───────────────────────────────────────── */
 window.setCefr = (v, el) => {
   cefrReq = v;
   document.querySelectorAll('.cefr-option').forEach(b => b.classList.remove('sel'));
   el.classList.add('sel');
   document.getElementById('pvC').textContent = v;
   document.getElementById('pvCC').textContent = v + '+';
-  document.getElementById('cefrHint').textContent = cefrHints[v] || '';
+  document.getElementById('cefrHint').textContent = CEFR_HINTS[v] || '';
 };
 
-// ─── Preview updater ──────────────────────────────────────────────────────────
-window.upPrev = () => {
-  document.getElementById('pvT').textContent = document.getElementById('jTitle').value || 'Your job title';
-  const loc = document.getElementById('jLoc').value || 'Location';
-  const typeMap = { full_time: 'Full-time', part_time: 'Part-time', contract: 'Contract', temporary: 'Temporary' };
-  const type = typeMap[document.getElementById('jType').value] || document.getElementById('jType').value;
-  document.getElementById('pvM').textContent = `📍 ${loc} · ${type}`;
-  document.getElementById('pvD').textContent = document.getElementById('jDesc').value || 'Your description…';
+/* ── Submit dispatcher ───────────────────────────────────── */
+window.submitJob = () => {
+  if (window._submitWithSupa) { window._submitWithSupa(); }
+  else { showErr('Still loading — please wait a moment and try again.'); }
 };
 
-// ─── Nominatim address autocomplete ──────────────────────────────────────────
-let _locLat = null, _locLng = null, _debounceTimer = null;
-
-// Irish county mapping from Nominatim county/state fields
-const irishCountyMap = {
-  'county galway': 'Galway', 'county dublin': 'Dublin', 'county cork': 'Cork',
-  'county kerry': 'Kerry', 'county mayo': 'Mayo', 'county donegal': 'Donegal',
-  'county limerick': 'Limerick', 'county tipperary': 'Tipperary', 'county waterford': 'Waterford',
-  'county kilkenny': 'Kilkenny', 'county wexford': 'Wexford', 'county wicklow': 'Wicklow',
-  'county meath': 'Meath', 'county louth': 'Louth', 'county kildare': 'Kildare',
-  'county laois': 'Laois', 'county carlow': 'Carlow', 'county offaly': 'Offaly',
-  'county westmeath': 'Westmeath', 'county longford': 'Longford', 'county roscommon': 'Roscommon',
-  'county sligo': 'Sligo', 'county leitrim': 'Leitrim', 'county cavan': 'Cavan',
-  'county monaghan': 'Monaghan', 'county fermanagh': 'Fermanagh', 'county tyrone': 'Tyrone',
-  'county armagh': 'Armagh', 'county down': 'Down', 'county antrim': 'Antrim', 'county derry': 'Derry',
-  // Irish-language county names
-  'contae na gaillimhe': 'Galway', 'contae átha cliath': 'Dublin', 'contae chorcaí': 'Cork',
-  'contae chiarraí': 'Kerry', 'contae mhaigh eo': 'Mayo', 'contae dhún na ngall': 'Donegal',
-  'contae luimnigh': 'Limerick',
-  // Galway shorthand (common)
-  'galway': 'Galway', 'dublin': 'Dublin', 'cork': 'Cork', 'kerry': 'Kerry',
-};
-
-function extractCounty(address) {
-  if (!address) return null;
-  // Try county field first
-  const fields = ['county', 'state', 'state_district', 'province'];
-  for (const f of fields) {
-    if (address[f]) {
-      const norm = address[f].toLowerCase().trim();
-      const mapped = irishCountyMap[norm] || irishCountyMap['county ' + norm.replace(/^county\s*/, '')];
-      if (mapped) return mapped;
-      // Try plain name match
-      const plain = norm.replace(/^county\s*/, '').replace(/^contae\s*/, '');
-      for (const [k, v] of Object.entries(irishCountyMap)) {
-        if (k.endsWith(plain) || k === plain) return v;
-      }
-    }
-  }
-  return null;
-}
-
-function buildDisplayName(item) {
-  const a = item.address || {};
-  // Prefer specific place names
-  const primary = a.village || a.town || a.hamlet || a.suburb || a.neighbourhood
-    || a.city_district || a.quarter || a.city || item.name || item.display_name.split(',')[0];
-  const county = extractCounty(a);
-  return county ? `${primary}, Co. ${county}` : item.display_name.split(',').slice(0, 2).join(',').trim();
-}
-
-async function searchNominatim(query) {
-  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query + ', Ireland')}&format=json&addressdetails=1&limit=6&countrycodes=ie`;
-  const resp = await fetch(url, {
-    headers: { 'User-Agent': 'poist.ie/1.0 (hello@poist.ie)' }
-  });
-  return resp.json();
-}
-
-const dropdown = document.getElementById('acDropdown');
-const locInput = document.getElementById('jLoc');
-
-function closeDropdown() { dropdown.classList.remove('open'); dropdown.innerHTML = ''; }
-
-function selectPlace(item) {
-  _locLat = parseFloat(item.lat);
-  _locLng = parseFloat(item.lon);
-  const displayName = buildDisplayName(item);
-  locInput.value = displayName;
-  const county = extractCounty(item.address || {});
-  if (county) {
-    const sel = document.getElementById('jCounty');
-    for (let i = 0; i < sel.options.length; i++) {
-      if (sel.options[i].text === county) { sel.selectedIndex = i; break; }
-    }
-  }
-  document.getElementById('locConfirmedText').textContent = `📍 Pin set at ${_locLat.toFixed(4)}, ${_locLng.toFixed(4)}`;
-  document.getElementById('locConfirmed').classList.add('show');
-  closeDropdown();
-  upPrev();
-}
-
-async function runSearch(query) {
-  if (query.length < 2) { closeDropdown(); return; }
-  dropdown.innerHTML = '<div class="autocomplete-loading">Searching…</div>';
-  dropdown.classList.add('open');
-  try {
-    const results = await searchNominatim(query);
-    if (!results.length) {
-      dropdown.innerHTML = '<div class="autocomplete-none">No results found. Try a different spelling.</div>';
-      return;
-    }
-    dropdown.innerHTML = results.map((item, i) => {
-      const name = buildDisplayName(item);
-      const sub = item.display_name.split(',').slice(1, 3).join(',').trim();
-      return `<div class="autocomplete-item" data-i="${i}">${
-        '<span class="place-name">' + name + '</span>' +
-        (sub ? '<span class="place-sub">' + sub + '</span>' : '')
-      }</div>`;
-    }).join('');
-    dropdown.querySelectorAll('.autocomplete-item').forEach((el, i) => {
-      el.addEventListener('click', () => selectPlace(results[i]));
-    });
-  } catch (e) {
-    dropdown.innerHTML = '<div class="autocomplete-none">Search failed. Please try again.</div>';
-  }
-}
-
-window.onLocInput = (val) => {
-  _locLat = null; _locLng = null;
-  document.getElementById('locConfirmed').classList.remove('show');
-  clearTimeout(_debounceTimer);
-  _debounceTimer = setTimeout(() => runSearch(val), 420); // debounce 420ms
-  upPrev();
-};
-
-window.triggerSearch = () => {
-  const val = locInput.value.trim();
-  if (val) runSearch(val);
-};
-
-// Close dropdown on outside click
-document.addEventListener('click', (e) => {
-  if (!document.getElementById('locationGroup').contains(e.target)) closeDropdown();
-});
-
-// ─── Submit to Supabase ───────────────────────────────────────────────────────
-window.submitJob = async () => {
-  const title = document.getElementById('jTitle').value.trim();
-  const desc = document.getElementById('jDesc').value.trim();
-  const loc = document.getElementById('jLoc').value.trim();
-  const county = document.getElementById('jCounty').value;
-
-  if (!title) { showError('Please add a job title.'); return; }
-  if (!desc) { showError('Please add a description.'); return; }
-  if (!loc) { showError('Please add a location.'); return; }
-  if (!county) { showError('Please select a county.'); return; }
-
-  const btn = document.getElementById('submitBtn');
-  btn.textContent = 'Submitting…'; btn.disabled = true;
-
-  const typeVal = document.getElementById('jType').value;
-  const closingRaw = document.getElementById('jClose').value;
-
-  const jobRow = {
-    employer_id: userId,
-    org_name: employer?.org_name || null,
-    title,
-    description: desc,
-    location: loc,
-    county,
-    cefr_required: cefrReq,
-    job_type: typeVal,
-    sector: document.getElementById('jSector').value,
-    salary: document.getElementById('jSalary').value.trim() || null,
-    closing_date: closingRaw || null,
-    lat: _locLat,
-    lng: _locLng,
-    status: 'pending',
-    is_aggregated: false,
-    source_name: 'poist.ie',
-  };
-
-  const { error } = await sb.from('jobs').insert([jobRow]);
-  if (error) {
-    showError('Submission failed: ' + error.message);
-    btn.textContent = 'Submit for Review →'; btn.disabled = false;
-    return;
-  }
-
-  document.getElementById('mainForm').style.display = 'none';
-  document.getElementById('successScreen').style.display = 'block';
-};
-
-function showError(msg) {
-  const b = document.getElementById('errorBanner');
-  b.textContent = msg;
-  b.style.display = 'block';
+function showErr(msg) {
+  const b = document.getElementById('errBanner');
+  b.textContent = msg; b.style.display = 'block';
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  setTimeout(() => { b.style.display = 'none'; }, 6000);
 }
 </script>
 </body>
