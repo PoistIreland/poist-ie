@@ -5,6 +5,7 @@ Runs via GitHub Actions at 23:00 UTC daily.
 """
 
 import os, re, time, logging
+from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
 from supabase import create_client, Client
@@ -340,7 +341,6 @@ def scrape_generic(url: str, source_name: str, existing_urls: set) -> int:
                 continue
             href = link["href"]
             if not href.startswith("http"):
-                from urllib.parse import urljoin
                 href = urljoin(url, href)
 
             # Try to get location from surrounding text
@@ -477,7 +477,7 @@ def scrape_adzuna(existing_urls: set) -> int:
     inserted = 0
     try:
         resp = requests.get(
-            f"https://api.adzuna.com/v1/api/jobs/ie/search/1",
+            "https://api.adzuna.com/v1/api/jobs/ie/search/1",
             params={
                 "app_id": ADZUNA_APP_ID,
                 "app_key": ADZUNA_APP_KEY,
@@ -580,7 +580,7 @@ def main():
         except Exception as e:
             log.error(f"   ✗ {name} failed: {e}")
 
-    log.info(f"── Cleanup expired jobs…")
+    log.info("── Cleanup expired jobs…")
     cleanup_expired()
 
     log.info(f"═══ Done. {total} new jobs inserted total. ═══")

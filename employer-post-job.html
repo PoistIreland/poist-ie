@@ -267,7 +267,7 @@ document.getElementById('shell').innerHTML = `
    SUPABASE — loads async, wires auth + submit
 ═══════════════════════════════════════════════════════ */
 (async () => {
-  const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
+  const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
   const sb = createClient(
     'https://kpfshjarepmazrgzffot.supabase.co',
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwZnNoamFyZXBtYXpyZ3pmZm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNzQ0MjIsImV4cCI6MjA5MDY1MDQyMn0.yU-6ASii1duNXgGMs0ZWTkgTYXonVfqVOnEQr0J8FhU'
@@ -431,7 +431,7 @@ const IRISH_PLACES = {
   'wexford':               ['Wexford Town',               'Wexford',   52.3369, -6.4633],
   'loch garman':           ['Wexford Town',               'Wexford',   52.3369, -6.4633],
   'drogheda':              ['Drogheda, Co. Louth',        'Louth',     53.7182, -6.3563],
-  'dundalk':               ['Dundalk, Co. Louth',         'Louth',     54.0042, -6.4074'],
+  'dundalk':               ['Dundalk, Co. Louth',         'Louth',     54.0042, -6.4074],
   'athlone':               ['Athlone, Co. Westmeath',    'Westmeath',  53.4235, -7.9401],
   'áth luain':             ['Athlone, Co. Westmeath',    'Westmeath',  53.4235, -7.9401],
   'ennis':                 ['Ennis, Co. Clare',           'Clare',     52.8433, -8.9820],
